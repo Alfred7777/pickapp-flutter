@@ -14,7 +14,7 @@ class MapSample extends StatefulWidget {
 class MapSampleState extends State<MapSample> with TickerProviderStateMixin {
   Completer<GoogleMapController> _controller = Completer();
 
-  AnimationController _animation_controller;
+  AnimationController _animationController;
 
   bool _switch = true;
 
@@ -30,7 +30,7 @@ class MapSampleState extends State<MapSample> with TickerProviderStateMixin {
     super.initState();
     _buildAddEventMenu();
     markers = new Set();
-    _animation_controller = new AnimationController(
+    _animationController = new AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 500),
     );
@@ -39,7 +39,7 @@ class MapSampleState extends State<MapSample> with TickerProviderStateMixin {
 
   @override
   void dispose() {
-    _animation_controller.dispose();
+    _animationController.dispose();
     super.dispose();
   }
 
@@ -48,26 +48,49 @@ class MapSampleState extends State<MapSample> with TickerProviderStateMixin {
     stderr.writeln(markers);
 
     return new Scaffold(
-        body: GoogleMap(
-          mapType: MapType.normal,
-          markers: markers,
-          mapToolbarEnabled: false,
-          zoomControlsEnabled: false,
-          initialCameraPosition: _kPoznan,
-          onMapCreated: (GoogleMapController controller) {
-            _controller.complete(controller);
-          },
-        ),
-        floatingActionButton: AnimatedOpacity(
-          opacity: 1,
-          duration: Duration(milliseconds: 250),
-          curve: Curves.easeOut,
-          child: _buildMenu(context),
-        ));
-  }
-
-  void _toggle() {
-    _switch = !_switch;
+      body: GoogleMap(
+        mapType: MapType.normal,
+        markers: markers,
+        mapToolbarEnabled: false,
+        zoomControlsEnabled: false,
+        initialCameraPosition: _kPoznan,
+        onMapCreated: (GoogleMapController controller) {
+          _controller.complete(controller);
+        },
+      ),
+      floatingActionButton: AnimatedOpacity(
+        opacity: 1,
+        duration: Duration(milliseconds: 250),
+        curve: Curves.easeOut,
+        child: _buildMenu(context),
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: 0,
+        type: BottomNavigationBarType.shifting,
+        selectedItemColor: Colors.blueAccent,
+        unselectedItemColor: Colors.black,
+        showUnselectedLabels: true,
+        unselectedLabelStyle:
+            new TextStyle(color: Colors.black, decorationColor: Colors.black),
+        // this will be set when a new tab is tapped
+        items: [
+          BottomNavigationBarItem(
+            icon: new Icon(Icons.public),
+            title: new Text('Map'),
+          ),
+          BottomNavigationBarItem(
+            icon: new Icon(Icons.event),
+            title: new Text('My events'),
+          ),
+          BottomNavigationBarItem(
+              icon: new Icon(Icons.people), title: new Text('Groups')),
+          BottomNavigationBarItem(
+              icon: new Icon(Icons.notifications),
+              backgroundColor: Colors.green,
+              title: new Text('Alerts'))
+        ],
+      ),
+    );
   }
 
   void _buildAddEventMenu() {
@@ -94,7 +117,7 @@ class MapSampleState extends State<MapSample> with TickerProviderStateMixin {
           padding: EdgeInsets.only(bottom: 10),
           child: new ScaleTransition(
             scale: new CurvedAnimation(
-              parent: _animation_controller,
+              parent: _animationController,
               curve: Curves.fastOutSlowIn,
             ),
             child: new FloatingActionButton(
@@ -104,7 +127,7 @@ class MapSampleState extends State<MapSample> with TickerProviderStateMixin {
               child: new Icon(menu[index].icon, color: foregroundColor),
               onPressed: () {
                 menu[index].action();
-                _animation_controller.reverse();
+                _animationController.reverse();
               },
             ),
           ),
@@ -116,23 +139,23 @@ class MapSampleState extends State<MapSample> with TickerProviderStateMixin {
             heroTag: null,
             backgroundColor: Colors.green,
             child: new AnimatedBuilder(
-              animation: _animation_controller,
+              animation: _animationController,
               builder: (BuildContext context, Widget child) {
                 return new Transform(
                   transform: new Matrix4.rotationZ(
-                      _animation_controller.value * 0.5 * math.pi),
+                      _animationController.value * 0.5 * math.pi),
                   alignment: FractionalOffset.center,
-                  child: new Icon(_animation_controller.isDismissed
+                  child: new Icon(_animationController.isDismissed
                       ? Icons.add
                       : Icons.close),
                 );
               },
             ),
             onPressed: () {
-              if (_animation_controller.isDismissed) {
-                _animation_controller.forward();
+              if (_animationController.isDismissed) {
+                _animationController.forward();
               } else {
-                _animation_controller.reverse();
+                _animationController.reverse();
               }
             },
           ),
@@ -141,12 +164,9 @@ class MapSampleState extends State<MapSample> with TickerProviderStateMixin {
   }
 
   void _createEvent() async {
-      final Marker marker = Marker(
+    final Marker marker = Marker(
       markerId: MarkerId("1"),
-      position: LatLng(
-        52.46,
-        16.92
-      ),
+      position: LatLng(52.46, 16.92),
       infoWindow: InfoWindow(title: "lol", snippet: '*'),
     );
 
