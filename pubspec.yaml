@@ -14,7 +14,7 @@ description: A new Flutter application.
 version: 1.0.0+1
 
 environment:
-  sdk: ">=2.1.0 <3.0.0"
+  sdk: ">=2.2.0 <3.0.0"
 
 dependencies:
   flutter:
@@ -29,6 +29,14 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  pedantic: 1.8.0+1
+
+dependency_overrides: 
+  pedantic: 1.9.0
+
+#there is an error when trying to use the newest version of pedantic
+#so I've found a workaround - dependency ovverridee
+#for more info see https://github.com/dart-lang/pedantic/issues/46
 
 
 # For information on the generic Dart part of this file, see the
