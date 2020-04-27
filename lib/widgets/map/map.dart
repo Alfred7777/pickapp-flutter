@@ -12,11 +12,9 @@ class MapSample extends StatefulWidget {
 }
 
 class MapSampleState extends State<MapSample> with TickerProviderStateMixin {
-  Completer<GoogleMapController> _controller = Completer();
+  final Completer<GoogleMapController> _controller = Completer();
 
   AnimationController _animationController;
-
-  bool _switch = true;
 
   static final CameraPosition _kPoznan =
       CameraPosition(target: LatLng(52.4064, 16.9252), zoom: 13);
@@ -29,8 +27,8 @@ class MapSampleState extends State<MapSample> with TickerProviderStateMixin {
   void initState() {
     super.initState();
     _buildAddEventMenu();
-    markers = new Set();
-    _animationController = new AnimationController(
+    markers = {};
+    _animationController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 500),
     );
@@ -47,7 +45,7 @@ class MapSampleState extends State<MapSample> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     stderr.writeln(markers);
 
-    return new Scaffold(
+    return Scaffold(
       body: GoogleMap(
         mapType: MapType.normal,
         markers: markers,
@@ -71,23 +69,23 @@ class MapSampleState extends State<MapSample> with TickerProviderStateMixin {
         unselectedItemColor: Colors.black,
         showUnselectedLabels: true,
         unselectedLabelStyle:
-            new TextStyle(color: Colors.black, decorationColor: Colors.black),
+            TextStyle(color: Colors.black, decorationColor: Colors.black),
         // this will be set when a new tab is tapped
         items: [
           BottomNavigationBarItem(
-            icon: new Icon(Icons.public),
-            title: new Text('Map'),
+            icon: Icon(Icons.public),
+            title: Text('Map'),
           ),
           BottomNavigationBarItem(
-            icon: new Icon(Icons.event),
-            title: new Text('My events'),
+            icon: Icon(Icons.event),
+            title: Text('My events'),
           ),
           BottomNavigationBarItem(
-              icon: new Icon(Icons.people), title: new Text('Groups')),
+              icon: Icon(Icons.people), title: Text('Groups')),
           BottomNavigationBarItem(
-              icon: new Icon(Icons.notifications),
+              icon: Icon(Icons.notifications),
               backgroundColor: Colors.green,
-              title: new Text('Alerts'))
+              title: Text('Alerts'))
         ],
       ),
     );
@@ -98,33 +96,33 @@ class MapSampleState extends State<MapSample> with TickerProviderStateMixin {
       AddEventMenuButton(
           action: () => _createEvent(),
           icon: Icons.business,
-          label: "Event",
+          label: 'Event',
           color: Colors.orange),
       AddEventMenuButton(
           action: () => _createEvent(),
           icon: Icons.room,
-          label: "Event",
+          label: 'Event',
           color: Colors.purple)
     ];
   }
 
   Widget _buildMenu(BuildContext context) {
-    Color foregroundColor = Colors.white;
-    return new Column(
+    var foregroundColor = Colors.white;
+    return Column(
       mainAxisSize: MainAxisSize.min,
       children: List.generate(menu.length, (int index) {
-        Widget child = new Container(
+        Widget child = Container(
           padding: EdgeInsets.only(bottom: 10),
-          child: new ScaleTransition(
-            scale: new CurvedAnimation(
+          child: ScaleTransition(
+            scale: CurvedAnimation(
               parent: _animationController,
               curve: Curves.fastOutSlowIn,
             ),
-            child: new FloatingActionButton(
+            child: FloatingActionButton(
               heroTag: null,
               backgroundColor: menu[index].color,
               mini: false,
-              child: new Icon(menu[index].icon, color: foregroundColor),
+              child: Icon(menu[index].icon, color: foregroundColor),
               onPressed: () {
                 menu[index].action();
                 _animationController.reverse();
@@ -135,17 +133,17 @@ class MapSampleState extends State<MapSample> with TickerProviderStateMixin {
         return child;
       }).toList()
         ..add(
-          new FloatingActionButton(
+          FloatingActionButton(
             heroTag: null,
             backgroundColor: Colors.green,
-            child: new AnimatedBuilder(
+            child: AnimatedBuilder(
               animation: _animationController,
               builder: (BuildContext context, Widget child) {
-                return new Transform(
-                  transform: new Matrix4.rotationZ(
+                return Transform(
+                  transform: Matrix4.rotationZ(
                       _animationController.value * 0.5 * math.pi),
                   alignment: FractionalOffset.center,
-                  child: new Icon(_animationController.isDismissed
+                  child: Icon(_animationController.isDismissed
                       ? Icons.add
                       : Icons.close),
                 );
@@ -164,10 +162,10 @@ class MapSampleState extends State<MapSample> with TickerProviderStateMixin {
   }
 
   void _createEvent() async {
-    final Marker marker = Marker(
-      markerId: MarkerId("1"),
+    final marker = Marker(
+      markerId: MarkerId('1'),
       position: LatLng(52.46, 16.92),
-      infoWindow: InfoWindow(title: "lol", snippet: '*'),
+      infoWindow: InfoWindow(title: '1', snippet: '*'),
     );
 
     setState(() {
