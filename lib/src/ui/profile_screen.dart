@@ -107,7 +107,11 @@ class ProfileScreenState extends State<ProfileScreen> {
                     children: <Widget>[
                       Padding(
                         padding: const EdgeInsets.only(right: 15.0),
-                        child: Icon(Icons.add_circle_outline),
+                        child: IconButton(
+                          icon: Icon(Icons.add_circle_outline),
+                          onPressed: () {//send comment to backend
+                          }
+                        )
                       ),
                     ],
                   )
