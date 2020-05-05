@@ -14,6 +14,7 @@ class SimpleBlocDelegate extends BlocDelegate {
     super.onEvent(bloc, event);
   }
 
+
   @override
   void onTransition(Bloc bloc, Transition transition) {
     super.onTransition(bloc, transition);
@@ -46,6 +47,9 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      theme: ThemeData(
+        primarySwatch: Colors.green,
+      ),
       title: 'PickApp',
       home: BlocBuilder<AuthenticationBloc, AuthenticationState>(
         builder: (context, state) {
