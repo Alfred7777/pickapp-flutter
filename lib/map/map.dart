@@ -7,7 +7,6 @@ import 'package:PickApp/reusables/bottom_nav_bar.dart';
 import 'add_event_menu.dart';
 import 'package:PickApp/widgets/nav_drawer/nav_drawer.dart';
 
-
 class MapSample extends StatefulWidget {
   @override
   State<MapSample> createState() => MapSampleState();
@@ -55,47 +54,16 @@ class MapSampleState extends State<MapSample> with TickerProviderStateMixin {
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-<<<<<<< HEAD:lib/map/map.dart
-          icon: Icon(Icons.menu),
-          iconSize: 34.0,
-          color: Color(0xFF000000),
-          onPressed: () {
-            _scaffoldKey.currentState.openDrawer();
-          }
-        ),
-=======
             icon: Icon(Icons.menu),
             iconSize: 34.0,
             color: Color(0xFF000000),
             onPressed: () {
               _scaffoldKey.currentState.openDrawer();
             }),
->>>>>>> profile screen remade, various fixes in project:lib/widgets/map/map.dart
         centerTitle: true,
         title: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-<<<<<<< HEAD:lib/map/map.dart
-            Icon(
-              Icons.search,
-              color: Color(0xFF000000),
-              size: 32.0
-            ),
-            ButtonTheme(
-              minWidth: 170,
-              height: 28,
-              child: FlatButton(
-                onPressed: () {
-
-                },
-                color: Color(0x55C4C4C4),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20.0)
-                ),
-                child: null
-              )
-            )
-=======
             Icon(Icons.search, color: Color(0xFF000000), size: 32.0),
             ButtonTheme(
                 minWidth: 170,
@@ -106,7 +74,6 @@ class MapSampleState extends State<MapSample> with TickerProviderStateMixin {
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(20.0)),
                     child: null))
->>>>>>> profile screen remade, various fixes in project:lib/widgets/map/map.dart
           ],
         ),
         actions: <Widget>[
@@ -114,13 +81,7 @@ class MapSampleState extends State<MapSample> with TickerProviderStateMixin {
             icon: Icon(Icons.filter_list),
             iconSize: 34.0,
             color: Color(0xFF000000),
-<<<<<<< HEAD:lib/map/map.dart
-            onPressed: () {
-
-            },
-=======
             onPressed: () {},
->>>>>>> profile screen remade, various fixes in project:lib/widgets/map/map.dart
           )
         ],
       ),

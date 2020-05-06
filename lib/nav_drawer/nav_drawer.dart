@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutterplayground/profile/profile_screen.dart';
+import 'package:PickApp/profile/profile_screen.dart';
 
 class NavDrawer extends StatelessWidget {
   @override

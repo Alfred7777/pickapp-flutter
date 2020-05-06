@@ -14,7 +14,6 @@ class SimpleBlocDelegate extends BlocDelegate {
     super.onEvent(bloc, event);
   }
 
-
   @override
   void onTransition(Bloc bloc, Transition transition) {
     super.onTransition(bloc, transition);
@@ -31,11 +30,11 @@ void main() {
   final userRepository = UserRepository();
   runApp(
     BlocProvider<AuthenticationBloc>(
-      create: (context) {
-        return AuthenticationBloc(userRepository: userRepository)..add(AppStarted());
-      },
-      child: MyApp(userRepository: userRepository)
-    ),
+        create: (context) {
+          return AuthenticationBloc(userRepository: userRepository)
+            ..add(AppStarted());
+        },
+        child: MyApp(userRepository: userRepository)),
   );
 }
 
@@ -47,27 +46,21 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      theme: ThemeData(
-        primarySwatch: Colors.green,
-      ),
-      title: 'PickApp',
-      home: BlocBuilder<AuthenticationBloc, AuthenticationState>(
-        builder: (context, state) {
+        theme: ThemeData(
+          primarySwatch: Colors.green,
+        ),
+        title: 'PickApp',
+        home: BlocBuilder<AuthenticationBloc, AuthenticationState>(
+            builder: (context, state) {
           if (state is AuthenticationUninitialized) {
             return LoadingScreen();
-          }
-          else if (state is AuthenticationAuthenticated) {
+          } else if (state is AuthenticationAuthenticated) {
             return MapSample();
-          }
-          else if (state is AuthenticationUnauthenticated) {
+          } else if (state is AuthenticationUnauthenticated) {
             return LoginPage(userRepository: userRepository);
-          }
-          else {
+          } else {
             return LoadingScreen();
           }
-        }
-      )
-    );
+        }));
   }
 }
-
