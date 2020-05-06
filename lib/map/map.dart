@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import 'add_event_menu.dart';
+import 'package:PickApp/widgets/nav_drawer/nav_drawer.dart';
 
 class MapSample extends StatefulWidget {
   @override
@@ -20,6 +21,8 @@ class MapSampleState extends State<MapSample> with TickerProviderStateMixin {
       CameraPosition(target: LatLng(52.4064, 16.9252), zoom: 13);
 
   List<AddEventMenuButton> menu;
+
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   Set<Marker> markers;
 
@@ -46,6 +49,56 @@ class MapSampleState extends State<MapSample> with TickerProviderStateMixin {
     stderr.writeln(markers);
 
     return Scaffold(
+      key: _scaffoldKey,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        leading: IconButton(
+          icon: Icon(Icons.menu),
+          iconSize: 34.0,
+          color: Color(0xFF000000),
+          onPressed: () {
+            _scaffoldKey.currentState.openDrawer();
+          }
+        ),
+        centerTitle: true,
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Icon(
+              Icons.search,
+              color: Color(0xFF000000),
+              size: 32.0
+            ),
+            ButtonTheme(
+              minWidth: 170,
+              height: 28,
+              child: FlatButton(
+                onPressed: () {
+
+                },
+                color: Color(0x55C4C4C4),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20.0)
+                ),
+                child: null
+              )
+            )
+          ],
+        ),
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(Icons.filter_list),
+            iconSize: 34.0,
+            color: Color(0xFF000000),
+            onPressed: () {
+
+            },
+          )
+        ],
+      ),
+      drawer: NavDrawer(),
+      extendBodyBehindAppBar: true,
       body: GoogleMap(
         mapType: MapType.normal,
         markers: markers,
