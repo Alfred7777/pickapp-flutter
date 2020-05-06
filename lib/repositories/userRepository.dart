@@ -14,8 +14,7 @@ class UserRepository {
 
     if (response.statusCode == 200) {
       return response.body;
-    }
-    else {
+    } else {
       throw Exception();
     }
   }
