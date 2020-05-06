@@ -3,7 +3,7 @@ import 'dart:math' as math;
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-
+import 'package:PickApp/reusables/bottom_nav_bar.dart';
 import 'add_event_menu.dart';
 import 'package:PickApp/widgets/nav_drawer/nav_drawer.dart';
 
@@ -54,36 +54,26 @@ class MapSampleState extends State<MapSample> with TickerProviderStateMixin {
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.menu),
-          iconSize: 34.0,
-          color: Color(0xFF000000),
-          onPressed: () {
-            _scaffoldKey.currentState.openDrawer();
-          }
-        ),
+            icon: Icon(Icons.menu),
+            iconSize: 34.0,
+            color: Color(0xFF000000),
+            onPressed: () {
+              _scaffoldKey.currentState.openDrawer();
+            }),
         centerTitle: true,
         title: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Icon(
-              Icons.search,
-              color: Color(0xFF000000),
-              size: 32.0
-            ),
+            Icon(Icons.search, color: Color(0xFF000000), size: 32.0),
             ButtonTheme(
-              minWidth: 170,
-              height: 28,
-              child: FlatButton(
-                onPressed: () {
-
-                },
-                color: Color(0x55C4C4C4),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20.0)
-                ),
-                child: null
-              )
-            )
+                minWidth: 170,
+                height: 28,
+                child: FlatButton(
+                    onPressed: () {},
+                    color: Color(0x55C4C4C4),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20.0)),
+                    child: null))
           ],
         ),
         actions: <Widget>[
@@ -91,9 +81,7 @@ class MapSampleState extends State<MapSample> with TickerProviderStateMixin {
             icon: Icon(Icons.filter_list),
             iconSize: 34.0,
             color: Color(0xFF000000),
-            onPressed: () {
-
-            },
+            onPressed: () {},
           )
         ],
       ),
@@ -115,32 +103,7 @@ class MapSampleState extends State<MapSample> with TickerProviderStateMixin {
         curve: Curves.easeOut,
         child: _buildMenu(context),
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: 0,
-        type: BottomNavigationBarType.shifting,
-        selectedItemColor: Colors.blueAccent,
-        unselectedItemColor: Colors.black,
-        showUnselectedLabels: true,
-        unselectedLabelStyle:
-            TextStyle(color: Colors.black, decorationColor: Colors.black),
-        // this will be set when a new tab is tapped
-        items: [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.public),
-            title: Text('Map'),
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.event),
-            title: Text('My events'),
-          ),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.people), title: Text('Groups')),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.notifications),
-              backgroundColor: Colors.green,
-              title: Text('Alerts'))
-        ],
-      ),
+      bottomNavigationBar: bottom_bar(0),
     );
   }
 
