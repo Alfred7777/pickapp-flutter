@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:PickApp/map/map.dart';
 import 'package:PickApp/widgets/nav_drawer/nav_drawer_item.dart';
+import 'package:PickApp/profile/profile_screen.dart';
 
 class NavDrawer extends StatelessWidget {
   @override
@@ -60,7 +61,7 @@ class NavDrawer extends StatelessWidget {
               Text('Profile',
                   style: TextStyle(color: Color(0xFF3D3A3A), fontSize: 18)),
               // redirect to map view, change after according view is ready + add import
-              MaterialPageRoute<void>(builder: (context) => MapSample())),
+              MaterialPageRoute<void>(builder: (context) => ProfileScreen())),
           NavDraverItem(
               Icon(Icons.settings, color: Color(0xFF3D3A3A), size: 30.0),
               Text('Settings',
