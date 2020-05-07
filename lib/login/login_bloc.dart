@@ -13,8 +13,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
   LoginBloc({
     @required this.userRepository,
     @required this.authenticationBloc,
-  })  : assert(userRepository != null),
-        assert(authenticationBloc != null);
+  }): assert(userRepository != null), assert(authenticationBloc != null);
 
   @override
   LoginState get initialState => LoginInitial();
@@ -26,8 +25,14 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
 
       try {
         final token = await userRepository.authenticate(
-            email: event.email, password: event.password);
-        authenticationBloc.add(LoggedIn(token: token));
+          email: event.email, 
+          password: event.password
+        );
+        authenticationBloc.add(
+          LoggedIn(
+            token: token
+          )
+        );
         yield LoginInitial();
       } catch (error) {
         yield LoginFailure(error: 'Invalid credentials');

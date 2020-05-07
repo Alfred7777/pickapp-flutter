@@ -3,9 +3,9 @@ import 'dart:math' as math;
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:PickApp/reusables/bottom_nav_bar.dart';
-import 'add_event_menu.dart';
+import 'package:PickApp/widgets/bottom_navbar.dart';
 import 'package:PickApp/widgets/nav_drawer/nav_drawer.dart';
+import 'add_event_menu.dart';
 
 class MapSample extends StatefulWidget {
   @override
@@ -103,7 +103,7 @@ class MapSampleState extends State<MapSample> with TickerProviderStateMixin {
         curve: Curves.easeOut,
         child: _buildMenu(context),
       ),
-      bottomNavigationBar: bottom_bar(0),
+      bottomNavigationBar: bottomNavbar(0),
     );
   }
 
