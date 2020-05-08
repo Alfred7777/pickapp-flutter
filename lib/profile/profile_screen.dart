@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import './profile_bloc.dart';
-import './profile_model.dart';
-import '../reusables/top_bar.dart';
+import 'package:PickApp/profile/profile_bloc.dart';
+import 'package:PickApp/profile/profile_model.dart';
+import 'package:PickApp/widgets/top_bar.dart';
 
 class ProfileScreen extends StatefulWidget {
   @override
@@ -79,7 +79,7 @@ class ProfileScreenState extends State<ProfileScreen> {
   Scaffold _buildProfileScreen(BuildContext context, Profile data) {
     var screenSize = MediaQuery.of(context).size;
     return Scaffold(
-      appBar: top_bar(context),
+      appBar: topBar(context),
       body: Stack(
         children: <Widget>[
           SafeArea(
