@@ -7,6 +7,9 @@ import 'package:PickApp/login/login_page.dart';
 import 'package:PickApp/repositories/userRepository.dart';
 import 'package:PickApp/widgets/loading_screen.dart';
 import 'package:PickApp/map/map.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+
+final storage = FlutterSecureStorage();
 
 class SimpleBlocDelegate extends BlocDelegate {
   @override

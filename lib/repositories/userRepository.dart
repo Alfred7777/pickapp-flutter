@@ -1,5 +1,7 @@
 import 'package:meta/meta.dart';
 import 'package:http/http.dart';
+import 'dart:convert';
+import 'package:PickApp/main.dart';
 
 class UserRepository {
   Future<String> authenticate({
@@ -19,20 +21,27 @@ class UserRepository {
     }
   }
 
+  Future<String> getAuthToken() async {
+    final auth_token = await storage.read(key: 'jwt');
+    if (auth_token == null) return '';
+    return auth_token;
+  }
+
   Future<void> deleteToken() async {
-    /// delete from keystore/keychain
+    await storage.delete(key: 'jwt');
     await Future<void>.delayed(Duration(seconds: 1));
     return;
   }
 
   Future<void> persistToken(String token) async {
-    /// write to keystore/keychain
+    var auth_token = (json.decode(token))['auth_token'];
+    await storage.write(key: 'jwt', value: auth_token);
     await Future<void>.delayed(Duration(seconds: 1));
     return;
   }
 
   Future<bool> hasToken() async {
-    /// read from keystore/keychain
+    await storage.read(key: 'jwt').then((_) => true);
     await Future<bool>.delayed(Duration(seconds: 1));
     return false;
   }
