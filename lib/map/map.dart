@@ -6,6 +6,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:PickApp/widgets/bottom_navbar.dart';
 import 'package:PickApp/widgets/nav_drawer/nav_drawer.dart';
 import 'add_event_menu.dart';
+import 'package:PickApp/repositories/eventRepository.dart';
 
 class MapSample extends StatefulWidget {
   @override
@@ -13,6 +14,8 @@ class MapSample extends StatefulWidget {
 }
 
 class MapSampleState extends State<MapSample> with TickerProviderStateMixin {
+  final eventRepository = EventRepository();
+
   final Completer<GoogleMapController> _controller = Completer();
 
   AnimationController _animationController;
@@ -30,7 +33,7 @@ class MapSampleState extends State<MapSample> with TickerProviderStateMixin {
   void initState() {
     super.initState();
     _buildAddEventMenu();
-    markers = {};
+
     _animationController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 500),
@@ -47,6 +50,12 @@ class MapSampleState extends State<MapSample> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     stderr.writeln(markers);
+
+    eventRepository.getEvents().then(
+      (events) {
+        markers = events;
+      }
+    );
 
     return Scaffold(
       key: _scaffoldKey,
