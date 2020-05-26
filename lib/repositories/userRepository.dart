@@ -29,20 +29,20 @@ class UserRepository {
 
   Future<void> deleteToken() async {
     await storage.delete(key: 'jwt');
-    await Future<void>.delayed(Duration(seconds: 1));
     return;
   }
 
   Future<void> persistToken(String token) async {
     var auth_token = (json.decode(token))['auth_token'];
-    await storage.write(key: 'jwt', value: auth_token);
-    await Future<void>.delayed(Duration(seconds: 1));
+    if (auth_token != null){
+      await storage.write(key: 'jwt', value: auth_token);
+    }
     return;
   }
 
   Future<bool> hasToken() async {
-    await storage.read(key: 'jwt').then((_) => true);
-    await Future<bool>.delayed(Duration(seconds: 1));
-    return false;
+    final key = await storage.read(key: 'jwt');
+    if (key == null) return false;
+    return true;
   }
 }
