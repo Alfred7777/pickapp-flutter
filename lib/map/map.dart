@@ -2,9 +2,11 @@ import 'dart:async';
 import 'dart:math' as math;
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:flutter_map/flutter_map.dart';
+//import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:PickApp/widgets/bottom_navbar.dart';
 import 'package:PickApp/widgets/nav_drawer/nav_drawer.dart';
+import 'package:latlong/latlong.dart';
 import 'add_event_menu.dart';
 import 'package:PickApp/repositories/eventRepository.dart';
 
@@ -16,12 +18,12 @@ class MapSample extends StatefulWidget {
 class MapSampleState extends State<MapSample> with TickerProviderStateMixin {
   final eventRepository = EventRepository();
 
-  final Completer<GoogleMapController> _controller = Completer();
+  //final Completer<GoogleMapController> _controller = Completer();
 
   AnimationController _animationController;
 
-  static final CameraPosition _kPoznan =
-      CameraPosition(target: LatLng(52.4064, 16.9252), zoom: 13);
+  //static final CameraPosition _kPoznan =
+    //  CameraPosition(target: LatLng(52.4064, 16.9252), zoom: 13);
 
   List<AddEventMenuButton> menu;
 
@@ -51,11 +53,9 @@ class MapSampleState extends State<MapSample> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     stderr.writeln(markers);
 
-    eventRepository.getEvents().then(
-      (events) {
-        markers = events;
-      }
-    );
+    eventRepository.getEvents().then((events) {
+      markers = events;
+    });
 
     return Scaffold(
       key: _scaffoldKey,
@@ -96,15 +96,33 @@ class MapSampleState extends State<MapSample> with TickerProviderStateMixin {
       ),
       drawer: NavDrawer(),
       extendBodyBehindAppBar: true,
-      body: GoogleMap(
-        mapType: MapType.normal,
-        markers: markers,
-        mapToolbarEnabled: false,
-        zoomControlsEnabled: false,
-        initialCameraPosition: _kPoznan,
-        onMapCreated: (GoogleMapController controller) {
-          _controller.complete(controller);
-        },
+      body: FlutterMap(
+       options: MapOptions(
+          center: LatLng(52.4064, 16.9252),
+          zoom: 13.0,
+        ),
+        layers: [
+          TileLayerOptions(
+            urlTemplate: 'https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}',
+            additionalOptions: {
+              'accessToken': 'pk.eyJ1Ijoic2Fsd2luaCIsImEiOiJja2FxcTFveHQwN3c1MnBxZjhybmdzaGlhIn0.SrA-2zNIO1eT2Jjb3VIhYw',
+              'id': 'mapbox/streets-v11',
+            },
+          ),
+          MarkerLayerOptions(
+            markers: [
+              Marker(
+                width: 80.0,
+                height: 80.0,
+                point: LatLng(52.4064, 16.9252),
+                builder: (ctx) =>
+                Container(
+                  child: FlutterLogo(),
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
       floatingActionButton: AnimatedOpacity(
         opacity: 1,
@@ -118,16 +136,16 @@ class MapSampleState extends State<MapSample> with TickerProviderStateMixin {
 
   void _buildAddEventMenu() {
     menu = [
-      AddEventMenuButton(
-          action: () => _createEvent(),
-          icon: Icons.business,
-          label: 'Event',
-          color: Colors.orange),
-      AddEventMenuButton(
-          action: () => _createEvent(),
-          icon: Icons.room,
-          label: 'Event',
-          color: Colors.purple)
+      // AddEventMenuButton(
+      //     action: () => _createEvent(),
+      //     icon: Icons.business,
+      //     label: 'Event',
+      //     color: Colors.orange),
+      // AddEventMenuButton(
+      //     action: () => _createEvent(),
+      //     icon: Icons.room,
+      //     label: 'Event',
+      //     color: Colors.purple)
     ];
   }
 
@@ -186,16 +204,16 @@ class MapSampleState extends State<MapSample> with TickerProviderStateMixin {
     );
   }
 
-  void _createEvent() async {
-    final marker = Marker(
-      markerId: MarkerId('1'),
-      position: LatLng(52.46, 16.92),
-      infoWindow: InfoWindow(title: '1', snippet: '*'),
-    );
+  // void _createEvent() async {
+  //   final marker = Marker(
+  //     markerId: MarkerId('1'),
+  //     position: LatLng(52.46, 16.92),
+  //     infoWindow: InfoWindow(title: '1', snippet: '*'),
+  //   );
 
-    setState(() {
-      markers.add(marker);
-      stderr.writeln(markers);
-    });
-  }
+  //   setState(() {
+  //     markers.add(marker);
+  //     stderr.writeln(markers);
+  //   });
+  // }
 }
