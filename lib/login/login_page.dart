@@ -15,13 +15,15 @@ class LoginPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: BlocProvider(
-            create: (context) {
-              return LoginBloc(
-                  authenticationBloc:
-                      BlocProvider.of<AuthenticationBloc>(context),
-                  userRepository: userRepository);
-            },
-            child: LoginForm()));
+      body: BlocProvider(
+        create: (context) {
+          return LoginBloc(
+            authenticationBloc: BlocProvider.of<AuthenticationBloc>(context),
+            userRepository: userRepository,
+          );
+        },
+        child: LoginForm(),
+      ),
+    );
   }
 }

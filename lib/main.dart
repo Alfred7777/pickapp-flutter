@@ -29,22 +29,32 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return GestureDetector(
+      onTap: () {
+        var currentFocus = FocusScope.of(context);
+        if (!currentFocus.hasPrimaryFocus) {
+          currentFocus.unfocus();
+        }
+      },
+      child: MaterialApp(
         theme: ThemeData(
           primarySwatch: Colors.green,
         ),
         title: 'PickApp',
         home: BlocBuilder<AuthenticationBloc, AuthenticationState>(
-            builder: (context, state) {
-          if (state is AuthenticationUninitialized) {
-            return LoadingScreen();
-          } else if (state is AuthenticationAuthenticated) {
-            return MapScreen();
-          } else if (state is AuthenticationUnauthenticated) {
-            return LoginPage(userRepository: userRepository);
-          } else {
-            return LoadingScreen();
-          }
-        }));
+          builder: (context, state) {
+            if (state is AuthenticationUninitialized) {
+              return LoadingScreen();
+            } else if (state is AuthenticationAuthenticated) {
+              return MapScreen();
+            } else if (state is AuthenticationUnauthenticated) {
+              return LoginPage(userRepository: userRepository);
+            } else {
+              return LoadingScreen();
+            }
+          },
+        ),
+      ),
+    );
   }
 }
