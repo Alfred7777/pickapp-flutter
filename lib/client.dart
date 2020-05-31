@@ -1,80 +1,43 @@
 import 'dart:convert';
-
 import 'package:http/http.dart' as http;
-import 'package:PickApp/repositories/userRepository.dart';
+import 'repositories/userRepository.dart';
 
-class AuthenticatedApiClient extends http.BaseClient {
-  final http.Client _httpClient = http.Client();
+class AuthenticatedApiClient {
   final userRepository = UserRepository();
-  final api_url = 'http://150.254.78.200/api/';
+  final apiUrl = 'http://150.254.78.200/api/';
 
-  bool isMapEmpty(Map<String, String> map) {
-    return (map is Map) ? map.isEmpty : false;
+  Future getAuthToken() async {
+    var token = await userRepository.getAuthToken();
+    return token;
   }
 
-  Future getAuthHeader() async {
-    final token = await userRepository.getAuthToken();
-    final auth_header = {'Authorization': 'Bearer ' + token};
-    return auth_header;
-  }
-
-  Future getHeadersMap(Map<String, String> headers) async {
-    var auth_header = await getAuthHeader();
-    if (isMapEmpty(headers)) {
-      headers.addAll(auth_header);
-    } else {
-      headers = auth_header;
+  Map<String, String> getHeaders(dynamic token, Map<String, String> additionalHeaders){
+    final headers = {'Authorization': 'Bearer $token', 'Content-type': 'application/json'};
+    if (additionalHeaders is Map) {
+      headers.addAll(additionalHeaders);
     }
     return headers;
   }
-
-  @override
-  Future<http.Response> delete(url, {Map<String, String> headers}) async {
-    var request_headers = await getHeadersMap(headers);
-    return _httpClient.delete(api_url + url, headers: request_headers);
+  Future <http.Response> post(url, {Map<String, String> headers, dynamic body}) async {
+    var token = await getAuthToken();
+    var response = await http.post(apiUrl + url, headers: getHeaders(token, headers), body: json.encode(body));
+    return response;
+  }
+  Future <http.Response> get(url, {Map<String, String> headers}) async{
+    var token = await getAuthToken();
+    var response = http.get(apiUrl + url, headers: getHeaders(token, headers));
+    return response;
   }
 
-  @override
-  Future<http.StreamedResponse> send(http.BaseRequest request,
-      {Map<String, String> headers}) async {
-    var request_headers = await getHeadersMap(headers);
-    request.headers.addAll(request_headers);
-    return _httpClient.send(request);
+  Future <http.Response> delete(url, {Map<String, String> headers}) async{
+    var token = await getAuthToken();
+    var response = http.delete(apiUrl + url, headers: getHeaders(token, headers));
+    return response;
+  }
+  Future <http.Response> put(url, {Map<String, String> headers, dynamic body}) async{
+    var token = await getAuthToken();
+    var response = http.put(apiUrl + url, headers: getHeaders(token, headers), body: json.encode(body));
+    return response;
   }
 
-  @override
-  Future<http.Response> get(url, {Map<String, String> headers}) async {
-    var request_headers = await getHeadersMap(headers);
-    return _httpClient.get(api_url + url, headers: request_headers);
-  }
-
-  @override
-  Future<http.Response> post(url,
-      {Map<String, String> headers, dynamic body, Encoding encoding}) async {
-    var request_headers = await getHeadersMap(headers);
-    return _httpClient.post(url,
-        headers: request_headers, body: body, encoding: encoding);
-  }
-
-  @override
-  Future<http.Response> patch(url,
-      {Map<String, String> headers, dynamic body, Encoding encoding}) async {
-    var request_headers = await getHeadersMap(headers);
-    return _httpClient.post(url,
-        headers: request_headers, body: body, encoding: encoding);
-  }
-
-  @override
-  Future<http.Response> put(url,
-      {Map<String, String> headers, dynamic body, Encoding encoding}) async {
-    var request_headers = await getHeadersMap(headers);
-    return _httpClient.post(url,
-        headers: request_headers, body: body, encoding: encoding);
-  }
-
-  @override
-  Future<http.Response> head(url, {Map<String, String> headers}) async {
-    var request_headers = await getHeadersMap(headers);
-    return _httpClient.post(url, headers: request_headers);
-  }
 }
