@@ -1,12 +1,13 @@
 import 'dart:async';
 import 'dart:math' as math;
 import 'dart:io';
+import 'package:PickApp/repositories/eventRepository.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:PickApp/widgets/bottom_navbar.dart';
 import 'package:PickApp/widgets/nav_drawer/nav_drawer.dart';
+import 'package:PickApp/create_event/create_event_page.dart';
 import 'add_event_menu.dart';
-import 'package:PickApp/repositories/eventRepository.dart';
 
 class MapSample extends StatefulWidget {
   @override
@@ -39,6 +40,12 @@ class MapSampleState extends State<MapSample> with TickerProviderStateMixin {
       duration: const Duration(milliseconds: 500),
     );
     WidgetsBinding.instance.addPostFrameCallback((_) {});
+
+    eventRepository.getEvents().then((events) {
+      setState(() {
+        markers = events;
+      });
+    });
   }
 
   @override
@@ -49,14 +56,6 @@ class MapSampleState extends State<MapSample> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    stderr.writeln(markers);
-
-    eventRepository.getEvents().then(
-      (events) {
-        markers = events;
-      }
-    );
-
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
@@ -124,7 +123,19 @@ class MapSampleState extends State<MapSample> with TickerProviderStateMixin {
           label: 'Event',
           color: Colors.orange),
       AddEventMenuButton(
-          action: () => _createEvent(),
+          action: () async {
+            final eventRepository = EventRepository();
+            final result = await Navigator.of(context).push(MaterialPageRoute(
+                builder: (context) => CreateEventPage(
+                      eventRepository: eventRepository,
+                    )));
+            if (result != null) {
+              _scaffoldKey.currentState.showSnackBar(
+                SnackBar(
+                    content: Text('$result'), backgroundColor: Colors.green),
+              );
+            }
+          },
           icon: Icons.room,
           label: 'Event',
           color: Colors.purple)
