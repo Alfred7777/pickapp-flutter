@@ -1,5 +1,5 @@
+import 'package:PickApp/map/map_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:PickApp/map/map.dart';
 import 'package:PickApp/widgets/nav_drawer/nav_drawer_item.dart';
 import 'package:PickApp/profile/profile_screen.dart';
 
@@ -65,13 +65,13 @@ class NavDrawer extends StatelessWidget {
               Text('Settings',
                   style: TextStyle(color: Color(0xFF3D3A3A), fontSize: 18)),
               // redirect to map view, change after according view is ready + add import
-              MaterialPageRoute<void>(builder: (context) => MapSample())),
+              MaterialPageRoute<void>(builder: (context) => MapScreen())),
           NavDraverItem(
               Icon(Icons.exit_to_app, color: Color(0xFF3D3A3A), size: 30.0),
               Text('Log Out',
                   style: TextStyle(color: Color(0xFF3D3A3A), fontSize: 18)),
               // redirect to map view, change after according view is ready + add import
-              MaterialPageRoute<void>(builder: (context) => MapSample())),
+              MaterialPageRoute<void>(builder: (context) => MapScreen())),
           Expanded(
               child: Material(
                   color: Color(0xFFFFFFFF),

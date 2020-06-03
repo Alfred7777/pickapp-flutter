@@ -1,25 +1,30 @@
 import 'dart:async';
 import 'dart:math' as math;
-import 'dart:io';
-import 'package:PickApp/repositories/eventRepository.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'add_event_menu.dart';
+import 'package:PickApp/map/map_bloc.dart';
+import 'package:PickApp/map/map_event.dart';
+import 'package:PickApp/map/map_state.dart';
+import 'package:PickApp/repositories/eventRepository.dart';
 import 'package:PickApp/widgets/bottom_navbar.dart';
 import 'package:PickApp/widgets/nav_drawer/nav_drawer.dart';
 import 'package:PickApp/create_event/create_event_page.dart';
-import 'add_event_menu.dart';
 
-class MapSample extends StatefulWidget {
+class MapScreen extends StatefulWidget {
   @override
-  State<MapSample> createState() => MapSampleState();
+  State<MapScreen> createState() => MapScreenState();
 }
 
-class MapSampleState extends State<MapSample> with TickerProviderStateMixin {
+class MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
   final eventRepository = EventRepository();
 
   final Completer<GoogleMapController> _controller = Completer();
 
   AnimationController _animationController;
+
+  MapBloc _mapBloc;
 
   static final CameraPosition _kPoznan =
       CameraPosition(target: LatLng(52.4064, 16.9252), zoom: 13);
@@ -27,8 +32,6 @@ class MapSampleState extends State<MapSample> with TickerProviderStateMixin {
   List<AddEventMenuButton> menu;
 
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-
-  Set<Marker> markers;
 
   @override
   void initState() {
@@ -41,11 +44,7 @@ class MapSampleState extends State<MapSample> with TickerProviderStateMixin {
     );
     WidgetsBinding.instance.addPostFrameCallback((_) {});
 
-    eventRepository.getEvents().then((events) {
-      setState(() {
-        markers = events;
-      });
-    });
+    _mapBloc = MapBloc(eventRepository: eventRepository);
   }
 
   @override
@@ -56,69 +55,91 @@ class MapSampleState extends State<MapSample> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      key: _scaffoldKey,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        leading: IconButton(
-            icon: Icon(Icons.menu),
-            iconSize: 34.0,
-            color: Color(0xFF000000),
-            onPressed: () {
-              _scaffoldKey.currentState.openDrawer();
-            }),
-        centerTitle: true,
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Icon(Icons.search, color: Color(0xFF000000), size: 32.0),
-            ButtonTheme(
-                minWidth: 170,
-                height: 28,
-                child: FlatButton(
+    return BlocBuilder<MapBloc, MapState>(
+        bloc: _mapBloc,
+        builder: (context, state) {
+          if (state is MapUninitialized) {
+            _mapBloc.add(FetchLocations());
+
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+          if (state is MapReady) {
+            return Scaffold(
+              key: _scaffoldKey,
+              appBar: AppBar(
+                backgroundColor: Colors.transparent,
+                elevation: 0,
+                leading: IconButton(
+                    icon: Icon(Icons.menu),
+                    iconSize: 34.0,
+                    color: Color(0xFF000000),
+                    onPressed: () {
+                      _scaffoldKey.currentState.openDrawer();
+                    }),
+                centerTitle: true,
+                title: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Icon(Icons.search, color: Color(0xFF000000), size: 32.0),
+                    ButtonTheme(
+                        minWidth: 170,
+                        height: 28,
+                        child: FlatButton(
+                          onPressed: () {},
+                          color: Color(0x55C4C4C4),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20.0)),
+                          child: null,
+                        ))
+                  ],
+                ),
+                actions: <Widget>[
+                  IconButton(
+                    icon: Icon(Icons.filter_list),
+                    iconSize: 34.0,
+                    color: Color(0xFF000000),
                     onPressed: () {},
-                    color: Color(0x55C4C4C4),
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20.0)),
-                    child: null))
-          ],
-        ),
-        actions: <Widget>[
-          IconButton(
-            icon: Icon(Icons.filter_list),
-            iconSize: 34.0,
-            color: Color(0xFF000000),
-            onPressed: () {},
-          )
-        ],
-      ),
-      drawer: NavDrawer(),
-      extendBodyBehindAppBar: true,
-      body: GoogleMap(
-        mapType: MapType.normal,
-        markers: markers,
-        mapToolbarEnabled: false,
-        zoomControlsEnabled: false,
-        initialCameraPosition: _kPoznan,
-        onMapCreated: (GoogleMapController controller) {
-          _controller.complete(controller);
-        },
-      ),
-      floatingActionButton: AnimatedOpacity(
-        opacity: 1,
-        duration: Duration(milliseconds: 250),
-        curve: Curves.easeOut,
-        child: _buildMenu(context),
-      ),
-      bottomNavigationBar: bottomNavbar(0),
-    );
+                  )
+                ],
+              ),
+              drawer: NavDrawer(),
+              extendBodyBehindAppBar: true,
+              body: GoogleMap(
+                mapType: MapType.normal,
+                markers: mapLocationsToMarkers(state.locations),
+                mapToolbarEnabled: false,
+                zoomControlsEnabled: false,
+                initialCameraPosition: _kPoznan,
+                onMapCreated: (GoogleMapController controller) {
+                  _controller.complete(controller);
+                },
+              ),
+              floatingActionButton: AnimatedOpacity(
+                opacity: 1,
+                duration: Duration(milliseconds: 250),
+                curve: Curves.easeOut,
+                child: _buildMenu(context),
+              ),
+              bottomNavigationBar: bottomNavbar(0),
+            );
+          }
+          return CircularProgressIndicator();
+        });
+  }
+
+  Set<Marker> mapLocationsToMarkers(locations) {
+    return locations.map<Marker>((location) => Marker(
+          markerId: location.id,
+          position: LatLng(location.lat, location.lon),
+        ));
   }
 
   void _buildAddEventMenu() {
     menu = [
       AddEventMenuButton(
-          action: () => _createEvent(),
+          action: () => null,
           icon: Icons.business,
           label: 'Event',
           color: Colors.orange),
@@ -138,7 +159,7 @@ class MapSampleState extends State<MapSample> with TickerProviderStateMixin {
           },
           icon: Icons.room,
           label: 'Event',
-          color: Colors.purple)
+          color: Colors.purple),
     ];
   }
 
@@ -195,18 +216,5 @@ class MapSampleState extends State<MapSample> with TickerProviderStateMixin {
           ),
         ),
     );
-  }
-
-  void _createEvent() async {
-    final marker = Marker(
-      markerId: MarkerId('1'),
-      position: LatLng(52.46, 16.92),
-      infoWindow: InfoWindow(title: '1', snippet: '*'),
-    );
-
-    setState(() {
-      markers.add(marker);
-      stderr.writeln(markers);
-    });
   }
 }
