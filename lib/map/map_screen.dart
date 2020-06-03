@@ -10,6 +10,7 @@ import 'package:PickApp/map/map_state.dart';
 import 'package:PickApp/repositories/eventRepository.dart';
 import 'package:PickApp/widgets/bottom_navbar.dart';
 import 'package:PickApp/widgets/nav_drawer/nav_drawer.dart';
+import 'package:PickApp/widgets/event_details.dart';
 import 'package:PickApp/create_event/create_event_page.dart';
 
 class MapScreen extends StatefulWidget {
@@ -108,7 +109,7 @@ class MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
               extendBodyBehindAppBar: true,
               body: GoogleMap(
                 mapType: MapType.normal,
-                markers: mapLocationsToMarkers(state.locations),
+                markers: mapLocationsToMarkers(state.locations, context),
                 mapToolbarEnabled: false,
                 zoomControlsEnabled: false,
                 initialCameraPosition: _kPoznan,
@@ -129,11 +130,21 @@ class MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
         });
   }
 
-  Set<Marker> mapLocationsToMarkers(locations) {
+  Set<Marker> mapLocationsToMarkers(locations, context) {
     return locations.map<Marker>((location) => Marker(
-          markerId: location.id,
-          position: LatLng(location.lat, location.lon),
-        ));
+      markerId: MarkerId(location.id),
+      position: LatLng(location.lat, location.lon),
+      onTap: () {
+        eventRepository.getEventDetails(location.id).then((details){
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return EventDetails(eventDetails: details);
+            },
+          );
+        });
+      },
+    )).toSet();
   }
 
   void _buildAddEventMenu() {
