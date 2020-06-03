@@ -123,7 +123,7 @@ class EventDetails extends StatelessWidget {
                   top: 0.005 * screenSize.height,
                 ),
                 child: Text(
-                  eventDetails['description'],
+                  (eventDetails['description'] ?? ''),
                   style: TextStyle(color: Color(0xFF3D3A3A), fontSize: 14),
                 ),
               ),

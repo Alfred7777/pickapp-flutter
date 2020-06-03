@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:meta/meta.dart';
 
 class MapEvent extends Equatable {
   const MapEvent();
@@ -8,3 +9,12 @@ class MapEvent extends Equatable {
 }
 
 class FetchLocations extends MapEvent {}
+
+class FilterMapByDiscipline extends MapEvent {
+  final String disciplineId;
+
+  const FilterMapByDiscipline({@required this.disciplineId});
+
+  @override
+  List<Object> get props => [disciplineId];
+}

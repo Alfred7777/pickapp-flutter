@@ -16,20 +16,35 @@ class MapBloc extends Bloc<MapEvent, MapState> {
 
   @override
   Stream<MapState> mapEventToState(MapEvent event) async* {
+    var _disciplines = await eventRepository.getDisciplines();
+    var _icons = await assignIconsToDisciplines(_disciplines);
+
     if (event is FetchLocations) {
       var locations = await eventRepository.getMap();
-      var disciplines = await eventRepository.getDisciplines();
-      var icons = <String, BitmapDescriptor>{};
 
-      for (var discipline in disciplines) {
-        var icon = await BitmapDescriptor.fromAssetImage(
-            ImageConfiguration(size: Size(28, 28), devicePixelRatio: 2.5),
-            'assets/images/${discipline.id}.png');
-        icons.addAll({discipline.id: icon});
-      }
-
-      yield MapReady(locations: locations, icons: icons);
+      yield MapReady(locations: locations, icons: _icons);
       return;
     }
+    if (event is FilterMapByDiscipline) {
+      var filteredLocations =
+          await eventRepository.filterMapByDiscipline(event.disciplineId);
+
+      yield MapReady(locations: filteredLocations, icons: _icons);
+      return;
+    }
+  }
+
+  Future<Map<String, BitmapDescriptor>> assignIconsToDisciplines(
+      List<Discipline> disciplines) async {
+    var icons = <String, BitmapDescriptor>{};
+
+    for (var discipline in disciplines) {
+      var icon = await BitmapDescriptor.fromAssetImage(
+          ImageConfiguration(size: Size(28, 28), devicePixelRatio: 2.5),
+          'assets/images/${discipline.id}.png');
+      icons.addAll({discipline.id: icon});
+    }
+
+    return icons;
   }
 }

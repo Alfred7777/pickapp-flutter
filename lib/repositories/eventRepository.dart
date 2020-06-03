@@ -63,13 +63,30 @@ class EventRepository {
       return {
         'name': details['name'],
         'description': details['description'],
-        'start_date': DateTime.fromMillisecondsSinceEpoch(details['start_datetime_ms']),
-        'end_date': DateTime.fromMillisecondsSinceEpoch(details['end_datetime_ms']),
+        'start_date':
+            DateTime.fromMillisecondsSinceEpoch(details['start_datetime_ms']),
+        'end_date':
+            DateTime.fromMillisecondsSinceEpoch(details['end_datetime_ms']),
         'discipline_id': details['discipline_id'],
         'organiser_id': details['organiser_id'],
       };
     } else {
       throw Exception('Event not found in database');
+    }
+  }
+
+  Future<Set<Location>> filterMapByDiscipline(disciplineId) async {
+    final client = AuthenticatedApiClient();
+    final url = 'map?discipline_id=${disciplineId}';
+    var response = await client.get(url);
+
+    if (response.statusCode == 200) {
+      return json
+          .decode(response.body)
+          .map<Location>((locationJson) => Location.fromJson(locationJson))
+          .toSet();
+    } else {
+      throw Exception('Failed to fetch map');
     }
   }
 
@@ -94,16 +111,16 @@ class Location {
   final String id;
   final double lat;
   final double lon;
-  final String disciplineID;
+  final String disciplineId;
 
-  Location({this.id, this.lat, this.lon, this.disciplineID});
+  Location({this.id, this.lat, this.lon, this.disciplineId});
 
   factory Location.fromJson(Map<String, dynamic> json) {
     return Location(
         id: json['id'],
         lat: json['lat'],
         lon: json['lon'],
-        disciplineID: json['discipline_id']);
+        disciplineId: json['discipline_id']);
   }
 }
 

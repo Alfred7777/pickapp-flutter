@@ -8,18 +8,35 @@ import 'package:mockito/mockito.dart';
 
 import '../mocks.dart';
 
-void main() async{
+void main() async {
   TestWidgetsFlutterBinding.ensureInitialized();
   var _eventRepositoryMock = MockEventRepository();
-  var _location =
-      Location(id: 'id', lat: 100.50, lon: 100.50, disciplineID: 'discipline');
-  var _discipline = 
+
+  var _discipline =
       Discipline('b5c6e905-6b06-4c92-8c4f-5abc8dd44bfa', 'Basketball');
+
+  var _location = Location(
+    id: 'id',
+    lat: 100.50,
+    lon: 100.50,
+    disciplineId: 'disciplineId',
+  );
+
+  var _anotherLocation = Location(
+    id: 'id',
+    lat: 100.50,
+    lon: 100.50,
+    disciplineId: 'anotherDisciplineId',
+  );
 
   when(_eventRepositoryMock.getMap())
       .thenAnswer((_) => Future.value({_location}));
+
   when(_eventRepositoryMock.getDisciplines())
       .thenAnswer((_) => Future.value([_discipline]));
+
+  when(_eventRepositoryMock.filterMapByDiscipline('anotherDisciplineId'))
+      .thenAnswer((_) => Future.value({_anotherLocation}));
 
   group('MapBloc', () {
     blocTest(
@@ -32,7 +49,10 @@ void main() async{
         build: () async => MapBloc(eventRepository: _eventRepositoryMock),
         expect: [],
         verify: (bloc) async {
-          expect(bloc.state, equals(MapUninitialized()));
+          expect(
+            bloc.state,
+            equals(MapUninitialized()),
+          );
         });
 
     blocTest(
@@ -41,9 +61,30 @@ void main() async{
       act: (bloc) => bloc.add(FetchLocations()),
       expect: [isA<MapReady>()],
       verify: (bloc) async {
-        verify(_eventRepositoryMock.getMap()).called(1);
-        verify(_eventRepositoryMock.getDisciplines()).called(1);
-        expect(bloc.state, equals(MapReady(locations: {_location}, icons:{})));
+        verify(
+          _eventRepositoryMock.getMap(),
+        ).called(1);
+        expect(
+          bloc.state,
+          equals(MapReady(locations: {_location}, icons: {})),
+        );
+      },
+    );
+
+    blocTest(
+      'emits MapReady when FilterMapByDiscipline is added with correctly filtered locations',
+      build: () async => MapBloc(eventRepository: _eventRepositoryMock),
+      act: (bloc) =>
+          bloc.add(FilterMapByDiscipline(disciplineId: 'anotherDisciplineId')),
+      expect: [isA<MapReady>()],
+      verify: (bloc) async {
+        verify(
+          _eventRepositoryMock.filterMapByDiscipline('anotherDisciplineId'),
+        ).called(1);
+        expect(
+          bloc.state,
+          equals(MapReady(locations: {_anotherLocation}, icons: {})),
+        );
       },
     );
   });

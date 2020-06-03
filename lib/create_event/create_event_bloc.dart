@@ -4,12 +4,10 @@ import 'create_event_event.dart';
 import 'create_event_state.dart';
 import 'package:PickApp/repositories/eventRepository.dart';
 
-class CreateEventBloc extends Bloc<CreateEventEvent, CreateEventState>{
+class CreateEventBloc extends Bloc<CreateEventEvent, CreateEventState> {
   final EventRepository eventRepository;
 
-  CreateEventBloc({
-    @required this.eventRepository
-  });
+  CreateEventBloc({@required this.eventRepository});
 
   @override
   CreateEventState get initialState => CreateEventInitial();
