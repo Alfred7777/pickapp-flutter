@@ -50,8 +50,7 @@ class _CreateEventMapState extends State<CreateEventMap> {
             backgroundColor: Colors.red
           )
         );
-      }
-      else {
+      } else {
         eventPos = _markers.first.position;
         showDialog(
           context: context,
