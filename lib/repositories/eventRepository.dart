@@ -53,6 +53,26 @@ class EventRepository {
     }
   }
 
+  Future<Map<String, dynamic>> getEventDetails(String eventID) async {
+    final client = AuthenticatedApiClient();
+    final url = 'events/$eventID';
+    var response = await client.get(url);
+
+    if (response.statusCode == 200) {
+      var details = json.decode(response.body);
+      return {
+        'name': details['name'],
+        'description': details['description'],
+        'start_date': DateTime.fromMillisecondsSinceEpoch(details['start_datetime_ms']),
+        'end_date': DateTime.fromMillisecondsSinceEpoch(details['end_datetime_ms']),
+        'discipline_id': details['discipline_id'],
+        'organiser_id': details['organiser_id'],
+      };
+    } else {
+      throw Exception('Event not found in database');
+    }
+  }
+
   Future<List<Discipline>> getDisciplines() async {
     final client = AuthenticatedApiClient();
     final url = 'disciplines';
@@ -74,16 +94,16 @@ class Location {
   final String id;
   final double lat;
   final double lon;
-  final String disciplineId;
+  final String disciplineID;
 
-  Location({this.id, this.lat, this.lon, this.disciplineId});
+  Location({this.id, this.lat, this.lon, this.disciplineID});
 
   factory Location.fromJson(Map<String, dynamic> json) {
     return Location(
         id: json['id'],
         lat: json['lat'],
         lon: json['lon'],
-        disciplineId: json['discipline_id']);
+        disciplineID: json['discipline_id']);
   }
 }
 

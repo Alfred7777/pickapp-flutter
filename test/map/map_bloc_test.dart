@@ -11,7 +11,7 @@ import '../mocks.dart';
 void main() {
   var _eventRepositoryMock = MockEventRepository();
   var _location =
-      Location(id: 'id', lat: 100.50, lon: 100.50, disciplineId: 'discipline');
+      Location(id: 'id', lat: 100.50, lon: 100.50, disciplineID: 'discipline');
 
   when(_eventRepositoryMock.getMap())
       .thenAnswer((_) => Future.value({_location}));

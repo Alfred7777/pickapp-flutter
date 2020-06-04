@@ -70,6 +70,7 @@ flutter:
   assets:
     - assets/images/pickapp_logo.png
     - assets/images/profile_placeholder.png
+    - assets/images/basket_event_placeholder.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
