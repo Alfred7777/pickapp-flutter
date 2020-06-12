@@ -1,7 +1,9 @@
+import 'package:PickApp/client.dart';
 import 'package:meta/meta.dart';
 import 'package:http/http.dart';
 import 'dart:convert';
 import 'package:PickApp/main.dart';
+import 'package:equatable/equatable.dart';
 
 class UserRepository {
   Future<String> authenticate({
@@ -21,10 +23,27 @@ class UserRepository {
     }
   }
 
+  Future<Profile> getProfileDetails(String userID) async {
+    final client = AuthenticatedApiClient();
+    final url = 'profile/$userID';
+    var response = await client.get(url);
+
+    if (response.statusCode == 200) {
+      var data = json.decode(response.body);
+      return Profile(
+        name: data['name'],
+        uniqueUsername: data['unique_username'],
+        bio: data['bio'],
+      );
+    } else {
+      throw Exception('Failed to load profile');
+    }
+  }
+
   Future<String> getAuthToken() async {
-    final auth_token = await storage.read(key: 'jwt');
-    if (auth_token == null) return '';
-    return auth_token;
+    final authToken = await storage.read(key: 'jwt');
+    if (authToken == null) return '';
+    return authToken;
   }
 
   Future<void> deleteToken() async {
@@ -33,9 +52,9 @@ class UserRepository {
   }
 
   Future<void> persistToken(String token) async {
-    var auth_token = (json.decode(token))['auth_token'];
-    if (auth_token != null){
-      await storage.write(key: 'jwt', value: auth_token);
+    var authToken = (json.decode(token))['auth_token'];
+    if (authToken != null) {
+      await storage.write(key: 'jwt', value: authToken);
     }
     return;
   }
@@ -45,4 +64,15 @@ class UserRepository {
     if (key == null) return false;
     return true;
   }
+}
+
+class Profile extends Equatable {
+  final String bio;
+  final String name;
+  final String uniqueUsername;
+
+  Profile({this.uniqueUsername, this.name, this.bio});
+
+  @override
+  List<Object> get props => [name, uniqueUsername, bio];
 }
