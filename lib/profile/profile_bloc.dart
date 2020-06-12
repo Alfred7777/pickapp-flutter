@@ -1,22 +1,24 @@
-import 'package:rxdart/rxdart.dart';
-import './profile_model.dart';
-import '../repository/repository.dart';
+import 'package:PickApp/profile/profile_event.dart';
+import 'package:PickApp/profile/profile_state.dart';
+import 'package:PickApp/repositories/userRepository.dart';
+import 'package:bloc/bloc.dart';
+import 'package:meta/meta.dart';
 
-class ProfileBloc {
-  final Repository _repository = Repository();
+class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
+  final UserRepository userRepository;
 
-  final _profileFetcher = PublishSubject<Profile>();
+  ProfileBloc({@required this.userRepository}) : assert(userRepository != null);
 
-  Stream<Profile> get profile => _profileFetcher.stream;
+  @override
+  ProfileState get initialState => InitialProfileState();
 
-  void fetchProfile() async {
-    var profile = await _repository.fetchProfile();
-    _profileFetcher.sink.add(profile);
-  }
-
-  void dispose() {
-    _profileFetcher.close();
+  @override
+  Stream<ProfileState> mapEventToState(ProfileEvent event) async* {
+    if (event is FetchProfile) {
+      yield ProfileLoading();
+      var details = await userRepository.getProfileDetails(event.userID);
+      yield ProfileLoaded(details: details);
+      return;
+    }
   }
 }
-
-final profileBloc = ProfileBloc();
