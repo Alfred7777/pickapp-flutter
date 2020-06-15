@@ -1,5 +1,6 @@
 import 'package:PickApp/repositories/eventRepository.dart';
 import 'package:equatable/equatable.dart';
+import 'package:google_maps_flutter_platform_interface/src/types/bitmap.dart';
 import 'package:meta/meta.dart';
 
 class MapState extends Equatable {
@@ -13,8 +14,9 @@ class MapUninitialized extends MapState {}
 
 class MapReady extends MapState {
   final Set<Location> locations;
+  final Map<String, BitmapDescriptor> icons;
 
-  const MapReady({@required this.locations});
+  const MapReady({@required this.locations, this.icons});
 
   @override
   List<Object> get props => [locations];

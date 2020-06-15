@@ -109,7 +109,7 @@ class MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
               extendBodyBehindAppBar: true,
               body: GoogleMap(
                 mapType: MapType.normal,
-                markers: mapLocationsToMarkers(state.locations, context),
+                markers: mapLocationsToMarkers(state, context),
                 mapToolbarEnabled: false,
                 zoomControlsEnabled: false,
                 initialCameraPosition: _kPoznan,
@@ -130,21 +130,24 @@ class MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
         });
   }
 
-  Set<Marker> mapLocationsToMarkers(locations, context) {
-    return locations.map<Marker>((location) => Marker(
-      markerId: MarkerId(location.id),
-      position: LatLng(location.lat, location.lon),
-      onTap: () {
-        eventRepository.getEventDetails(location.id).then((details){
-          showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              return EventDetails(eventDetails: details);
-            },
-          );
-        });
-      },
-    )).toSet();
+  Set<Marker> mapLocationsToMarkers(state, context) {
+    return state.locations
+        .map<Marker>((location) => Marker(
+              markerId: MarkerId(location.id),
+              position: LatLng(location.lat, location.lon),
+              icon: state.icons[location.disciplineID],
+              onTap: () {
+                eventRepository.getEventDetails(location.id).then((details) {
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return EventDetails(eventDetails: details);
+                    },
+                  );
+                });
+              },
+            ))
+        .toSet();
   }
 
   void _buildAddEventMenu() {
