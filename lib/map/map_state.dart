@@ -16,7 +16,7 @@ class MapReady extends MapState {
   final Set<Location> locations;
   final Map<String, BitmapDescriptor> icons;
 
-  const MapReady({@required this.locations, this.icons});
+  const MapReady({@required this.locations, @required this.icons});
 
   @override
   List<Object> get props => [locations];

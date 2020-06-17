@@ -1,5 +1,7 @@
 import 'dart:async';
 import 'dart:math' as math;
+import 'package:PickApp/map/filter_map/filter_map_screen.dart';
+import 'package:PickApp/widgets/event_details.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -10,7 +12,6 @@ import 'package:PickApp/map/map_state.dart';
 import 'package:PickApp/repositories/eventRepository.dart';
 import 'package:PickApp/widgets/bottom_navbar.dart';
 import 'package:PickApp/widgets/nav_drawer/nav_drawer.dart';
-import 'package:PickApp/widgets/event_details.dart';
 import 'package:PickApp/create_event/create_event_page.dart';
 
 class MapScreen extends StatefulWidget {
@@ -19,7 +20,7 @@ class MapScreen extends StatefulWidget {
 }
 
 class MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
-  final eventRepository = EventRepository();
+  static final eventRepository = EventRepository();
 
   final Completer<GoogleMapController> _controller = Completer();
 
@@ -101,7 +102,14 @@ class MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
                     icon: Icon(Icons.filter_list),
                     iconSize: 34.0,
                     color: Color(0xFF000000),
-                    onPressed: () {},
+                    onPressed: () {
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return FilterMapScreen(mapBloc: _mapBloc);
+                        },
+                      );
+                    },
                   )
                 ],
               ),
@@ -135,7 +143,7 @@ class MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
         .map<Marker>((location) => Marker(
               markerId: MarkerId(location.id),
               position: LatLng(location.lat, location.lon),
-              icon: state.icons[location.disciplineID],
+              icon: state.icons[location.disciplineId],
               onTap: () {
                 eventRepository.getEventDetails(location.id).then((details) {
                   showDialog(
