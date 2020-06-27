@@ -1,4 +1,5 @@
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'userRepository.dart';
 import 'package:meta/meta.dart';
 import 'dart:convert';
 import 'package:PickApp/client.dart';
@@ -69,6 +70,7 @@ class EventRepository {
             DateTime.fromMillisecondsSinceEpoch(details['end_datetime_ms']),
         'discipline_id': details['discipline_id'],
         'organiser_id': details['organiser_id'],
+        'is_participant': details['is_participating?'],
       };
     } else {
       throw Exception('Event not found in database');
@@ -105,22 +107,60 @@ class EventRepository {
       throw Exception('Failed to get disciplines');
     }
   }
+
+  Future<String> joinEvent(String eventID) async {
+    final client = AuthenticatedApiClient();
+    final url = 'events/$eventID/participants';
+    var body = {
+      'event_id': '$eventID',
+    };
+
+    var response = await client.post(url, body: body);
+
+    if (response.statusCode == 201) {
+      return 'Successfully joined event.';
+    } else {
+      return json.decode(response.body)['message'];
+    }
+  }
+
+  Future<List<Profile>> getParticipants(String eventID) async {
+    Profile mapParticipantToProfile(Map<String, dynamic> participant) {
+      return Profile(
+        bio: participant['bio'],
+        name: participant['name'],
+        uniqueUsername: participant['unique_username'],
+      );
+    }
+
+    final client = AuthenticatedApiClient();
+    final url = 'events/$eventID/participants';
+
+    var response = await client.get(url);
+
+    if (response.statusCode == 200) {
+      return json.decode(response.body).map<Profile>((participant) => mapParticipantToProfile(participant)).toList();
+    } else {
+      return [];
+    }
+  }
 }
 
 class Location {
   final String id;
   final double lat;
   final double lon;
-  final String disciplineId;
+  final String disciplineID;
 
-  Location({this.id, this.lat, this.lon, this.disciplineId});
+  Location({this.id, this.lat, this.lon, this.disciplineID});
 
   factory Location.fromJson(Map<String, dynamic> json) {
     return Location(
-        id: json['id'],
-        lat: json['lat'],
-        lon: json['lon'],
-        disciplineId: json['discipline_id']);
+      id: json['id'],
+      lat: json['lat'],
+      lon: json['lon'],
+      disciplineID: json['discipline_id'],
+    );
   }
 }
 

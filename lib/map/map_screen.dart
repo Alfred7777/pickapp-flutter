@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:math' as math;
 import 'package:PickApp/map/filter_map/filter_map_screen.dart';
-import 'package:PickApp/widgets/event_details.dart';
+import 'package:PickApp/event_details/event_details_scrollable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -139,23 +139,36 @@ class MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
   }
 
   Set<Marker> mapLocationsToMarkers(state, context) {
-    return state.locations
-        .map<Marker>((location) => Marker(
-              markerId: MarkerId(location.id),
-              position: LatLng(location.lat, location.lon),
-              icon: state.icons[location.disciplineId],
-              onTap: () {
-                eventRepository.getEventDetails(location.id).then((details) {
-                  showDialog(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return EventDetails(eventDetails: details);
-                    },
-                  );
-                });
-              },
-            ))
-        .toSet();
+    return state.locations.map<Marker>((location) => Marker(
+      markerId: MarkerId(location.id),
+      position: LatLng(location.lat, location.lon),
+      icon: state.icons[location.disciplineID],
+      onTap: () {
+        eventRepository.getEventDetails(location.id).then((details) {
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              var screenSize = MediaQuery.of(context).size;
+              return Padding(
+                padding: EdgeInsets.only(
+                  top: 0.12 * screenSize.height,
+                  bottom: 0.02 * screenSize.height,
+                  left: 0.02 * screenSize.width,
+                  right: 0.02 * screenSize.width,
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(32.0),
+                  child: Material(
+                    color: Color(0xFFF3F3F3),
+                    child: EventDetailsScrollable(eventID: location.id),
+                  ),
+                ),
+              );
+            },
+          );
+        },);
+      },
+    )).toSet();
   }
 
   void _buildAddEventMenu() {
