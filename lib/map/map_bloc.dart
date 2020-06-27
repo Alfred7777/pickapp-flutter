@@ -26,8 +26,7 @@ class MapBloc extends Bloc<MapEvent, MapState> {
       return;
     }
     if (event is FilterMapByDiscipline) {
-      var filteredLocations =
-          await eventRepository.filterMapByDiscipline(event.disciplineId);
+      var filteredLocations = await eventRepository.filterMapByDiscipline(event.disciplineId);
 
       yield MapReady(locations: filteredLocations, icons: _icons);
       return;
@@ -40,8 +39,9 @@ class MapBloc extends Bloc<MapEvent, MapState> {
 
     for (var discipline in disciplines) {
       var icon = await BitmapDescriptor.fromAssetImage(
-          ImageConfiguration(size: Size(28, 28), devicePixelRatio: 2.5),
-          'assets/images/${discipline.id}.png');
+        ImageConfiguration(devicePixelRatio: 2.5),
+        'assets/images/marker/${discipline.id}.png',
+      );
       icons.addAll({discipline.id: icon});
     }
 

@@ -19,14 +19,14 @@ void main() async {
     id: 'id',
     lat: 100.50,
     lon: 100.50,
-    disciplineId: 'disciplineId',
+    disciplineID: 'disciplineId',
   );
 
   var _anotherLocation = Location(
     id: 'id',
     lat: 100.50,
     lon: 100.50,
-    disciplineId: 'anotherDisciplineId',
+    disciplineID: 'anotherDisciplineId',
   );
 
   when(_eventRepositoryMock.getMap())

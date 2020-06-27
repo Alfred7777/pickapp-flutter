@@ -243,6 +243,7 @@ class _CreateEventMapState extends State<CreateEventMap> {
                                 setState(() {
                                   disciplineID = newValue;
                                 });
+                                FocusScope.of(context).unfocus();
                               },
                               items: disciplineList.map((discipline) {
                                 return DropdownMenuItem<String>(
@@ -270,6 +271,7 @@ class _CreateEventMapState extends State<CreateEventMap> {
                               children: [
                                 RaisedButton(
                                   onPressed: () {
+                                    FocusScope.of(context).unfocus();
                                     _selectStartDate(context);
                                   },
                                   child: Padding(
@@ -293,6 +295,7 @@ class _CreateEventMapState extends State<CreateEventMap> {
                                 ),
                                 RaisedButton(
                                   onPressed: () {
+                                    FocusScope.of(context).unfocus();
                                     _selectStartTime(context);
                                   },
                                   child: Padding(
@@ -335,6 +338,7 @@ class _CreateEventMapState extends State<CreateEventMap> {
                               children: [
                                 RaisedButton(
                                   onPressed: () {
+                                    FocusScope.of(context).unfocus();
                                     _selectEndDate(context);
                                   },
                                   child: Padding(
@@ -358,6 +362,7 @@ class _CreateEventMapState extends State<CreateEventMap> {
                                 ),
                                 RaisedButton(
                                   onPressed: () {
+                                    FocusScope.of(context).unfocus();
                                     _selectEndTime(context);
                                   },
                                   child: Padding(
