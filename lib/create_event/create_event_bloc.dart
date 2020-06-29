@@ -1,3 +1,5 @@
+import 'package:PickApp/map/map_bloc.dart';
+import 'package:PickApp/map/map_event.dart';
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
 import 'create_event_event.dart';
@@ -6,8 +8,9 @@ import 'package:PickApp/repositories/eventRepository.dart';
 
 class CreateEventBloc extends Bloc<CreateEventEvent, CreateEventState> {
   final EventRepository eventRepository;
+  final MapBloc mapBloc;
 
-  CreateEventBloc({@required this.eventRepository});
+  CreateEventBloc({@required this.eventRepository, @required this.mapBloc});
 
   @override
   CreateEventState get initialState => CreateEventInitial();
@@ -24,6 +27,7 @@ class CreateEventBloc extends Bloc<CreateEventEvent, CreateEventState> {
           startDate: event.eventStartDate,
           endDate: event.eventEndDate,
         );
+        mapBloc.add(FetchLocations());
         yield CreateEventCreated(message: response);
       } catch (error) {
         yield CreateEventFailure(error: error.toString());

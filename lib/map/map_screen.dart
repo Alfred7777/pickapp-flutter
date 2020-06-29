@@ -184,6 +184,7 @@ class MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
             final result = await Navigator.of(context).push(MaterialPageRoute(
                 builder: (context) => CreateEventPage(
                       eventRepository: eventRepository,
+                      mapBloc: _mapBloc,
                     )));
             if (result != null) {
               _scaffoldKey.currentState.showSnackBar(
