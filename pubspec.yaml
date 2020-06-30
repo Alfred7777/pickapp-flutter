@@ -71,6 +71,7 @@ flutter:
     - assets/images/profile_placeholder.png
     - assets/images/marker/
     - assets/images/event_placeholder/
+    - assets/images/event_icon/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
@@ -84,11 +85,27 @@ flutter:
   # list giving the asset and other descriptors for the font. For
   # example:
   fonts:
-    - family: Roboto
+    - family: Montserrat
       fonts:
-        - asset: assets/fonts/Roboto-Bold.ttf
-        - asset: assets/fonts/Roboto-Light.ttf
-        - asset: assets/fonts/Roboto-Regular.ttf
+        - asset: assets/fonts/Montserrat/Montserrat-Black.ttf
+        - asset: assets/fonts/Montserrat/Montserrat-BlackItalic.ttf
+        - asset: assets/fonts/Montserrat/Montserrat-Bold.ttf
+        - asset: assets/fonts/Montserrat/Montserrat-BoldItalic.ttf
+        - asset: assets/fonts/Montserrat/Montserrat-ExtraBold.ttf
+        - asset: assets/fonts/Montserrat/Montserrat-ExtraBoldItalic.ttf
+        - asset: assets/fonts/Montserrat/Montserrat-ExtraLight.ttf
+        - asset: assets/fonts/Montserrat/Montserrat-ExtraLightItalic.ttf
+        - asset: assets/fonts/Montserrat/Montserrat-Light.ttf
+        - asset: assets/fonts/Montserrat/Montserrat-LightItalic.ttf
+        - asset: assets/fonts/Montserrat/Montserrat-Regular.ttf
+        - asset: assets/fonts/Montserrat/Montserrat-Italic.ttf
+        - asset: assets/fonts/Montserrat/Montserrat-Medium.ttf
+        - asset: assets/fonts/Montserrat/Montserrat-MediumItalic.ttf
+        - asset: assets/fonts/Montserrat/Montserrat-SemiBold.ttf
+        - asset: assets/fonts/Montserrat/Montserrat-SemiBoldItalic.ttf
+        - asset: assets/fonts/Montserrat/Montserrat-Thin.ttf
+        - asset: assets/fonts/Montserrat/Montserrat-ThinItalic.ttf
+
           
   
   # For details regarding fonts from package dependencies,

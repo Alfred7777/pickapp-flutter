@@ -1,6 +1,7 @@
 import 'package:PickApp/event_details/event_details_bloc.dart';
 import 'package:PickApp/event_details/event_details_event.dart';
 import 'package:PickApp/event_details/event_details_state.dart';
+import 'package:PickApp/profile/profile_screen.dart';
 import 'package:PickApp/repositories/eventRepository.dart';
 import 'package:PickApp/repositories/userRepository.dart';
 import 'package:flutter/material.dart';
@@ -53,7 +54,7 @@ class EventDetailsScrollableState extends State<EventDetailsScrollable> {
     );
   }
 
-  Widget _buildEventParticipant(Profile participant) {
+  Widget _buildEventParticipant(User participant) {
     var screenSize = MediaQuery.of(context).size;
     return Padding(
       padding: EdgeInsets.only(
@@ -123,7 +124,8 @@ class EventDetailsScrollableState extends State<EventDetailsScrollable> {
                   height: 40,
                   child: FlatButton(
                     onPressed: () {
-                      print('implementacja wyświetlania profilu here bedzie');
+                      var route = MaterialPageRoute<void>(builder: (context) => ProfileScreen(userID: participant.userID));
+                      Navigator.push(context, route);
                     },
                     color: Color(0xFF7FBCF1),
                     shape: RoundedRectangleBorder(
@@ -144,7 +146,7 @@ class EventDetailsScrollableState extends State<EventDetailsScrollable> {
     );
   }
 
-  Widget _buildEventDetails(bool joinedEvent, Map<String, dynamic> eventDetails, List<Profile> participantsList) {
+  Widget _buildEventDetails(bool joinedEvent, Map<String, dynamic> eventDetails, List<User> participantsList) {
     var screenSize = MediaQuery.of(context).size;
     return SingleChildScrollView(
       child: Column(
@@ -169,6 +171,7 @@ class EventDetailsScrollableState extends State<EventDetailsScrollable> {
             child: Text(
               eventDetails['name'],
               style: TextStyle(color: Color(0xFF3D3A3A), fontSize: 24, fontWeight: FontWeight.bold),
+              textAlign: TextAlign.center,
             ),
           ),
           Padding(

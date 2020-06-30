@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:math' as math;
-import 'package:PickApp/map/filter_map/filter_map_screen.dart';
 import 'package:PickApp/event_details/event_details_scrollable.dart';
+import 'package:PickApp/widgets/top_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -10,9 +10,7 @@ import 'package:PickApp/map/map_bloc.dart';
 import 'package:PickApp/map/map_event.dart';
 import 'package:PickApp/map/map_state.dart';
 import 'package:PickApp/repositories/eventRepository.dart';
-import 'package:PickApp/widgets/bottom_navbar.dart';
-import 'package:PickApp/widgets/nav_drawer/nav_drawer.dart';
-import 'package:PickApp/create_event/create_event_page.dart';
+import 'package:PickApp/create_event/create_event_screen.dart';
 
 class MapScreen extends StatefulWidget {
   @override
@@ -32,8 +30,6 @@ class MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
       CameraPosition(target: LatLng(52.4064, 16.9252), zoom: 13);
 
   List<AddEventMenuButton> menu;
-
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   void initState() {
@@ -69,51 +65,7 @@ class MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
           }
           if (state is MapReady) {
             return Scaffold(
-              key: _scaffoldKey,
-              appBar: AppBar(
-                backgroundColor: Colors.transparent,
-                elevation: 0,
-                leading: IconButton(
-                    icon: Icon(Icons.menu),
-                    iconSize: 34.0,
-                    color: Color(0xFF000000),
-                    onPressed: () {
-                      _scaffoldKey.currentState.openDrawer();
-                    }),
-                centerTitle: true,
-                title: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    Icon(Icons.search, color: Color(0xFF000000), size: 32.0),
-                    ButtonTheme(
-                        minWidth: 170,
-                        height: 28,
-                        child: FlatButton(
-                          onPressed: () {},
-                          color: Color(0x55C4C4C4),
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20.0)),
-                          child: null,
-                        ))
-                  ],
-                ),
-                actions: <Widget>[
-                  IconButton(
-                    icon: Icon(Icons.filter_list),
-                    iconSize: 34.0,
-                    color: Color(0xFF000000),
-                    onPressed: () {
-                      showDialog(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return FilterMapScreen(mapBloc: _mapBloc);
-                        },
-                      );
-                    },
-                  )
-                ],
-              ),
-              drawer: NavDrawer(),
+              appBar: mapScreenTopBar(context, _mapBloc),
               extendBodyBehindAppBar: true,
               body: GoogleMap(
                 mapType: MapType.normal,
@@ -131,7 +83,6 @@ class MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
                 curve: Curves.easeOut,
                 child: _buildMenu(context),
               ),
-              bottomNavigationBar: bottomNavbar(0),
             );
           }
           return CircularProgressIndicator();
@@ -174,28 +125,32 @@ class MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
   void _buildAddEventMenu() {
     menu = [
       AddEventMenuButton(
-          action: () => null,
-          icon: Icons.business,
-          label: 'Event',
-          color: Colors.orange),
+        action: () => null,
+        icon: Icons.business,
+        label: 'Event',
+        color: Colors.orange,
+      ),
       AddEventMenuButton(
-          action: () async {
-            final eventRepository = EventRepository();
-            final result = await Navigator.of(context).push(MaterialPageRoute(
-                builder: (context) => CreateEventPage(
-                      eventRepository: eventRepository,
-                      mapBloc: _mapBloc,
-                    )));
-            if (result != null) {
-              _scaffoldKey.currentState.showSnackBar(
-                SnackBar(
-                    content: Text('$result'), backgroundColor: Colors.green),
-              );
-            }
-          },
-          icon: Icons.room,
-          label: 'Event',
-          color: Colors.purple),
+        action: () async {
+          final eventRepository = EventRepository();
+          final result = await Navigator.of(context).push(MaterialPageRoute(
+            builder: (context) => CreateEventScreen(
+              eventRepository: eventRepository,
+              mapBloc: _mapBloc,
+            )
+          ));
+          if (result != null) {
+            Scaffold.of(context).showSnackBar(
+              SnackBar(
+                content: Text('$result'), backgroundColor: Colors.green,
+              ),
+            );
+          }
+        },
+        icon: Icons.room,
+        label: 'Event',
+        color: Colors.purple,
+      ),
     ];
   }
 

@@ -18,7 +18,7 @@ class EventDetailsUninitialized extends EventDetailsState {
 class EventDetailsReady extends EventDetailsState {
   final String eventID;
   final Map<String, dynamic> eventDetails;
-  final List<Profile> participantsList;
+  final List<User> participantsList;
 
   const EventDetailsReady({
     @required this.eventID,
@@ -30,7 +30,7 @@ class EventDetailsReady extends EventDetailsState {
 class EventDetailsJoined extends EventDetailsState {
   final String eventID;
   final Map<String, dynamic> eventDetails;
-  final List<Profile> participantsList;
+  final List<User> participantsList;
 
   const EventDetailsJoined({
     @required this.eventID,

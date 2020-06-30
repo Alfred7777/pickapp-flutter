@@ -5,10 +5,10 @@ import 'package:PickApp/login/login_bloc.dart';
 import 'package:PickApp/repositories/userRepository.dart';
 import 'package:PickApp/authentication/authentication_bloc.dart';
 
-class LoginPage extends StatelessWidget {
+class LoginScreen extends StatelessWidget {
   final UserRepository userRepository;
 
-  LoginPage({Key key, @required this.userRepository})
+  LoginScreen({Key key, @required this.userRepository})
       : assert(userRepository != null),
         super(key: key);
 

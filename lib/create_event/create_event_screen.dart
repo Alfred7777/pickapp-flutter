@@ -5,11 +5,11 @@ import 'create_event_map.dart';
 import 'create_event_bloc.dart';
 import 'package:PickApp/repositories/eventRepository.dart';
 
-class CreateEventPage extends StatelessWidget {
+class CreateEventScreen extends StatelessWidget {
   final EventRepository eventRepository;
   final MapBloc mapBloc;
 
-  CreateEventPage({
+  CreateEventScreen({
     Key key,
     @required this.eventRepository,
     @required this.mapBloc,

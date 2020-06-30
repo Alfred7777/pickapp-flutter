@@ -7,13 +7,20 @@ import 'package:PickApp/widgets/top_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ProfileScreen extends StatefulWidget {
+  final String userID;
+
+  ProfileScreen({this.userID});
+
   @override
-  ProfileScreenState createState() => ProfileScreenState();
+  ProfileScreenState createState() => ProfileScreenState(userID: userID);
 }
 
 class ProfileScreenState extends State<ProfileScreen> {
+  final String userID;
   final userRepository = UserRepository();
   ProfileBloc _profileBloc;
+
+  ProfileScreenState({this.userID});
 
   @override
   void initState() {
@@ -26,9 +33,8 @@ class ProfileScreenState extends State<ProfileScreen> {
     return BlocBuilder<ProfileBloc, ProfileState>(
       bloc: _profileBloc,
       builder: (context, state) {
-        var userId = 'de9ac1c2-37e8-4244-9bc5-a6026c0ab717';
         if (state is InitialProfileState) {
-          _profileBloc.add(FetchProfile(userID: userId));
+          _profileBloc.add(FetchProfile(userID: userID));
         }
         if (state is ProfileLoading) {
           return Center(
@@ -83,7 +89,6 @@ class ProfileScreenState extends State<ProfileScreen> {
 
   Widget _buildFullName(String full_name) {
     var _nameStyle = TextStyle(
-      fontFamily: 'Roboto',
       color: Colors.black,
       fontSize: 30.0,
       fontWeight: FontWeight.w600,
@@ -98,7 +103,6 @@ class ProfileScreenState extends State<ProfileScreen> {
 
   Widget _buildUserName(String username) {
     var _usernameStyle = TextStyle(
-      fontFamily: 'Roboto',
       color: Colors.black,
       fontSize: 18.0,
       fontWeight: FontWeight.w200,
@@ -109,7 +113,6 @@ class ProfileScreenState extends State<ProfileScreen> {
 
   Widget _buildBio(String bio) {
     var _bioStyle = TextStyle(
-      fontFamily: 'Roboto',
       fontStyle: FontStyle.italic,
       color: Colors.blueGrey,
       fontSize: 22.0,
@@ -146,10 +149,10 @@ class ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Scaffold _buildProfileScreen(BuildContext context, Profile data) {
+  Scaffold _buildProfileScreen(BuildContext context, User data) {
     var screenSize = MediaQuery.of(context).size;
     return Scaffold(
-      appBar: topBar(context),
+      appBar: sideScreenTopBar(context),
       body: Stack(
         children: <Widget>[
           _buildProfileCover(screenSize),

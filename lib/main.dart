@@ -1,10 +1,10 @@
-import 'package:PickApp/map/map_screen.dart';
+import 'package:PickApp/home/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:PickApp/authentication/authentication_bloc.dart';
 import 'package:PickApp/authentication/authentication_state.dart';
 import 'package:PickApp/authentication/authentication_event.dart';
-import 'package:PickApp/login/login_page.dart';
+import 'package:PickApp/login/login_screen.dart';
 import 'package:PickApp/repositories/userRepository.dart';
 import 'package:PickApp/widgets/loading_screen.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -46,9 +46,9 @@ class MyApp extends StatelessWidget {
             if (state is AuthenticationUninitialized) {
               return LoadingScreen();
             } else if (state is AuthenticationAuthenticated) {
-              return MapScreen();
+              return HomeScreen();
             } else if (state is AuthenticationUnauthenticated) {
-              return LoginPage(userRepository: userRepository);
+              return LoginScreen(userRepository: userRepository);
             } else {
               return LoadingScreen();
             }
