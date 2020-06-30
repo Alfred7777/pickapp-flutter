@@ -139,7 +139,10 @@ class EventRepository {
     var response = await client.get(url);
 
     if (response.statusCode == 200) {
-      return json.decode(response.body).map<Profile>((participant) => mapParticipantToProfile(participant)).toList();
+      return json
+          .decode(response.body)
+          .map<Profile>((participant) => mapParticipantToProfile(participant))
+          .toList();
     } else {
       return [];
     }

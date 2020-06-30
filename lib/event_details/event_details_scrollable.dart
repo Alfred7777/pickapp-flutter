@@ -57,11 +57,11 @@ class EventDetailsScrollableState extends State<EventDetailsScrollable> {
     var screenSize = MediaQuery.of(context).size;
     return Padding(
       padding: EdgeInsets.only(
-        bottom: 0.012 * screenSize.height,
-        left: 0.022 * screenSize.width,
-        right: 0.022 * screenSize.width,
+        bottom: 0.01 * screenSize.height,
+        left: 0.02 * screenSize.width,
+        right: 0.02 * screenSize.width,
       ),
-      child: Material(
+      child: Card(
         color: Color(0xFFDEDEDE),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.all(Radius.circular(20.0)),
