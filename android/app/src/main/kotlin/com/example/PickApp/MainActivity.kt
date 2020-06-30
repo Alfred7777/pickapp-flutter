@@ -1,4 +1,4 @@
-package com.example.flutterplayground
+package com.example.PickApp
 
 import androidx.annotation.NonNull;
 import io.flutter.embedding.android.FlutterActivity

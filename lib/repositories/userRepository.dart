@@ -23,17 +23,23 @@ class UserRepository {
     }
   }
 
-  Future<Profile> getProfileDetails(String userID) async {
+  Future<User> getProfileDetails(String userID) async {
     final client = AuthenticatedApiClient();
-    final url = 'profile/$userID';
+    var url;
+    if (userID != null) {
+      url = 'profile/$userID';
+    } else {
+      url = 'profile';
+    }
     var response = await client.get(url);
 
     if (response.statusCode == 200) {
       var data = json.decode(response.body);
-      return Profile(
+      return User(
         name: data['name'],
         uniqueUsername: data['unique_username'],
         bio: data['bio'],
+        userID: userID,
       );
     } else {
       throw Exception('Failed to load profile');
@@ -66,13 +72,14 @@ class UserRepository {
   }
 }
 
-class Profile extends Equatable {
+class User extends Equatable {
   final String bio;
   final String name;
   final String uniqueUsername;
+  final String userID;
 
-  Profile({this.uniqueUsername, this.name, this.bio});
+  User({this.uniqueUsername, this.name, this.bio, this.userID});
 
   @override
-  List<Object> get props => [name, uniqueUsername, bio];
+  List<Object> get props => [name, uniqueUsername, bio,];
 }

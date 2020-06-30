@@ -14,7 +14,7 @@ class InitialProfileState extends ProfileState {}
 class ProfileLoading extends ProfileState {}
 
 class ProfileLoaded extends ProfileState {
-  final Profile details;
+  final User details;
 
   const ProfileLoaded({@required this.details});
 

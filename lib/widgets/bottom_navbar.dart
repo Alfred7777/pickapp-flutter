@@ -7,8 +7,10 @@ BottomNavigationBar bottomNavbar(int index) {
     selectedItemColor: Colors.blueAccent,
     unselectedItemColor: Colors.black,
     showUnselectedLabels: true,
-    unselectedLabelStyle:
-        TextStyle(color: Colors.black, decorationColor: Colors.black),
+    unselectedLabelStyle: TextStyle(
+      color: Colors.black, 
+      decorationColor: Colors.black,
+    ),
     // this will be set when a new tab is tapped
     items: [
       BottomNavigationBarItem(
@@ -19,9 +21,14 @@ BottomNavigationBar bottomNavbar(int index) {
         icon: Icon(Icons.event),
         title: Text('My events'),
       ),
-      BottomNavigationBarItem(icon: Icon(Icons.people), title: Text('Groups')),
       BottomNavigationBarItem(
-          icon: Icon(Icons.notifications), title: Text('Alerts'))
+        icon: Icon(Icons.people), 
+        title: Text('Groups'),
+      ),
+      BottomNavigationBarItem(
+        icon: Icon(Icons.notifications), 
+        title: Text('Alerts'),
+      ),
     ],
   );
 }

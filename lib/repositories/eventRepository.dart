@@ -1,5 +1,6 @@
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'userRepository.dart';
+import 'package:collection/collection.dart';
 import 'package:meta/meta.dart';
 import 'dart:convert';
 import 'package:PickApp/client.dart';
@@ -124,12 +125,13 @@ class EventRepository {
     }
   }
 
-  Future<List<Profile>> getParticipants(String eventID) async {
-    Profile mapParticipantToProfile(Map<String, dynamic> participant) {
-      return Profile(
+  Future<List<User>> getParticipants(String eventID) async {
+    User mapParticipantToProfile(Map<String, dynamic> participant) {
+      return User(
         bio: participant['bio'],
         name: participant['name'],
         uniqueUsername: participant['unique_username'],
+        userID: participant['user_id'],
       );
     }
 
@@ -139,12 +141,35 @@ class EventRepository {
     var response = await client.get(url);
 
     if (response.statusCode == 200) {
-      return json
-          .decode(response.body)
-          .map<Profile>((participant) => mapParticipantToProfile(participant))
-          .toList();
+      return json.decode(response.body).map<User>((participant) => mapParticipantToProfile(participant)).toList();
     } else {
       return [];
+    }
+  }
+  
+  Future<Map<DateTime, List<Event>>> getMyEvents() async {
+    Event mapDetailsToEvent(Map<String, dynamic> details) {
+      return Event(
+        details['id'],
+        details['name'],
+        details['description'],
+        details['discipline_id'],
+        DateTime.fromMillisecondsSinceEpoch(details['start_datetime_ms']),
+        DateTime.fromMillisecondsSinceEpoch(details['end_datetime_ms']),
+      );
+    }
+
+    final client = AuthenticatedApiClient();
+    final url = 'my_events';
+
+    var response = await client.get(url);
+
+    if (response.statusCode == 200) {
+      List<Event> eventList = json.decode(response.body).map<Event>((event) => mapDetailsToEvent(event)).toList();
+      eventList.sort((e1, e2) => e1.startDate.compareTo(e2.startDate));
+      return groupBy(eventList, (event) => DateTime(event.startDate.year, event.startDate.month, event.startDate.day));
+    } else {
+      return {};
     }
   }
 }
@@ -175,4 +200,22 @@ class Discipline {
   factory Discipline.fromJson(Map<String, dynamic> json) {
     return Discipline(json['id'], json['name']);
   }
+}
+
+class Event {
+  final String id;
+  final String name;
+  final String description;
+  final String disciplineID;
+  final DateTime startDate;
+  final DateTime endDate;
+
+  Event(
+    this.id, 
+    this.name, 
+    this.description,
+    this.disciplineID,
+    this.startDate,
+    this.endDate,
+  );
 }
