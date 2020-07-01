@@ -8,11 +8,19 @@ import 'create_event_state.dart';
 import 'create_event_event.dart';
 
 class CreateEventMap extends StatefulWidget {
+  final CameraUpdate initialCameraPos;
+
+  CreateEventMap({@required this.initialCameraPos});
+
   @override
-  State<CreateEventMap> createState() => _CreateEventMapState();
+  State<CreateEventMap> createState() => _CreateEventMapState(initialCameraPos: initialCameraPos);
 }
 
 class _CreateEventMapState extends State<CreateEventMap> {
+  final CameraUpdate initialCameraPos;
+
+  _CreateEventMapState({@required this.initialCameraPos});
+
   final EventRepository eventRepository = EventRepository();
   final _nameController = TextEditingController();
   final _descriptionController = TextEditingController();
@@ -21,7 +29,7 @@ class _CreateEventMapState extends State<CreateEventMap> {
   DateTime endDate = DateTime.now();
   LatLng eventPos;
   GoogleMapController mapController;
-
+  
   @override
   Widget build(BuildContext context) {
     var screenSize = MediaQuery.of(context).size;
@@ -240,10 +248,10 @@ class _CreateEventMapState extends State<CreateEventMap> {
                                 color: Colors.black,
                               ),
                               onChanged: (String newValue) {
+                                FocusScope.of(context).unfocus();
                                 setState(() {
                                   disciplineID = newValue;
                                 });
-                                FocusScope.of(context).unfocus();
                               },
                               items: disciplineList.map((discipline) {
                                 return DropdownMenuItem<String>(
@@ -428,7 +436,7 @@ class _CreateEventMapState extends State<CreateEventMap> {
           );
         }
         if (state is CreateEventCreated) {
-          Navigator.pop(context, 'Event created');
+          Navigator.pop(context, ['Event created', eventPos]);
         }
       },
       child: BlocBuilder<CreateEventBloc, CreateEventState>(
@@ -451,6 +459,7 @@ class _CreateEventMapState extends State<CreateEventMap> {
                     zoomControlsEnabled: false,
                     onMapCreated: (GoogleMapController controller) {
                       mapController = controller;
+                      mapController.moveCamera(initialCameraPos);
                     },
                     onTap: (LatLng point) {
                       setState(() {

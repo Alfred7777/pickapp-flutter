@@ -20,14 +20,16 @@ class MapScreen extends StatefulWidget {
 class MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
   static final eventRepository = EventRepository();
 
-  final Completer<GoogleMapController> _controller = Completer();
+  final Completer<GoogleMapController> _mapController = Completer();
 
   AnimationController _animationController;
 
   MapBloc _mapBloc;
 
-  static final CameraPosition _kPoznan =
-      CameraPosition(target: LatLng(52.4064, 16.9252), zoom: 13);
+  static final CameraPosition _kPoznan = CameraPosition(
+    target: LatLng(52.4064, 16.9252), 
+    zoom: 12,
+  );
 
   List<AddEventMenuButton> menu;
 
@@ -74,7 +76,7 @@ class MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
                 zoomControlsEnabled: false,
                 initialCameraPosition: _kPoznan,
                 onMapCreated: (GoogleMapController controller) {
-                  _controller.complete(controller);
+                  _mapController.complete(controller);
                 },
               ),
               floatingActionButton: AnimatedOpacity(
@@ -132,19 +134,31 @@ class MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
       ),
       AddEventMenuButton(
         action: () async {
+          var controller = await _mapController.future;
+          var screenSize = MediaQuery.of(context).size;
+          var pixelRatio = MediaQuery.of(context).devicePixelRatio;
+          var initialCameraPos = await controller.getLatLng(
+            ScreenCoordinate(
+              x: (screenSize.width * pixelRatio / 2).round(), 
+              y: (screenSize.height * pixelRatio / 2).round(),
+            ),
+          );
+          var initialCameraZoom = await controller.getZoomLevel();
           final eventRepository = EventRepository();
           final result = await Navigator.of(context).push(MaterialPageRoute(
             builder: (context) => CreateEventScreen(
               eventRepository: eventRepository,
               mapBloc: _mapBloc,
+              initialCameraPos: CameraUpdate.newLatLngZoom(initialCameraPos, initialCameraZoom),
             )
           ));
           if (result != null) {
             Scaffold.of(context).showSnackBar(
               SnackBar(
-                content: Text('$result'), backgroundColor: Colors.green,
+                content: Text('${result[0]}'), backgroundColor: Colors.green,
               ),
             );
+            await controller.moveCamera(CameraUpdate.newLatLngZoom(result[1], 17));
           }
         },
         icon: Icons.room,

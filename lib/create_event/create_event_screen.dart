@@ -8,13 +8,16 @@ import 'package:PickApp/repositories/eventRepository.dart';
 class CreateEventScreen extends StatelessWidget {
   final EventRepository eventRepository;
   final MapBloc mapBloc;
+  final initialCameraPos;
 
   CreateEventScreen({
     Key key,
     @required this.eventRepository,
     @required this.mapBloc,
+    @required this.initialCameraPos,
   })  : assert(eventRepository != null),
         assert(mapBloc != null),
+        assert(initialCameraPos != null),
         super(key: key);
 
   @override
@@ -27,7 +30,7 @@ class CreateEventScreen extends StatelessWidget {
           mapBloc: mapBloc,
         );
       },
-      child: CreateEventMap(),
+      child: CreateEventMap(initialCameraPos: initialCameraPos),
     ));
   }
 }
