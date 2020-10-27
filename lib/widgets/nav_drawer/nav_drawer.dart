@@ -21,7 +21,7 @@ class NavDrawer extends StatelessWidget {
               decoration: BoxDecoration(
                 color: Colors.white,
                 border: Border(
-                  bottom:BorderSide(color: Color(0x883D3A3A), width: 0.6),
+                  bottom: BorderSide(color: Color(0x883D3A3A), width: 0.6),
                 ),
               ),
               child: Column(
@@ -30,8 +30,8 @@ class NavDrawer extends StatelessWidget {
                     children: [
                       Padding(
                         padding: EdgeInsets.only(
-                          top: 38.0, 
-                          left: 14.0, 
+                          top: 38.0,
+                          left: 14.0,
                           bottom: 14.0,
                         ),
                         child: Container(
@@ -39,7 +39,9 @@ class NavDrawer extends StatelessWidget {
                           width: 64,
                           decoration: BoxDecoration(
                             image: DecorationImage(
-                              image: AssetImage('assets/images/profile_placeholder.png'),
+                              image: AssetImage(
+                                'assets/images/profile_placeholder.png',
+                              ),
                               fit: BoxFit.cover,
                             ),
                           ),
@@ -53,7 +55,10 @@ class NavDrawer extends StatelessWidget {
                         padding: EdgeInsets.only(left: 14.0),
                         child: Text(
                           user.name,
-                          style: TextStyle(color: Color(0xFF3D3A3A), fontSize: 22),
+                          style: TextStyle(
+                            color: Color(0xFF3D3A3A),
+                            fontSize: 22,
+                          ),
                         ),
                       ),
                     ],
@@ -64,30 +69,36 @@ class NavDrawer extends StatelessWidget {
                         padding: EdgeInsets.only(left: 14.0),
                         child: Text(
                           '@${user.uniqueUsername}',
-                          style: TextStyle(color: Color(0xFF3D3A3A), fontSize: 14),
+                          style: TextStyle(
+                            color: Color(0xFF3D3A3A),
+                            fontSize: 14,
+                          ),
                         ),
                       ),
                     ],
                   )
                 ],
-              )
+              ),
             ),
             NavDraverItem(
               Icon(
-                Icons.person, 
-                color: Color(0xFF3D3A3A), 
+                Icons.person,
+                color: Color(0xFF3D3A3A),
                 size: 30.0,
               ),
               Text(
                 'Profile',
-                style: TextStyle(color: Color(0xFF3D3A3A), fontSize: 18),
+                style: TextStyle(
+                  color: Color(0xFF3D3A3A),
+                  fontSize: 18,
+                ),
               ),
               MaterialPageRoute<void>(builder: (context) => ProfileScreen()),
             ),
             NavDraverItem(
               Icon(
-                Icons.settings, 
-                color: Color(0xFF3D3A3A), 
+                Icons.settings,
+                color: Color(0xFF3D3A3A),
                 size: 30.0,
               ),
               Text(
@@ -99,8 +110,8 @@ class NavDrawer extends StatelessWidget {
             ),
             NavDraverItem(
               Icon(
-                Icons.exit_to_app, 
-                color: Color(0xFF3D3A3A), 
+                Icons.exit_to_app,
+                color: Color(0xFF3D3A3A),
                 size: 30.0,
               ),
               Text(
@@ -126,16 +137,16 @@ class NavDrawer extends StatelessWidget {
                       child: Text(
                         'PickApp © 2020',
                         style: TextStyle(
-                          color: Color(0x88827676), 
+                          color: Color(0x88827676),
                           fontSize: 12,
                         ),
                       ),
                     ),
-                  ),    
+                  ),
                 ),
               ),
             ),
-          ]
+          ],
         ),
       ),
     );

@@ -22,7 +22,7 @@ class EventDetailsReady extends EventDetailsState {
 
   const EventDetailsReady({
     @required this.eventID,
-    @required this.eventDetails, 
+    @required this.eventDetails,
     @required this.participantsList,
   });
 }
@@ -34,7 +34,7 @@ class EventDetailsJoined extends EventDetailsState {
 
   const EventDetailsJoined({
     @required this.eventID,
-    @required this.eventDetails, 
+    @required this.eventDetails,
     @required this.participantsList,
   });
 }

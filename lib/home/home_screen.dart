@@ -80,19 +80,19 @@ class HomeScreenState extends State<HomeScreen> {
         items: [
           BottomNavigationBarItem(
             icon: Icon(Icons.public),
-            title: Text('Map'),
+            label: 'Map',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.event),
-            title: Text('My events'),
+            label: 'My events',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.people), 
-            title: Text('Groups'),
+            icon: Icon(Icons.people),
+            label: 'Groups',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.notifications), 
-            title: Text('Alerts'),
+            icon: Icon(Icons.notifications),
+            label: 'Alerts',
           ),
         ],
       ),

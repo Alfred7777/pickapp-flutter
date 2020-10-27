@@ -14,13 +14,16 @@ class EventDetailsBloc extends Bloc<EventDetailsEvent, EventDetailsState> {
   });
 
   @override
-  EventDetailsState get initialState => EventDetailsUninitialized(eventID: eventID);
+  EventDetailsState get initialState =>
+      EventDetailsUninitialized(eventID: eventID);
 
   @override
   Stream<EventDetailsState> mapEventToState(EventDetailsEvent event) async* {
     if (event is FetchEventDetails) {
       var eventDetails = await eventRepository.getEventDetails(event.eventID);
-      var participantsList = await eventRepository.getParticipants(event.eventID);
+      var participantsList = await eventRepository.getParticipants(
+        event.eventID,
+      );
 
       if (eventDetails['is_participant']) {
         yield EventDetailsJoined(
@@ -39,7 +42,9 @@ class EventDetailsBloc extends Bloc<EventDetailsEvent, EventDetailsState> {
     if (event is JoinEvent) {
       await eventRepository.joinEvent(event.eventID);
       var eventDetails = await eventRepository.getEventDetails(event.eventID);
-      var participantsList = await eventRepository.getParticipants(event.eventID);
+      var participantsList = await eventRepository.getParticipants(
+        event.eventID,
+      );
 
       if (eventDetails['is_participant']) {
         yield EventDetailsJoined(

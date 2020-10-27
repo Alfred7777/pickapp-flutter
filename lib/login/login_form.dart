@@ -18,23 +18,23 @@ class _LoginFormState extends State<LoginForm> {
     void _onLoginButtonPressed() {
       BlocProvider.of<LoginBloc>(context).add(
         LoginButtonPressed(
-          email: _emailController.text, 
+          email: _emailController.text,
           password: _passwordController.text,
         ),
       );
-    };
+    }
 
     return BlocListener<LoginBloc, LoginState>(
       listener: (context, state) {
         if (state is LoginFailure) {
           Scaffold.of(context).showSnackBar(
             SnackBar(
-              content: Text('${state.error}'), 
+              content: Text('${state.error}'),
               backgroundColor: Colors.red,
             ),
           );
-        };
-      }, 
+        }
+      },
       child: BlocBuilder<LoginBloc, LoginState>(
         builder: (context, state) {
           var screenSize = MediaQuery.of(context).size;
@@ -64,11 +64,17 @@ class _LoginFormState extends State<LoginForm> {
                       decoration: InputDecoration(
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(20.0),
-                          borderSide: BorderSide(color: Color(0x883D3A3A), width: 0.6),
+                          borderSide: BorderSide(
+                            color: Color(0x883D3A3A),
+                            width: 0.6,
+                          ),
                         ),
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(20.0),
-                          borderSide: BorderSide(color: Color(0x883D3A3A), width: 0.6),
+                          borderSide: BorderSide(
+                            color: Color(0x883D3A3A),
+                            width: 0.6,
+                          ),
                         ),
                         contentPadding: EdgeInsets.only(right: 20.0, top: 14.0),
                         fillColor: Color(0xFFF0F0F0),
@@ -79,7 +85,10 @@ class _LoginFormState extends State<LoginForm> {
                           size: 20.0,
                         ),
                         hintText: 'E-mail',
-                        hintStyle: TextStyle(color: Color(0x883D3A3A), fontSize: 14),
+                        hintStyle: TextStyle(
+                          color: Color(0x883D3A3A),
+                          fontSize: 14,
+                        ),
                       ),
                       keyboardType: TextInputType.emailAddress,
                       controller: _emailController,
@@ -95,22 +104,31 @@ class _LoginFormState extends State<LoginForm> {
                       decoration: InputDecoration(
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(20.0),
-                          borderSide: BorderSide(color: Color(0x883D3A3A), width: 0.6),
+                          borderSide: BorderSide(
+                            color: Color(0x883D3A3A),
+                            width: 0.6,
+                          ),
                         ),
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(20.0),
-                          borderSide: BorderSide(color: Color(0x883D3A3A), width: 0.6),
+                          borderSide: BorderSide(
+                            color: Color(0x883D3A3A),
+                            width: 0.6,
+                          ),
                         ),
                         contentPadding: EdgeInsets.only(right: 20.0, top: 14.0),
                         fillColor: Color(0xFFF0F0F0),
                         filled: true,
                         prefixIcon: Icon(
                           Icons.lock_outline,
-                          color: Color(0xFF3D3A3A), 
+                          color: Color(0xFF3D3A3A),
                           size: 20.0,
                         ),
                         hintText: 'Password',
-                        hintStyle: TextStyle(color: Color(0x883D3A3A), fontSize: 14),
+                        hintStyle: TextStyle(
+                          color: Color(0x883D3A3A),
+                          fontSize: 14,
+                        ),
                       ),
                       keyboardType: TextInputType.text,
                       obscureText: true,
@@ -137,7 +155,10 @@ class _LoginFormState extends State<LoginForm> {
                       ),
                       child: Text(
                         'Login',
-                        style: TextStyle(color: Color(0xFFFFFFFF), fontSize: 18),
+                        style: TextStyle(
+                          color: Color(0xFFFFFFFF),
+                          fontSize: 18,
+                        ),
                       ),
                     ),
                   ),
@@ -149,7 +170,10 @@ class _LoginFormState extends State<LoginForm> {
                       alignment: FractionalOffset.bottomLeft,
                       child: Text(
                         'PickApp © 2020',
-                        style: TextStyle(color: Color(0x88827676), fontSize: 12),
+                        style: TextStyle(
+                          color: Color(0x88827676),
+                          fontSize: 12,
+                        ),
                       ),
                     ),
                   ),

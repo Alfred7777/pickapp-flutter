@@ -13,7 +13,7 @@ class FetchEventDetails extends EventDetailsEvent {
 
   FetchEventDetails({@required this.eventID});
 
-  @override 
+  @override
   List<Object> get props => [eventID];
 }
 
@@ -22,6 +22,6 @@ class JoinEvent extends EventDetailsEvent {
 
   JoinEvent({@required this.eventID});
 
-  @override 
+  @override
   List<Object> get props => [eventID];
 }

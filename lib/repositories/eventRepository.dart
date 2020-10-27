@@ -65,10 +65,12 @@ class EventRepository {
       return {
         'name': details['name'],
         'description': details['description'],
-        'start_date':
-            DateTime.fromMillisecondsSinceEpoch(details['start_datetime_ms']),
-        'end_date':
-            DateTime.fromMillisecondsSinceEpoch(details['end_datetime_ms']),
+        'start_date': DateTime.fromMillisecondsSinceEpoch(
+          details['start_datetime_ms'],
+        ),
+        'end_date': DateTime.fromMillisecondsSinceEpoch(
+          details['end_datetime_ms'],
+        ),
         'discipline_id': details['discipline_id'],
         'organiser_id': details['organiser_id'],
         'is_participant': details['is_participating?'],
@@ -141,12 +143,15 @@ class EventRepository {
     var response = await client.get(url);
 
     if (response.statusCode == 200) {
-      return json.decode(response.body).map<User>((participant) => mapParticipantToProfile(participant)).toList();
+      return json
+          .decode(response.body)
+          .map<User>((participant) => mapParticipantToProfile(participant))
+          .toList();
     } else {
       return [];
     }
   }
-  
+
   Future<Map<DateTime, List<Event>>> getMyEvents() async {
     Event mapDetailsToEvent(Map<String, dynamic> details) {
       return Event(
@@ -165,9 +170,15 @@ class EventRepository {
     var response = await client.get(url);
 
     if (response.statusCode == 200) {
-      List<Event> eventList = json.decode(response.body).map<Event>((event) => mapDetailsToEvent(event)).toList();
+      List<Event> eventList = json
+          .decode(response.body)
+          .map<Event>((event) => mapDetailsToEvent(event))
+          .toList();
       eventList.sort((e1, e2) => e1.startDate.compareTo(e2.startDate));
-      return groupBy(eventList, (event) => DateTime(event.startDate.year, event.startDate.month, event.startDate.day));
+      return groupBy(
+          eventList,
+          (event) => DateTime(event.startDate.year, event.startDate.month,
+              event.startDate.day));
     } else {
       return {};
     }
@@ -211,8 +222,8 @@ class Event {
   final DateTime endDate;
 
   Event(
-    this.id, 
-    this.name, 
+    this.id,
+    this.name,
     this.description,
     this.disciplineID,
     this.startDate,

@@ -15,11 +15,13 @@ void main() {
   final userRepository = UserRepository();
 
   runApp(BlocProvider<AuthenticationBloc>(
-      create: (context) {
-        return AuthenticationBloc(userRepository: userRepository)
-          ..add(AppStarted());
-      },
-      child: MyApp(userRepository: userRepository)));
+    create: (context) {
+      return AuthenticationBloc(
+        userRepository: userRepository,
+      )..add(AppStarted());
+    },
+    child: MyApp(userRepository: userRepository),
+  ));
 }
 
 class MyApp extends StatelessWidget {

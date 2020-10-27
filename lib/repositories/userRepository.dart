@@ -81,5 +81,5 @@ class User extends Equatable {
   User({this.uniqueUsername, this.name, this.bio, this.userID});
 
   @override
-  List<Object> get props => [name, uniqueUsername, bio,];
+  List<Object> get props => [name, uniqueUsername, bio];
 }
