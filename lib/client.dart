@@ -1,4 +1,7 @@
 import 'dart:convert';
+import 'dart:io';
+import 'package:PickApp/main.dart';
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'repositories/userRepository.dart';
 
@@ -25,41 +28,118 @@ class AuthenticatedApiClient {
 
   Future<http.Response> post(url,
       {Map<String, String> headers, dynamic body}) async {
+    var response;
     var token = await getAuthToken();
-    var response = await http.post(
-      apiUrl + url,
-      headers: getHeaders(token, headers),
-      body: json.encode(body),
-    );
+
+    while (response == null) {
+      try {
+        response = await http.post(
+          apiUrl + url,
+          headers: getHeaders(token, headers),
+          body: json.encode(body),
+        );
+      } on SocketException {
+        await showDialog(
+          context: navigatorKey.currentContext,
+          builder: (BuildContext context) {
+            return _buildConnectionAlert(context);
+          },
+        );
+      }
+    }
+
     return response;
   }
 
   Future<http.Response> get(url, {Map<String, String> headers}) async {
+    var response;
     var token = await getAuthToken();
-    var response = http.get(
-      apiUrl + url,
-      headers: getHeaders(token, headers),
-    );
+
+    while (response == null) {
+      try {
+        response = await http.get(
+          apiUrl + url,
+          headers: getHeaders(token, headers),
+        );
+      } on SocketException {
+        await showDialog(
+          context: navigatorKey.currentContext,
+          builder: (BuildContext context) {
+            return _buildConnectionAlert(context);
+          },
+        );
+      }
+    }
+
     return response;
   }
 
   Future<http.Response> delete(url, {Map<String, String> headers}) async {
+    var response;
     var token = await getAuthToken();
-    var response = http.delete(
-      apiUrl + url,
-      headers: getHeaders(token, headers),
-    );
+
+    while (response == null) {
+      try {
+        response = await http.delete(
+          apiUrl + url,
+          headers: getHeaders(token, headers),
+        );
+      } on SocketException {
+        await showDialog(
+          context: navigatorKey.currentContext,
+          builder: (BuildContext context) {
+            return _buildConnectionAlert(context);
+          },
+        );
+      }
+    }
+
     return response;
   }
 
   Future<http.Response> put(url,
       {Map<String, String> headers, dynamic body}) async {
+    var response;
     var token = await getAuthToken();
-    var response = http.put(
-      apiUrl + url,
-      headers: getHeaders(token, headers),
-      body: json.encode(body),
-    );
+
+    while (response == null) {
+      try {
+        response = await http.put(
+          apiUrl + url,
+          headers: getHeaders(token, headers),
+          body: json.encode(body),
+        );
+      } on SocketException {
+        await showDialog(
+          context: navigatorKey.currentContext,
+          builder: (BuildContext context) {
+            return _buildConnectionAlert(context);
+          },
+        );
+      }
+    }
+
     return response;
+  }
+
+  Widget _buildConnectionAlert(BuildContext context) {
+    return AlertDialog(
+      title: Text('Connection Error!'),
+      content: Text('Failed to connect to the server.'),
+      actions: [
+        FlatButton(
+          child: Text('Try Again'),
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+        ),
+        FlatButton(
+          child: Text('Close App'),
+          onPressed: () {
+            exit(0);
+          },
+        ),
+      ],
+    );
   }
 }
