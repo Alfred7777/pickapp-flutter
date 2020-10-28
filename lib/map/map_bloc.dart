@@ -26,7 +26,9 @@ class MapBloc extends Bloc<MapEvent, MapState> {
       return;
     }
     if (event is FilterMapByDiscipline) {
-      var filteredLocations = await eventRepository.filterMapByDiscipline(event.disciplineId);
+      var filteredLocations = await eventRepository.filterMapByDiscipline(
+        event.disciplineId,
+      );
 
       yield MapReady(locations: filteredLocations, icons: _icons);
       return;

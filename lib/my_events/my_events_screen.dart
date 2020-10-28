@@ -48,7 +48,9 @@ class MyEventsScreenState extends State<MyEventsScreen> {
     var screenSize = MediaQuery.of(context).size;
     return InkWell(
       onTap: () {
-        var route = MaterialPageRoute<void>(builder: (context) => EventDetailsScreen(eventID: event.id));
+        var route = MaterialPageRoute<void>(
+          builder: (context) => EventDetailsScreen(eventID: event.id),
+        );
         Navigator.push(context, route);
       },
       child: Container(
@@ -68,7 +70,8 @@ class MyEventsScreenState extends State<MyEventsScreen> {
                 width: 0.05 * screenSize.height,
                 decoration: BoxDecoration(
                   image: DecorationImage(
-                    image: AssetImage('assets/images/event_icon/${event.disciplineID}.png'),
+                    image: AssetImage(
+                        'assets/images/event_icon/${event.disciplineID}.png'),
                     fit: BoxFit.cover,
                   ),
                 ),
@@ -80,8 +83,8 @@ class MyEventsScreenState extends State<MyEventsScreen> {
                 child: Text(
                   event.name,
                   style: TextStyle(
-                    color: Color(0xFF3D3A3A), 
-                    fontSize: 0.025 * screenSize.height, 
+                    color: Color(0xFF3D3A3A),
+                    fontSize: 0.025 * screenSize.height,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -99,8 +102,8 @@ class MyEventsScreenState extends State<MyEventsScreen> {
                 child: Text(
                   DateFormat.jm().format(event.startDate),
                   style: TextStyle(
-                    color: Color(0xFFA7A7A7), 
-                    fontSize: 0.025 * screenSize.height, 
+                    color: Color(0xFFA7A7A7),
+                    fontSize: 0.025 * screenSize.height,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -132,8 +135,8 @@ class MyEventsScreenState extends State<MyEventsScreen> {
                 child: Text(
                   DateFormat.EEEE().add_MMMd().format(date),
                   style: TextStyle(
-                    color: Color(0xFF3D3A3A), 
-                    fontSize: 0.025 * screenSize.height, 
+                    color: Color(0xFF3D3A3A),
+                    fontSize: 0.025 * screenSize.height,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -147,13 +150,13 @@ class MyEventsScreenState extends State<MyEventsScreen> {
           itemCount: events.length,
           itemBuilder: (BuildContext context, int index) {
             return _buildEventBar(events[index]);
-          }
+          },
         ),
       ],
     );
   }
 
-  Widget _buildMyEvents(Map <DateTime, List<Event>> myEvents) {
+  Widget _buildMyEvents(Map<DateTime, List<Event>> myEvents) {
     var screenSize = MediaQuery.of(context).size;
     return Scaffold(
       appBar: mainScreenTopBar(context),
@@ -179,8 +182,8 @@ class MyEventsScreenState extends State<MyEventsScreen> {
                   child: Text(
                     'My Events',
                     style: TextStyle(
-                      color: Color(0xFF3D3A3A), 
-                      fontSize: 0.04 * screenSize.height, 
+                      color: Color(0xFF3D3A3A),
+                      fontSize: 0.04 * screenSize.height,
                       fontWeight: FontWeight.bold,
                     ),
                   ),

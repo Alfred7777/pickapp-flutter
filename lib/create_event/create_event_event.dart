@@ -27,5 +27,12 @@ class CreateEventButtonPressed extends CreateEventEvent {
   });
 
   @override
-  List<Object> get props => [eventName, eventDescription, eventDisciplineID, eventPos, eventStartDate, eventEndDate];
+  List<Object> get props => [
+        eventName,
+        eventDescription,
+        eventDisciplineID,
+        eventPos,
+        eventStartDate,
+        eventEndDate,
+      ];
 }

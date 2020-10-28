@@ -8,7 +8,8 @@ class EventDetailsScreen extends StatefulWidget {
   EventDetailsScreen({@required this.eventID});
 
   @override
-  State<EventDetailsScreen> createState() => EventDetailsScreenState(eventID: eventID);
+  State<EventDetailsScreen> createState() =>
+      EventDetailsScreenState(eventID: eventID);
 }
 
 class EventDetailsScreenState extends State<EventDetailsScreen> {

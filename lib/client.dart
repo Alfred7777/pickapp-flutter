@@ -11,33 +11,55 @@ class AuthenticatedApiClient {
     return token;
   }
 
-  Map<String, String> getHeaders(dynamic token, Map<String, String> additionalHeaders){
-    final headers = {'Authorization': 'Bearer $token', 'Content-type': 'application/json'};
+  Map<String, String> getHeaders(
+      dynamic token, Map<String, String> additionalHeaders) {
+    final headers = {
+      'Authorization': 'Bearer $token',
+      'Content-type': 'application/json',
+    };
     if (additionalHeaders is Map) {
       headers.addAll(additionalHeaders);
     }
     return headers;
   }
-  Future <http.Response> post(url, {Map<String, String> headers, dynamic body}) async {
+
+  Future<http.Response> post(url,
+      {Map<String, String> headers, dynamic body}) async {
     var token = await getAuthToken();
-    var response = await http.post(apiUrl + url, headers: getHeaders(token, headers), body: json.encode(body));
-    return response;
-  }
-  Future <http.Response> get(url, {Map<String, String> headers}) async{
-    var token = await getAuthToken();
-    var response = http.get(apiUrl + url, headers: getHeaders(token, headers));
+    var response = await http.post(
+      apiUrl + url,
+      headers: getHeaders(token, headers),
+      body: json.encode(body),
+    );
     return response;
   }
 
-  Future <http.Response> delete(url, {Map<String, String> headers}) async{
+  Future<http.Response> get(url, {Map<String, String> headers}) async {
     var token = await getAuthToken();
-    var response = http.delete(apiUrl + url, headers: getHeaders(token, headers));
-    return response;
-  }
-  Future <http.Response> put(url, {Map<String, String> headers, dynamic body}) async{
-    var token = await getAuthToken();
-    var response = http.put(apiUrl + url, headers: getHeaders(token, headers), body: json.encode(body));
+    var response = http.get(
+      apiUrl + url,
+      headers: getHeaders(token, headers),
+    );
     return response;
   }
 
+  Future<http.Response> delete(url, {Map<String, String> headers}) async {
+    var token = await getAuthToken();
+    var response = http.delete(
+      apiUrl + url,
+      headers: getHeaders(token, headers),
+    );
+    return response;
+  }
+
+  Future<http.Response> put(url,
+      {Map<String, String> headers, dynamic body}) async {
+    var token = await getAuthToken();
+    var response = http.put(
+      apiUrl + url,
+      headers: getHeaders(token, headers),
+      body: json.encode(body),
+    );
+    return response;
+  }
 }

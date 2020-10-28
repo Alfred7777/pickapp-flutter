@@ -23,14 +23,15 @@ class CreateEventScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: BlocProvider(
-      create: (context) {
-        return CreateEventBloc(
-          eventRepository: eventRepository,
-          mapBloc: mapBloc,
-        );
-      },
-      child: CreateEventMap(initialCameraPos: initialCameraPos),
-    ));
+      body: BlocProvider(
+        create: (context) {
+          return CreateEventBloc(
+            eventRepository: eventRepository,
+            mapBloc: mapBloc,
+          );
+        },
+        child: CreateEventMap(initialCameraPos: initialCameraPos),
+      ),
+    );
   }
 }

@@ -27,7 +27,7 @@ class MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
   MapBloc _mapBloc;
 
   static final CameraPosition _kPoznan = CameraPosition(
-    target: LatLng(52.4064, 16.9252), 
+    target: LatLng(52.4064, 16.9252),
     zoom: 12,
   );
 
@@ -56,72 +56,77 @@ class MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<MapBloc, MapState>(
-        bloc: _mapBloc,
-        builder: (context, state) {
-          if (state is MapUninitialized) {
-            _mapBloc.add(FetchLocations());
+      bloc: _mapBloc,
+      builder: (context, state) {
+        if (state is MapUninitialized) {
+          _mapBloc.add(FetchLocations());
 
-            return Center(
-              child: CircularProgressIndicator(),
-            );
-          }
-          if (state is MapReady) {
-            return Scaffold(
-              appBar: mapScreenTopBar(context, _mapBloc),
-              extendBodyBehindAppBar: true,
-              body: GoogleMap(
-                mapType: MapType.normal,
-                markers: mapLocationsToMarkers(state, context),
-                mapToolbarEnabled: false,
-                zoomControlsEnabled: false,
-                initialCameraPosition: _kPoznan,
-                onMapCreated: (GoogleMapController controller) {
-                  _mapController.complete(controller);
-                },
-              ),
-              floatingActionButton: AnimatedOpacity(
-                opacity: 1,
-                duration: Duration(milliseconds: 250),
-                curve: Curves.easeOut,
-                child: _buildMenu(context),
-              ),
-            );
-          }
-          return CircularProgressIndicator();
-        });
+          return Center(
+            child: CircularProgressIndicator(),
+          );
+        }
+        if (state is MapReady) {
+          return Scaffold(
+            appBar: mapScreenTopBar(context, _mapBloc),
+            extendBodyBehindAppBar: true,
+            body: GoogleMap(
+              mapType: MapType.normal,
+              markers: mapLocationsToMarkers(state, context),
+              mapToolbarEnabled: false,
+              zoomControlsEnabled: false,
+              initialCameraPosition: _kPoznan,
+              onMapCreated: (GoogleMapController controller) {
+                _mapController.complete(controller);
+              },
+            ),
+            floatingActionButton: AnimatedOpacity(
+              opacity: 1,
+              duration: Duration(milliseconds: 250),
+              curve: Curves.easeOut,
+              child: _buildMenu(context),
+            ),
+          );
+        }
+        return CircularProgressIndicator();
+      },
+    );
   }
 
   Set<Marker> mapLocationsToMarkers(state, context) {
-    return state.locations.map<Marker>((location) => Marker(
-      markerId: MarkerId(location.id),
-      position: LatLng(location.lat, location.lon),
-      icon: state.icons[location.disciplineID],
-      onTap: () {
-        eventRepository.getEventDetails(location.id).then((details) {
-          showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              var screenSize = MediaQuery.of(context).size;
-              return Padding(
-                padding: EdgeInsets.only(
-                  top: 0.12 * screenSize.height,
-                  bottom: 0.02 * screenSize.height,
-                  left: 0.02 * screenSize.width,
-                  right: 0.02 * screenSize.width,
-                ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(32.0),
-                  child: Material(
-                    color: Color(0xFFF3F3F3),
-                    child: EventDetailsScrollable(eventID: location.id),
-                  ),
-                ),
+    return state.locations.map<Marker>(
+      (location) => Marker(
+        markerId: MarkerId(location.id),
+        position: LatLng(location.lat, location.lon),
+        icon: state.icons[location.disciplineID],
+        onTap: () {
+          eventRepository.getEventDetails(location.id).then(
+            (details) {
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  var screenSize = MediaQuery.of(context).size;
+                  return Padding(
+                    padding: EdgeInsets.only(
+                      top: 0.12 * screenSize.height,
+                      bottom: 0.02 * screenSize.height,
+                      left: 0.02 * screenSize.width,
+                      right: 0.02 * screenSize.width,
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(32.0),
+                      child: Material(
+                        color: Color(0xFFF3F3F3),
+                        child: EventDetailsScrollable(eventID: location.id),
+                      ),
+                    ),
+                  );
+                },
               );
             },
           );
-        },);
-      },
-    )).toSet();
+        },
+      ),
+    ).toSet();
   }
 
   void _buildAddEventMenu() {
@@ -139,26 +144,34 @@ class MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
           var pixelRatio = MediaQuery.of(context).devicePixelRatio;
           var initialCameraPos = await controller.getLatLng(
             ScreenCoordinate(
-              x: (screenSize.width * pixelRatio / 2).round(), 
+              x: (screenSize.width * pixelRatio / 2).round(),
               y: (screenSize.height * pixelRatio / 2).round(),
             ),
           );
           var initialCameraZoom = await controller.getZoomLevel();
           final eventRepository = EventRepository();
-          final result = await Navigator.of(context).push(MaterialPageRoute(
-            builder: (context) => CreateEventScreen(
-              eventRepository: eventRepository,
-              mapBloc: _mapBloc,
-              initialCameraPos: CameraUpdate.newLatLngZoom(initialCameraPos, initialCameraZoom),
-            )
-          ));
+          final result = await Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => CreateEventScreen(
+                eventRepository: eventRepository,
+                mapBloc: _mapBloc,
+                initialCameraPos: CameraUpdate.newLatLngZoom(
+                  initialCameraPos,
+                  initialCameraZoom,
+                ),
+              ),
+            ),
+          );
           if (result != null) {
             Scaffold.of(context).showSnackBar(
               SnackBar(
-                content: Text('${result[0]}'), backgroundColor: Colors.green,
+                content: Text('${result[0]}'),
+                backgroundColor: Colors.green,
               ),
             );
-            await controller.moveCamera(CameraUpdate.newLatLngZoom(result[1], 17));
+            await controller.moveCamera(
+              CameraUpdate.newLatLngZoom(result[1], 17),
+            );
           }
         },
         icon: Icons.room,

@@ -13,7 +13,8 @@ class CreateEventMap extends StatefulWidget {
   CreateEventMap({@required this.initialCameraPos});
 
   @override
-  State<CreateEventMap> createState() => _CreateEventMapState(initialCameraPos: initialCameraPos);
+  State<CreateEventMap> createState() =>
+      _CreateEventMapState(initialCameraPos: initialCameraPos);
 }
 
 class _CreateEventMapState extends State<CreateEventMap> {
@@ -29,7 +30,7 @@ class _CreateEventMapState extends State<CreateEventMap> {
   DateTime endDate = DateTime.now();
   LatLng eventPos;
   GoogleMapController mapController;
-  
+
   @override
   Widget build(BuildContext context) {
     var screenSize = MediaQuery.of(context).size;
@@ -37,16 +38,14 @@ class _CreateEventMapState extends State<CreateEventMap> {
     List<Discipline> disciplineList;
 
     void _onCreateEventButtonPressed(CreateEventState state) {
-      BlocProvider.of<CreateEventBloc>(context).add(
-        CreateEventButtonPressed(
-          eventName: _nameController.text, 
-          eventDescription: _descriptionController.text, 
-          eventDisciplineID: disciplineID,
-          eventPos: eventPos, 
-          eventStartDate: startDate,
-          eventEndDate: endDate,
-        )
-      );
+      BlocProvider.of<CreateEventBloc>(context).add(CreateEventButtonPressed(
+        eventName: _nameController.text,
+        eventDescription: _descriptionController.text,
+        eventDisciplineID: disciplineID,
+        eventPos: eventPos,
+        eventStartDate: startDate,
+        eventEndDate: endDate,
+      ));
       Navigator.pop(context);
     }
 
@@ -54,9 +53,9 @@ class _CreateEventMapState extends State<CreateEventMap> {
       if (_markers.isEmpty) {
         Scaffold.of(context).showSnackBar(
           SnackBar(
-            content: Text('Pick event location!'), 
-            backgroundColor: Colors.red
-          )
+            content: Text('Pick event location!'),
+            backgroundColor: Colors.red,
+          ),
         );
       } else {
         eventPos = _markers.first.position;
@@ -87,16 +86,22 @@ class _CreateEventMapState extends State<CreateEventMap> {
                       if (picked != null && picked != startDate) {
                         setState(() {
                           if (picked.isBefore(startDate)) {
-                            var difference = picked.difference(startDate).inDays;
-                            startDate = startDate.add(Duration(days: difference));
-                          }
-                          else {
-                            var difference = picked.difference(startDate).inDays + 1;
-                            startDate = startDate.add(Duration(days: difference));
+                            var difference =
+                                picked.difference(startDate).inDays;
+                            startDate = startDate.add(
+                              Duration(days: difference),
+                            );
+                          } else {
+                            var difference =
+                                picked.difference(startDate).inDays + 1;
+                            startDate = startDate.add(
+                              Duration(days: difference),
+                            );
                           }
                         });
                       }
-                    };
+                    }
+
                     Future<Null> _selectEndDate(BuildContext context) async {
                       final picked = await showDatePicker(
                         context: context,
@@ -109,9 +114,9 @@ class _CreateEventMapState extends State<CreateEventMap> {
                           if (picked.isBefore(endDate)) {
                             var difference = picked.difference(endDate).inDays;
                             endDate = endDate.add(Duration(days: difference));
-                          }
-                          else {
-                            var difference = picked.difference(endDate).inDays + 1;
+                          } else {
+                            var difference =
+                                picked.difference(endDate).inDays + 1;
                             endDate = endDate.add(Duration(days: difference));
                           }
                         });
@@ -123,20 +128,33 @@ class _CreateEventMapState extends State<CreateEventMap> {
                         context: context,
                         initialTime: TimeOfDay.fromDateTime(startDate),
                       );
-                      if(picked != null) {
+                      if (picked != null) {
                         setState(() {
-                          startDate = DateTime(startDate.year, startDate.month, startDate.day, picked.hour, picked.minute);
+                          startDate = DateTime(
+                            startDate.year,
+                            startDate.month,
+                            startDate.day,
+                            picked.hour,
+                            picked.minute,
+                          );
                         });
                       }
                     }
+
                     Future<Null> _selectEndTime(BuildContext context) async {
                       final picked = await showTimePicker(
                         context: context,
                         initialTime: TimeOfDay.fromDateTime(endDate),
                       );
-                      if(picked != null) {
+                      if (picked != null) {
                         setState(() {
-                          endDate = DateTime(endDate.year, endDate.month, endDate.day, picked.hour, picked.minute);
+                          endDate = DateTime(
+                            endDate.year,
+                            endDate.month,
+                            endDate.day,
+                            picked.hour,
+                            picked.minute,
+                          );
                         });
                       }
                     }
@@ -147,7 +165,9 @@ class _CreateEventMapState extends State<CreateEventMap> {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Padding(
-                            padding: EdgeInsets.only(top: 0 * screenSize.height),
+                            padding: EdgeInsets.only(
+                              top: 0 * screenSize.height,
+                            ),
                             child: Text(
                               'Event name',
                               style: TextStyle(
@@ -158,7 +178,9 @@ class _CreateEventMapState extends State<CreateEventMap> {
                             ),
                           ),
                           Padding(
-                            padding: EdgeInsets.only(top: 0.01 * screenSize.height),
+                            padding: EdgeInsets.only(
+                              top: 0.01 * screenSize.height,
+                            ),
                             child: SizedBox(
                               height: 30.0,
                               width: 0.80 * screenSize.width,
@@ -174,7 +196,11 @@ class _CreateEventMapState extends State<CreateEventMap> {
                                   ),
                                   fillColor: Colors.white,
                                   filled: true,
-                                  contentPadding: EdgeInsets.only(top: 12.0, left: 14.0, right: 10.0),
+                                  contentPadding: EdgeInsets.only(
+                                    top: 12.0,
+                                    left: 14.0,
+                                    right: 10.0,
+                                  ),
                                 ),
                                 keyboardType: TextInputType.text,
                                 controller: _nameController,
@@ -182,7 +208,9 @@ class _CreateEventMapState extends State<CreateEventMap> {
                             ),
                           ),
                           Padding(
-                            padding: EdgeInsets.only(top: 0.01 * screenSize.height),
+                            padding: EdgeInsets.only(
+                              top: 0.01 * screenSize.height,
+                            ),
                             child: Text(
                               'Description',
                               style: TextStyle(
@@ -190,10 +218,12 @@ class _CreateEventMapState extends State<CreateEventMap> {
                                 fontWeight: FontWeight.bold,
                                 color: Colors.black,
                               ),
-                            )
+                            ),
                           ),
                           Padding(
-                            padding: EdgeInsets.only(top: 0.01 * screenSize.height),
+                            padding: EdgeInsets.only(
+                              top: 0.01 * screenSize.height,
+                            ),
                             child: SizedBox(
                               height: 0.14 * screenSize.height,
                               width: 0.80 * screenSize.width,
@@ -209,7 +239,11 @@ class _CreateEventMapState extends State<CreateEventMap> {
                                   ),
                                   fillColor: Colors.white,
                                   filled: true,
-                                  contentPadding: EdgeInsets.only(top: 14.0, left: 10.0, right: 4.0),
+                                  contentPadding: EdgeInsets.only(
+                                    top: 14.0,
+                                    left: 10.0,
+                                    right: 4.0,
+                                  ),
                                 ),
                                 keyboardType: TextInputType.multiline,
                                 maxLines: null,
@@ -219,7 +253,9 @@ class _CreateEventMapState extends State<CreateEventMap> {
                             ),
                           ),
                           Padding(
-                            padding: EdgeInsets.only(top: 0.01 * screenSize.height),
+                            padding: EdgeInsets.only(
+                              top: 0.01 * screenSize.height,
+                            ),
                             child: Text(
                               'Discipline',
                               style: TextStyle(
@@ -227,20 +263,23 @@ class _CreateEventMapState extends State<CreateEventMap> {
                                 fontWeight: FontWeight.bold,
                                 color: Colors.black,
                               ),
-                            )
+                            ),
                           ),
                           Padding(
                             padding: EdgeInsets.only(
-                              top: 0.01 * screenSize.height, 
-                              left: 0.1 * screenSize.width, 
-                              right: 0.1 * screenSize.width
+                              top: 0.01 * screenSize.height,
+                              left: 0.1 * screenSize.width,
+                              right: 0.1 * screenSize.width,
                             ),
                             child: DropdownButton<String>(
                               isExpanded: true,
                               value: disciplineID,
                               hint: Text(
                                 'Select discipline',
-                                style: TextStyle(color: Color(0x883D3A3A), fontSize: 16),
+                                style: TextStyle(
+                                  color: Color(0x883D3A3A),
+                                  fontSize: 16,
+                                ),
                               ),
                               style: TextStyle(
                                 fontSize: 16,
@@ -259,10 +298,12 @@ class _CreateEventMapState extends State<CreateEventMap> {
                                   child: Text(discipline.name),
                                 );
                               }).toList(),
-                            )
+                            ),
                           ),
                           Padding(
-                            padding: EdgeInsets.only(top: 0.01 * screenSize.height),
+                            padding: EdgeInsets.only(
+                              top: 0.01 * screenSize.height,
+                            ),
                             child: Text(
                               'Start date',
                               style: TextStyle(
@@ -270,10 +311,12 @@ class _CreateEventMapState extends State<CreateEventMap> {
                                 fontWeight: FontWeight.bold,
                                 color: Colors.black,
                               ),
-                            )
+                            ),
                           ),
                           Padding(
-                            padding: EdgeInsets.only(top: 0.01 * screenSize.height),
+                            padding: EdgeInsets.only(
+                              top: 0.01 * screenSize.height,
+                            ),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.start,
                               children: [
@@ -283,7 +326,9 @@ class _CreateEventMapState extends State<CreateEventMap> {
                                     _selectStartDate(context);
                                   },
                                   child: Padding(
-                                    padding: EdgeInsets.all(0.006 * screenSize.height),
+                                    padding: EdgeInsets.all(
+                                      0.006 * screenSize.height,
+                                    ),
                                     child: Icon(
                                       Icons.event,
                                       size: 0.045 * screenSize.height,
@@ -307,7 +352,9 @@ class _CreateEventMapState extends State<CreateEventMap> {
                                     _selectStartTime(context);
                                   },
                                   child: Padding(
-                                    padding: EdgeInsets.all(0.006 * screenSize.height),
+                                    padding: EdgeInsets.all(
+                                      0.006 * screenSize.height,
+                                    ),
                                     child: Icon(
                                       Icons.schedule,
                                       size: 0.045 * screenSize.height,
@@ -325,11 +372,13 @@ class _CreateEventMapState extends State<CreateEventMap> {
                                     color: Colors.black,
                                   ),
                                 ),
-                              ]
-                            )
+                              ],
+                            ),
                           ),
                           Padding(
-                            padding: EdgeInsets.only(top: 0.01 * screenSize.height),
+                            padding: EdgeInsets.only(
+                              top: 0.01 * screenSize.height,
+                            ),
                             child: Text(
                               'End date',
                               style: TextStyle(
@@ -337,10 +386,12 @@ class _CreateEventMapState extends State<CreateEventMap> {
                                 fontWeight: FontWeight.bold,
                                 color: Colors.black,
                               ),
-                            )
+                            ),
                           ),
                           Padding(
-                            padding: EdgeInsets.only(top: 0.01 * screenSize.height),
+                            padding: EdgeInsets.only(
+                              top: 0.01 * screenSize.height,
+                            ),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.start,
                               children: [
@@ -350,7 +401,8 @@ class _CreateEventMapState extends State<CreateEventMap> {
                                     _selectEndDate(context);
                                   },
                                   child: Padding(
-                                    padding: EdgeInsets.all(0.006 * screenSize.height),
+                                    padding: EdgeInsets.all(
+                                        0.006 * screenSize.height),
                                     child: Icon(
                                       Icons.event,
                                       size: 0.045 * screenSize.height,
@@ -374,7 +426,9 @@ class _CreateEventMapState extends State<CreateEventMap> {
                                     _selectEndTime(context);
                                   },
                                   child: Padding(
-                                    padding: EdgeInsets.all(0.006 * screenSize.height),
+                                    padding: EdgeInsets.all(
+                                      0.006 * screenSize.height,
+                                    ),
                                     child: Icon(
                                       Icons.schedule,
                                       size: 0.045 * screenSize.height,
@@ -392,23 +446,30 @@ class _CreateEventMapState extends State<CreateEventMap> {
                                     color: Colors.black,
                                   ),
                                 ),
-                              ]
-                            )
+                              ],
+                            ),
                           ),
                           Padding(
-                            padding: EdgeInsets.only(top: 0.02 * screenSize.height),
+                            padding: EdgeInsets.only(
+                              top: 0.02 * screenSize.height,
+                            ),
                             child: ButtonTheme(
                               height: 40,
                               minWidth: 0.44 * screenSize.width,
                               child: FlatButton(
-                                onPressed: () => _onCreateEventButtonPressed(state),
+                                onPressed: () =>
+                                    _onCreateEventButtonPressed(state),
                                 color: Color(0xFF5EC374),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(20.0),
                                 ),
                                 child: Text(
                                   'CREATE',
-                                  style: TextStyle(color: Color(0xFFFFFFFF), fontSize: 22, fontWeight: FontWeight.bold),
+                                  style: TextStyle(
+                                    color: Color(0xFFFFFFFF),
+                                    fontSize: 22,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 ),
                               ),
                             ),
@@ -430,9 +491,9 @@ class _CreateEventMapState extends State<CreateEventMap> {
         if (state is CreateEventFailure) {
           Scaffold.of(context).showSnackBar(
             SnackBar(
-              content: Text('${state.error}'), 
-              backgroundColor: Colors.red
-            )
+              content: Text('${state.error}'),
+              backgroundColor: Colors.red,
+            ),
           );
         }
         if (state is CreateEventCreated) {
@@ -441,19 +502,17 @@ class _CreateEventMapState extends State<CreateEventMap> {
       },
       child: BlocBuilder<CreateEventBloc, CreateEventState>(
         builder: (context, state) {
-          eventRepository.getDisciplines().then(
-            (list) {
-              disciplineList = list;
-            }
-          );
+          eventRepository.getDisciplines().then((list) {
+            disciplineList = list;
+          });
           return Stack(
             overflow: Overflow.visible,
             children: [
-              StatefulBuilder(
-                builder: (context, setState) {
-                  return GoogleMap(
+              StatefulBuilder(builder: (context, setState) {
+                return GoogleMap(
                     markers: _markers,
-                    initialCameraPosition: CameraPosition(target: LatLng(52.4064, 16.9252), zoom: 14),
+                    initialCameraPosition: CameraPosition(
+                        target: LatLng(52.4064, 16.9252), zoom: 14),
                     mapType: MapType.normal,
                     mapToolbarEnabled: false,
                     zoomControlsEnabled: false,
@@ -464,17 +523,13 @@ class _CreateEventMapState extends State<CreateEventMap> {
                     onTap: (LatLng point) {
                       setState(() {
                         _markers.clear();
-                        _markers.add(
-                          Marker(
-                            markerId: MarkerId('pickedPos'),
-                            position: point,
-                          )
-                        );
+                        _markers.add(Marker(
+                          markerId: MarkerId('pickedPos'),
+                          position: point,
+                        ));
                       });
-                    }
-                  );
-                }
-              ),
+                    });
+              }),
               Positioned.fill(
                 bottom: 0.05 * screenSize.height,
                 child: Align(
@@ -489,7 +544,11 @@ class _CreateEventMapState extends State<CreateEventMap> {
                       ),
                       child: Text(
                         'CREATE EVENT',
-                        style: TextStyle(color: Color(0xFFFFFFFF), fontSize: 18, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                          color: Color(0xFFFFFFFF),
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
                   ),
@@ -503,16 +562,23 @@ class _CreateEventMapState extends State<CreateEventMap> {
                     width: screenSize.width,
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        colors: [Color(0xFF5EC374), Color(0xFF5EC374), Color(0x005EC374)]
-                      ),
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [
+                            Color(0xFF5EC374),
+                            Color(0xFF5EC374),
+                            Color(0x005EC374)
+                          ]),
                     ),
                     child: Align(
                       alignment: Alignment.center,
                       child: Text(
                         'Tap on map to choose location',
-                        style: TextStyle(color: Color(0xFFFFFFFF), fontSize: 18, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                          color: Color(0xFFFFFFFF),
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
                   ),
@@ -520,8 +586,8 @@ class _CreateEventMapState extends State<CreateEventMap> {
               ),
             ],
           );
-        }
-      )
+        },
+      ),
     );
   }
 }
