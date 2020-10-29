@@ -39,12 +39,7 @@ class AuthenticatedApiClient {
           body: json.encode(body),
         );
       } on SocketException {
-        await showDialog(
-          context: navigatorKey.currentContext,
-          builder: (BuildContext context) {
-            return _buildConnectionAlert(context);
-          },
-        );
+        await showConnectionDialog();
       }
     }
 
@@ -62,12 +57,7 @@ class AuthenticatedApiClient {
           headers: getHeaders(token, headers),
         );
       } on SocketException {
-        await showDialog(
-          context: navigatorKey.currentContext,
-          builder: (BuildContext context) {
-            return _buildConnectionAlert(context);
-          },
-        );
+        await showConnectionDialog();
       }
     }
 
@@ -85,12 +75,7 @@ class AuthenticatedApiClient {
           headers: getHeaders(token, headers),
         );
       } on SocketException {
-        await showDialog(
-          context: navigatorKey.currentContext,
-          builder: (BuildContext context) {
-            return _buildConnectionAlert(context);
-          },
-        );
+        await showConnectionDialog();
       }
     }
 
@@ -110,16 +95,20 @@ class AuthenticatedApiClient {
           body: json.encode(body),
         );
       } on SocketException {
-        await showDialog(
-          context: navigatorKey.currentContext,
-          builder: (BuildContext context) {
-            return _buildConnectionAlert(context);
-          },
-        );
+        await showConnectionDialog();
       }
     }
 
     return response;
+  }
+
+  void showConnectionDialog() async {
+    await showDialog(
+      context: navigatorKey.currentContext,
+      builder: (BuildContext context) {
+        return _buildConnectionAlert(context);
+      },
+    );
   }
 
   Widget _buildConnectionAlert(BuildContext context) {
