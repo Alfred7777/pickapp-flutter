@@ -4,6 +4,7 @@ A new Flutter application.
 
 ## iOS
 `$ cd ios && pod install`
+
 `$ flutter run`
 
 ## Getting Started
