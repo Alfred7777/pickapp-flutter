@@ -76,7 +76,7 @@ class EventRepository {
         'is_participant': details['is_participating?'],
       };
     } else {
-      throw Exception('Event not found in database');
+      throw Exception('We cannot show you this event right now. Please try again later.');
     }
   }
 
@@ -152,29 +152,17 @@ class EventRepository {
     }
   }
 
-  Future<Map<DateTime, List<Event>>> getMyEvents() async {
-    Event mapDetailsToEvent(Map<String, dynamic> details) {
-      return Event(
-        details['id'],
-        details['name'],
-        details['description'],
-        details['discipline_id'],
-        DateTime.fromMillisecondsSinceEpoch(details['start_datetime_ms']),
-        DateTime.fromMillisecondsSinceEpoch(details['end_datetime_ms']),
-      );
-    }
-
+  Future<Map<DateTime, List<Event>>> getMyEvents(String eventsType) async {
     final client = AuthenticatedApiClient();
-    final url = 'my_events';
+    final url = 'user_dashboard/${eventsType}_events';
 
     var response = await client.get(url);
 
     if (response.statusCode == 200) {
       List<Event> eventList = json
           .decode(response.body)
-          .map<Event>((event) => mapDetailsToEvent(event))
+          .map<Event>((event) => Event.fromJson(event))
           .toList();
-      eventList.sort((e1, e2) => e1.startDate.compareTo(e2.startDate));
       return groupBy(
           eventList,
           (event) => DateTime(event.startDate.year, event.startDate.month,
@@ -229,4 +217,15 @@ class Event {
     this.startDate,
     this.endDate,
   );
+
+  factory Event.fromJson(Map<String, dynamic> json) {
+    return Event(
+      json['id'],
+      json['name'],
+      json['description'],
+      json['discipline_id'],
+      DateTime.fromMillisecondsSinceEpoch(json['start_datetime_ms']),
+      DateTime.fromMillisecondsSinceEpoch(json['end_datetime_ms']),
+    );
+  }
 }

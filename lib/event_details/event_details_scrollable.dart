@@ -36,24 +36,60 @@ class EventDetailsScrollableState extends State<EventDetailsScrollable> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<EventDetailsBloc, EventDetailsState>(
+    return BlocListener(
       bloc: _eventDetailsBloc,
-      builder: (context, state) {
-        if (state is EventDetailsUninitialized) {
-          _eventDetailsBloc.add(FetchEventDetails(eventID: eventID));
+      listener: (context, state) {
+        if (state is EventDetailsFailure) {
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return _buildFailureAlert(context, state.error);
+            },
+          );
         }
-        if (state is EventDetailsReady) {
-          return _buildEventDetails(
-              false, state.eventDetails, state.participantsList);
-        }
-        if (state is EventDetailsJoined) {
-          return _buildEventDetails(
-              true, state.eventDetails, state.participantsList);
-        }
-        return Center(
-          child: CircularProgressIndicator(),
-        );
       },
+      child: BlocBuilder<EventDetailsBloc, EventDetailsState>(
+        bloc: _eventDetailsBloc,
+        builder: (context, state) {
+          if (state is EventDetailsUninitialized) {
+            _eventDetailsBloc.add(FetchEventDetails(eventID: eventID));
+          }
+          if (state is EventDetailsUnjoined) {
+            return _buildEventDetails(
+                false, state.eventDetails, state.participantsList);
+          }
+          if (state is EventDetailsJoined) {
+            return _buildEventDetails(
+                true, state.eventDetails, state.participantsList);
+          }
+          return Center(
+            child: CircularProgressIndicator(),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildFailureAlert(BuildContext context, String errorMessage) {
+    return AlertDialog(
+      title: Text('An Error Occured!'),
+      content: Text(errorMessage),
+      actions: [
+        FlatButton(
+          child: Text('Try Again'),
+          onPressed: () {
+            Navigator.of(context).pop();
+            _eventDetailsBloc.add(EventDetailsFetchFailure(eventID: eventID));
+          },
+        ),
+        FlatButton(
+          child: Text('Go Back'),
+          onPressed: () {
+            Navigator.of(context).pop();
+            Navigator.of(context).pop();
+          },
+        ),
+      ],
     );
   }
 

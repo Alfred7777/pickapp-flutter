@@ -15,12 +15,12 @@ class EventDetailsUninitialized extends EventDetailsState {
   const EventDetailsUninitialized({@required this.eventID});
 }
 
-class EventDetailsReady extends EventDetailsState {
+class EventDetailsUnjoined extends EventDetailsState {
   final String eventID;
   final Map<String, dynamic> eventDetails;
   final List<User> participantsList;
 
-  const EventDetailsReady({
+  const EventDetailsUnjoined({
     @required this.eventID,
     @required this.eventDetails,
     @required this.participantsList,
@@ -37,4 +37,10 @@ class EventDetailsJoined extends EventDetailsState {
     @required this.eventDetails,
     @required this.participantsList,
   });
+}
+
+class EventDetailsFailure extends EventDetailsState {
+  final String error;
+
+  const EventDetailsFailure({@required this.error});
 }
