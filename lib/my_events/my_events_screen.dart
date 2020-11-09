@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:PickApp/widgets/top_bar.dart';
 import 'package:PickApp/repositories/eventRepository.dart';
 import 'package:PickApp/event_details/event_details_screen.dart';
+import 'package:PickApp/widgets/event_location_screen.dart';
 import 'my_events_bloc.dart';
 import 'my_events_state.dart';
 import 'my_events_event.dart';
@@ -83,7 +84,8 @@ class MyEventsScreenState extends State<MyEventsScreen> {
                 decoration: BoxDecoration(
                   image: DecorationImage(
                     image: AssetImage(
-                        'assets/images/event_icon/${event.disciplineID}.png'),
+                      'assets/images/event_icon/${event.disciplineID}.png',
+                    ),
                     fit: BoxFit.cover,
                   ),
                 ),
@@ -100,6 +102,24 @@ class MyEventsScreenState extends State<MyEventsScreen> {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
+              ),
+            ),
+            Container(
+              height: 0.06 * screenSize.height,
+              width: 0.09 * screenSize.height,
+              child: MaterialButton(
+                onPressed: () {
+                  var route = MaterialPageRoute<void>(
+                    builder: (context) => EventLocationScreen(event: event),
+                  );
+                  Navigator.push(context, route);
+                },
+                color: Color(0xFF7FBCF1),
+                child: Icon(
+                  Icons.place,
+                  size: 24,
+                ),
+                shape: CircleBorder(),
               ),
             ),
             Container(
@@ -121,6 +141,7 @@ class MyEventsScreenState extends State<MyEventsScreen> {
                 ),
               ),
             ),
+            
           ],
         ),
       ),
