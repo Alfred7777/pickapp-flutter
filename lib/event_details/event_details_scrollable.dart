@@ -2,6 +2,7 @@ import 'package:PickApp/event_details/event_details_bloc.dart';
 import 'package:PickApp/event_details/event_details_event.dart';
 import 'package:PickApp/event_details/event_details_state.dart';
 import 'package:PickApp/profile/profile_screen.dart';
+import 'package:PickApp/event_invitation/event_invitation_screen.dart';
 import 'package:PickApp/repositories/eventRepository.dart';
 import 'package:PickApp/repositories/userRepository.dart';
 import 'package:flutter/material.dart';
@@ -331,8 +332,36 @@ class EventDetailsScrollableState extends State<EventDetailsScrollable> {
             ],
           ),
           Row(
-            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              Column(
+                children: [
+                  MaterialButton(
+                    onPressed: () {},
+                    color: Color(0xFF7FBCF1),
+                    child: Icon(
+                      Icons.add_alert,
+                      size: 34,
+                    ),
+                    padding: EdgeInsets.all(8),
+                    shape: CircleBorder(),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.only(top: 1.0, bottom: 6.0),
+                    child: Text(
+                      'Follow',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 12,
+                        fontWeight: FontWeight.normal,
+                        fontFamily: 'Montserrat',
+                      ),
+                    ),
+                  ),
+                ],
+              ),
               ButtonTheme(
                 height: 40,
                 minWidth: 0.34 * screenSize.width,
@@ -380,7 +409,39 @@ class EventDetailsScrollableState extends State<EventDetailsScrollable> {
                           ),
                         ),
                 ),
-              )
+              ),
+              Column(
+                children: [
+                  MaterialButton(
+                    onPressed: () {
+                      var route = MaterialPageRoute<void>(
+                        builder: (context) =>
+                            EventInvitationScreen(eventID: eventID),
+                      );
+                      Navigator.push(context, route);
+                    },
+                    color: Color(0xFF7FBCF1),
+                    child: Icon(
+                      Icons.person_add,
+                      size: 34,
+                    ),
+                    padding: EdgeInsets.all(8),
+                    shape: CircleBorder(),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.only(top: 1.0, bottom: 6.0),
+                    child: Text(
+                      'Invite',
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 12,
+                        fontWeight: FontWeight.normal,
+                        fontFamily: 'Montserrat',
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ],
           ),
           Align(

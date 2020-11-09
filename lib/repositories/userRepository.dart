@@ -1,4 +1,5 @@
 import 'package:PickApp/client.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:meta/meta.dart';
 import 'package:http/http.dart';
 import 'dart:convert';
@@ -20,6 +21,23 @@ class UserRepository {
       return response.body;
     } else {
       throw Exception();
+    }
+  }
+
+  Future<List<User>> searchUser(String searchPhrase) async {
+    final client = AuthenticatedApiClient();
+    final url = 'profile/search?phrase=${searchPhrase}';
+
+    var response = await client.get(url);
+
+    if (response.statusCode == 200) {
+      return json
+          .decode(response.body)
+          .map<User>((user) => User.fromJson(user))
+          .toList();
+    } else {
+      throw Exception(
+          'We cannot show you search results right now. Please try again later.');
     }
   }
 
@@ -79,6 +97,15 @@ class User extends Equatable {
   final String userID;
 
   User({this.uniqueUsername, this.name, this.bio, this.userID});
+
+  factory User.fromJson(Map<String, dynamic> json) {
+    return User(
+      bio: json['bio'],
+      name: json['name'],
+      uniqueUsername: json['unique_username'],
+      userID: json['user_id'],
+    );
+  }
 
   @override
   List<Object> get props => [name, uniqueUsername, bio];

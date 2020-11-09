@@ -126,16 +126,23 @@ class EventRepository {
     }
   }
 
-  Future<List<User>> getParticipants(String eventID) async {
-    User mapParticipantToProfile(Map<String, dynamic> participant) {
-      return User(
-        bio: participant['bio'],
-        name: participant['name'],
-        uniqueUsername: participant['unique_username'],
-        userID: participant['user_id'],
-      );
-    }
+  Future<String> inviteToEvent(String eventID, String inviteeID) async {
+    final client = AuthenticatedApiClient();
+    final url = 'events/$eventID/invite';
+    var body = {
+      'invitee_id': '$inviteeID',
+    };
 
+    var response = await client.post(url, body: body);
+
+    if (response.statusCode == 201) {
+      return 'Successfully invited user to event.';
+    } else {
+      return json.decode(response.body)['message'];
+    }
+  }
+
+  Future<List<User>> getParticipants(String eventID) async {
     final client = AuthenticatedApiClient();
     final url = 'events/$eventID/participants';
 
@@ -144,7 +151,7 @@ class EventRepository {
     if (response.statusCode == 200) {
       return json
           .decode(response.body)
-          .map<User>((participant) => mapParticipantToProfile(participant))
+          .map<User>((participant) => User.fromJson(participant))
           .toList();
     } else {
       return [];
