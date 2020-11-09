@@ -14,7 +14,6 @@ class EventRepository {
     @required DateTime startDate,
     @required DateTime endDate,
   }) async {
-    var userID = '30046e37-9187-45de-82f2-8964004b119c';
     var startDatetime = startDate.toUtc().millisecondsSinceEpoch;
     var endDatetime = endDate.toUtc().millisecondsSinceEpoch;
     var lat = pos.latitude;
@@ -28,7 +27,6 @@ class EventRepository {
       'end_datetime_ms': endDatetime,
       'lat': lat,
       'lon': lon,
-      'organiser_id': '$userID',
       'discipline_id': '$disciplineID'
     };
 
