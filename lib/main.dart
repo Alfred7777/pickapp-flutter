@@ -10,6 +10,7 @@ import 'package:PickApp/widgets/loading_screen.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 final storage = FlutterSecureStorage();
+final navigatorKey = GlobalKey<NavigatorState>();
 
 void main() {
   final userRepository = UserRepository();
@@ -43,6 +44,7 @@ class MyApp extends StatelessWidget {
           primarySwatch: Colors.green,
         ),
         title: 'PickApp',
+        navigatorKey: navigatorKey,
         home: BlocBuilder<AuthenticationBloc, AuthenticationState>(
           builder: (context, state) {
             if (state is AuthenticationUninitialized) {
