@@ -76,7 +76,8 @@ class EventRepository {
         'is_participant': details['is_participating?'],
       };
     } else {
-      throw Exception('We cannot show you this event right now. Please try again later.');
+      throw Exception(
+          'We cannot show you this event right now. Please try again later.');
     }
   }
 
@@ -206,6 +207,7 @@ class Event {
   final String name;
   final String description;
   final String disciplineID;
+  final LatLng pos;
   final DateTime startDate;
   final DateTime endDate;
 
@@ -214,16 +216,19 @@ class Event {
     this.name,
     this.description,
     this.disciplineID,
+    this.pos,
     this.startDate,
     this.endDate,
   );
 
   factory Event.fromJson(Map<String, dynamic> json) {
+    print(json);
     return Event(
       json['id'],
       json['name'],
       json['description'],
       json['discipline_id'],
+      LatLng(json['lat'], json['lon']),
       DateTime.fromMillisecondsSinceEpoch(json['start_datetime_ms']),
       DateTime.fromMillisecondsSinceEpoch(json['end_datetime_ms']),
     );
