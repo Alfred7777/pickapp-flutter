@@ -1,3 +1,4 @@
+import 'package:PickApp/widgets/loading_screen.dart';
 import 'package:intl/intl.dart';
 import 'package:PickApp/widgets/top_bar.dart';
 import 'package:PickApp/repositories/eventRepository.dart';
@@ -28,19 +29,30 @@ class MyEventsScreenState extends State<MyEventsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<MyEventsBloc, MyEventsState>(
+    return BlocListener<MyEventsBloc, MyEventsState>(
       bloc: _myEventsBloc,
-      builder: (context, state) {
-        if (state is MyEventsUninitialized) {
-          _myEventsBloc.add(FetchMyEvents());
+      listener: (context, state) {
+        if (state is MyEventsFailure) {
+          Scaffold.of(context).showSnackBar(
+            SnackBar(
+              content: Text('${state.error}'),
+              backgroundColor: Colors.red,
+            ),
+          );
         }
-        if (state is MyEventsReady) {
-          return _buildMyEvents(state.myEvents);
-        }
-        return Center(
-          child: CircularProgressIndicator(),
-        );
       },
+      child: BlocBuilder<MyEventsBloc, MyEventsState>(
+        bloc: _myEventsBloc,
+        builder: (context, state) {
+          if (state is MyEventsUninitialized) {
+            _myEventsBloc.add(FetchMyEvents());
+          }
+          if (state is MyEventsReady) {
+            return _buildMyEvents(state.myActiveEvents, state.myPastEvents);
+          }
+          return LoadingScreen();
+        },
+      ),
     );
   }
 
@@ -156,12 +168,25 @@ class MyEventsScreenState extends State<MyEventsScreen> {
     );
   }
 
-  Widget _buildMyEvents(Map<DateTime, List<Event>> myEvents) {
+  Widget _buildEventList(Map<DateTime, List<Event>> events) {
+    return ListView.builder(
+      shrinkWrap: true,
+      itemCount: events.length,
+      itemBuilder: (BuildContext context, int index) {
+        var date = events.keys.elementAt(index);
+        return _buildEventDayList(date, events[date]);
+      },
+    );
+  }
+
+  Widget _buildMyEvents(Map<DateTime, List<Event>> myEvents,
+      Map<DateTime, List<Event>> myPastEvents) {
     var screenSize = MediaQuery.of(context).size;
-    return Scaffold(
-      appBar: mainScreenTopBar(context),
-      body: SafeArea(
-        child: SingleChildScrollView(
+    return DefaultTabController(
+      length: 2,
+      child: Scaffold(
+        appBar: mainScreenTopBar(context),
+        body: SafeArea(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -173,30 +198,41 @@ class MyEventsScreenState extends State<MyEventsScreen> {
                     bottom: BorderSide(color: Colors.black45, width: 0.3),
                   ),
                 ),
-                child: Padding(
-                  padding: EdgeInsets.only(
-                    left: 0.04 * screenSize.width,
-                    top: 0.014 * screenSize.height,
-                    bottom: 0.018 * screenSize.height,
+                child: TabBar(
+                  labelColor: Colors.grey[700],
+                  labelStyle: TextStyle(
+                    fontSize: 0.04 * screenSize.width,
+                    fontWeight: FontWeight.bold,
                   ),
-                  child: Text(
-                    'My Events',
-                    style: TextStyle(
-                      color: Color(0xFF3D3A3A),
-                      fontSize: 0.04 * screenSize.height,
-                      fontWeight: FontWeight.bold,
+                  unselectedLabelStyle: TextStyle(
+                    fontSize: 0.04 * screenSize.width,
+                    fontWeight: FontWeight.normal,
+                  ),
+                  tabs: [
+                    Tab(
+                      text: 'Current Events',
+                      icon: Icon(
+                        Icons.event_note,
+                      ),
+                      iconMargin: EdgeInsets.zero,
                     ),
-                  ),
+                    Tab(
+                      text: 'Past Events',
+                      icon: Icon(
+                        Icons.history,
+                      ),
+                      iconMargin: EdgeInsets.zero,
+                    ),
+                  ],
                 ),
               ),
-              ListView.builder(
-                shrinkWrap: true,
-                physics: NeverScrollableScrollPhysics(),
-                itemCount: myEvents.length,
-                itemBuilder: (BuildContext context, int index) {
-                  var date = myEvents.keys.elementAt(index);
-                  return _buildEventDayList(date, myEvents[date]);
-                },
+              Expanded(
+                child: TabBarView(
+                  children: [
+                    _buildEventList(myEvents),
+                    _buildEventList(myPastEvents),
+                  ],
+                ),
               ),
             ],
           ),

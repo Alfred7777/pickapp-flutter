@@ -20,23 +20,26 @@ class EventDetailsBloc extends Bloc<EventDetailsEvent, EventDetailsState> {
   @override
   Stream<EventDetailsState> mapEventToState(EventDetailsEvent event) async* {
     if (event is FetchEventDetails) {
-      var eventDetails = await eventRepository.getEventDetails(event.eventID);
-      var participantsList = await eventRepository.getParticipants(
-        event.eventID,
-      );
-
-      if (eventDetails['is_participant']) {
-        yield EventDetailsJoined(
-          eventID: event.eventID,
-          eventDetails: eventDetails,
-          participantsList: participantsList,
+      try {
+        var eventDetails = await eventRepository.getEventDetails(event.eventID);
+        var participantsList = await eventRepository.getParticipants(
+          event.eventID,
         );
-      } else {
-        yield EventDetailsReady(
-          eventID: event.eventID,
-          eventDetails: eventDetails,
-          participantsList: participantsList,
-        );
+        if (eventDetails['is_participant']) {
+          yield EventDetailsJoined(
+            eventID: event.eventID,
+            eventDetails: eventDetails,
+            participantsList: participantsList,
+          );
+        } else {
+          yield EventDetailsUnjoined(
+            eventID: event.eventID,
+            eventDetails: eventDetails,
+            participantsList: participantsList,
+          );
+        }
+      } catch (error) {
+        yield EventDetailsFailure(error: error.message);
       }
     }
     if (event is JoinEvent) {
@@ -53,12 +56,15 @@ class EventDetailsBloc extends Bloc<EventDetailsEvent, EventDetailsState> {
           participantsList: participantsList,
         );
       } else {
-        yield EventDetailsReady(
+        yield EventDetailsUnjoined(
           eventID: event.eventID,
           eventDetails: eventDetails,
           participantsList: participantsList,
         );
       }
+    }
+    if (event is EventDetailsFetchFailure) {
+      yield EventDetailsUninitialized(eventID: event.eventID);
     }
   }
 }

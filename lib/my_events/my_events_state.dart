@@ -12,10 +12,23 @@ class MyEventsState extends Equatable {
 class MyEventsUninitialized extends MyEventsState {}
 
 class MyEventsReady extends MyEventsState {
-  final Map<DateTime, List<Event>> myEvents;
+  final Map<DateTime, List<Event>> myActiveEvents;
+  final Map<DateTime, List<Event>> myPastEvents;
 
-  const MyEventsReady({@required this.myEvents});
+  const MyEventsReady({
+    @required this.myActiveEvents,
+    @required this.myPastEvents,
+  });
 
   @override
-  List<Object> get props => [myEvents];
+  List<Object> get props => [myActiveEvents, myPastEvents];
+}
+
+class MyEventsFailure extends MyEventsState {
+  final String error;
+
+  const MyEventsFailure({@required this.error});
+
+  @override
+  List<Object> get props => [error];
 }
