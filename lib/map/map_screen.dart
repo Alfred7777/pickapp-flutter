@@ -73,6 +73,7 @@ class MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
               mapType: MapType.normal,
               markers: mapLocationsToMarkers(state, context),
               mapToolbarEnabled: false,
+              myLocationButtonEnabled: false,
               zoomControlsEnabled: false,
               initialCameraPosition: _kPoznan,
               onMapCreated: (GoogleMapController controller) {
@@ -93,40 +94,42 @@ class MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
   }
 
   Set<Marker> mapLocationsToMarkers(state, context) {
-    return state.locations.map<Marker>(
-      (location) => Marker(
-        markerId: MarkerId(location.id),
-        position: LatLng(location.lat, location.lon),
-        icon: state.icons[location.disciplineID],
-        onTap: () {
-          eventRepository.getEventDetails(location.id).then(
-            (details) {
-              showDialog(
-                context: context,
-                builder: (BuildContext context) {
-                  var screenSize = MediaQuery.of(context).size;
-                  return Padding(
-                    padding: EdgeInsets.only(
-                      top: 0.12 * screenSize.height,
-                      bottom: 0.02 * screenSize.height,
-                      left: 0.02 * screenSize.width,
-                      right: 0.02 * screenSize.width,
-                    ),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(32.0),
-                      child: Material(
-                        color: Color(0xFFF3F3F3),
-                        child: EventDetailsScrollable(eventID: location.id),
-                      ),
-                    ),
+    return state.locations
+        .map<Marker>(
+          (location) => Marker(
+            markerId: MarkerId(location.id),
+            position: LatLng(location.lat, location.lon),
+            icon: state.icons[location.disciplineID],
+            onTap: () {
+              eventRepository.getEventDetails(location.id).then(
+                (details) {
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      var screenSize = MediaQuery.of(context).size;
+                      return Padding(
+                        padding: EdgeInsets.only(
+                          top: 0.12 * screenSize.height,
+                          bottom: 0.02 * screenSize.height,
+                          left: 0.02 * screenSize.width,
+                          right: 0.02 * screenSize.width,
+                        ),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(32.0),
+                          child: Material(
+                            color: Color(0xFFF3F3F3),
+                            child: EventDetailsScrollable(eventID: location.id),
+                          ),
+                        ),
+                      );
+                    },
                   );
                 },
               );
             },
-          );
-        },
-      ),
-    ).toSet();
+          ),
+        )
+        .toSet();
   }
 
   void _buildAddEventMenu() {
