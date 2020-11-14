@@ -13,7 +13,7 @@ void main() async {
   var _eventRepositoryMock = MockEventRepository();
 
   var _discipline =
-      Discipline('b5c6e905-6b06-4c92-8c4f-5abc8dd44bfa', 'Basketball');
+      Discipline('04aa25eb-5f6e-47fd-b6a8-92cf9ef0bee6', 'Basketball');
 
   var _location = Location(
     id: 'id',
