@@ -98,3 +98,21 @@ AppBar sideScreenTopBar(BuildContext context) {
     ),
   );
 }
+
+AppBar editEventScreenTopBar(BuildContext context) {
+  return AppBar(
+    backgroundColor: Colors.transparent,
+    elevation: 0,
+    brightness: Brightness.light,
+    leading: IconButton(
+      iconSize: 34.0,
+      icon: Icon(
+        Icons.arrow_back,
+        color: Colors.black,
+      ),
+      onPressed: () {
+        Navigator.pop(context);
+      },
+    ),
+  );
+}

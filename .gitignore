@@ -41,3 +41,6 @@ lib/generated_plugin_registrant.dart
 *~
 \#*\#
 .\#*
+
+# iOS
+/ios/build

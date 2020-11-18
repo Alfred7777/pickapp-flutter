@@ -38,6 +38,58 @@ class EventRepository {
     }
   }
 
+  // For sure this could be improved ;)
+  String beautifyErrorResponse(String responseBody) {
+    var errors = Map<String, dynamic>.from(json.decode(responseBody)['errors']);
+    var error_formatted = '';
+
+    errors.forEach((key, value) {
+      error_formatted = error_formatted +
+          key.toString() +
+          ' ' +
+          value.toString().replaceAll('[', '').replaceAll(']', '') +
+          ' ' +
+          '\n';
+    });
+
+    return error_formatted;
+  }
+
+  Future<String> updateEvent({
+    final String name,
+    final String description,
+    final String disciplineID,
+    final String eventID,
+    final DateTime startDate,
+    final DateTime endDate,
+  }) async {
+    var startDatetime = startDate?.toUtc()?.millisecondsSinceEpoch;
+    var endDatetime = endDate?.toUtc()?.millisecondsSinceEpoch;
+    var client = AuthenticatedApiClient();
+
+    var new_details = {
+      'name': '$name',
+      'description': '$description',
+      'start_datetime_ms': startDatetime,
+      'end_datetime_ms': endDatetime,
+      'discipline_id': '$disciplineID',
+    };
+
+    new_details.removeWhere(
+        (key, value) => key == null || value == null || value == 'null');
+
+    var body = {
+      'new_details': new_details,
+    };
+
+    var response = await client.post('events/$eventID/edit', body: body);
+    if (response.statusCode == 201) {
+      return 'Event updated';
+    } else {
+      throw Exception(beautifyErrorResponse(response.body));
+    }
+  }
+
   Future<Set<Location>> getMap() async {
     final client = AuthenticatedApiClient();
     final url = 'map';
@@ -160,6 +212,7 @@ class EventRepository {
 
   Future<Map<DateTime, List<Event>>> getMyEvents(String eventsType) async {
     final client = AuthenticatedApiClient();
+
     final url = 'user_dashboard/${eventsType}_events';
 
     var response = await client.get(url);
