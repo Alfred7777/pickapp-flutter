@@ -16,6 +16,8 @@ class CreateEventButtonPressed extends CreateEventEvent {
   final LatLng eventPos;
   final DateTime eventStartDate;
   final DateTime eventEndDate;
+  final bool allowInvitations;
+  final bool requireParticipationAcceptation;
 
   const CreateEventButtonPressed({
     @required this.eventName,
@@ -24,6 +26,8 @@ class CreateEventButtonPressed extends CreateEventEvent {
     @required this.eventPos,
     @required this.eventStartDate,
     @required this.eventEndDate,
+    @required this.allowInvitations,
+    @required this.requireParticipationAcceptation,
   });
 
   @override
@@ -34,5 +38,7 @@ class CreateEventButtonPressed extends CreateEventEvent {
         eventPos,
         eventStartDate,
         eventEndDate,
+        allowInvitations,
+        requireParticipationAcceptation,
       ];
 }

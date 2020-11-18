@@ -305,6 +305,54 @@ class _CreateEventMapState extends State<CreateEventMap> {
                               top: 0.01 * screenSize.height,
                             ),
                             child: Text(
+                              'Privacy',
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black,
+                              ),
+                            ),
+                          ),
+                          Padding(
+                            padding: EdgeInsets.only(
+                              top: 0.01 * screenSize.height,
+                              left: 0.1 * screenSize.width,
+                              right: 0.1 * screenSize.width,
+                            ),
+                            child: DropdownButton<String>(
+                              isExpanded: true,
+                              value: eventPrivacySettings,
+                              hint: Text(
+                                'Event privacy settings',
+                                style: TextStyle(
+                                  color: Color(0x883D3A3A),
+                                  fontSize: 16,
+                                ),
+                              ),
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black,
+                              ),
+                              onChanged: (String newValue) {
+                                FocusScope.of(context).unfocus();
+                                setState(() {
+                                  disciplineID = newValue;
+                                });
+                              },
+                              items: eventPrivacySettings.map((privacyRule) {
+                                return DropdownMenuItem<String>(
+                                  value: privacyRule.id,
+                                  child: Text(privacyRule.name),
+                                );
+                              }).toList(),
+                            ),
+                          ),
+                          Padding(
+                            padding: EdgeInsets.only(
+                              top: 0.01 * screenSize.height,
+                            ),
+                            child: Text(
                               'Start date',
                               style: TextStyle(
                                 fontSize: 20,

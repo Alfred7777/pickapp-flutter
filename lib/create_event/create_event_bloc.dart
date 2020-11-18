@@ -26,6 +26,9 @@ class CreateEventBloc extends Bloc<CreateEventEvent, CreateEventState> {
           pos: event.eventPos,
           startDate: event.eventStartDate,
           endDate: event.eventEndDate,
+          allowInvitations: event.allowInvitations,
+          requireParticipationAcceptation:
+              event.requireParticipationAcceptation,
         );
         mapBloc.add(FetchLocations());
         yield CreateEventCreated(message: response);

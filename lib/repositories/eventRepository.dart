@@ -13,6 +13,9 @@ class EventRepository {
     @required LatLng pos,
     @required DateTime startDate,
     @required DateTime endDate,
+    // event privacy settings
+    @required bool allowInvitations,
+    @required bool requireParticipationAcceptation,
   }) async {
     var startDatetime = startDate.toUtc().millisecondsSinceEpoch;
     var endDatetime = endDate.toUtc().millisecondsSinceEpoch;
@@ -27,7 +30,11 @@ class EventRepository {
       'end_datetime_ms': endDatetime,
       'lat': lat,
       'lon': lon,
-      'discipline_id': '$disciplineID'
+      'discipline_id': '$disciplineID',
+      'settings': {
+        'allow_invitations': allowInvitations,
+        'require_participation_acceptation': requireParticipationAcceptation,
+      },
     };
 
     var response = await client.post('events', body: body);
@@ -230,6 +237,35 @@ class EventRepository {
       return {};
     }
   }
+
+  List<EventPrivacyRule> getEventPrivacyRules() {
+    var private = EventPrivacyRule(
+      id: 1,
+      name: 'Private',
+      allowInvitations: false,
+      requireParticipationAcceptation: false,
+    );
+
+    var public = EventPrivacyRule(
+      id: 2,
+      name: 'Public',
+      allowInvitations: true,
+      requireParticipationAcceptation: false,
+    );
+
+    var inviteOnly = EventPrivacyRule(
+      id: 3,
+      name: 'inviteOnly',
+      allowInvitations: true,
+      requireParticipationAcceptation: true,
+    );
+
+    return [
+      private,
+      public,
+      inviteOnly,
+    ];
+  }
 }
 
 class Location {
@@ -260,6 +296,19 @@ class Discipline {
   }
 }
 
+class EventPrivacyRule {
+  final int id;
+  final String name;
+  final bool allowInvitations;
+  final bool requireParticipationAcceptation;
+
+  EventPrivacyRule(
+      {this.id,
+      this.name,
+      this.allowInvitations,
+      this.requireParticipationAcceptation});
+}
+
 class Event {
   final String id;
   final String name;
@@ -268,7 +317,9 @@ class Event {
   final LatLng pos;
   final DateTime startDate;
   final DateTime endDate;
-
+  // Event privacy settings
+  final bool allowInvitations;
+  final bool requireParticipationAcceptation;
   Event(
     this.id,
     this.name,
@@ -277,6 +328,8 @@ class Event {
     this.pos,
     this.startDate,
     this.endDate,
+    this.allowInvitations,
+    this.requireParticipationAcceptation,
   );
 
   factory Event.fromJson(Map<String, dynamic> json) {
@@ -289,6 +342,8 @@ class Event {
       LatLng(json['lat'], json['lon']),
       DateTime.fromMillisecondsSinceEpoch(json['start_datetime_ms']),
       DateTime.fromMillisecondsSinceEpoch(json['end_datetime_ms']),
+      json['settings']['allow_invitations'],
+      json['settings']['require_participation_acceptation'],
     );
   }
 }
