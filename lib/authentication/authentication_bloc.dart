@@ -1,5 +1,8 @@
+import 'dart:convert';
+
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
+import '../push_notifications.dart';
 import 'authentication_event.dart';
 import 'authentication_state.dart';
 import 'package:PickApp/repositories/userRepository.dart';
@@ -15,7 +18,8 @@ class AuthenticationBloc
   AuthenticationState get initialState => AuthenticationUninitialized();
 
   @override
-  Stream<AuthenticationState> mapEventToState(AuthenticationEvent event) async* {
+  Stream<AuthenticationState> mapEventToState(
+      AuthenticationEvent event) async* {
     if (event is AppStarted) {
       final hasToken = await userRepository.hasToken();
 
@@ -28,7 +32,8 @@ class AuthenticationBloc
 
     if (event is LoggedIn) {
       yield AuthenticationLoading();
-      await userRepository.persistToken(event.token);
+      await userRepository.persistToken(event.authResponse);
+      unawaited(assignExternalUserIDForPushNotifications(event.authResponse));
       yield AuthenticationAuthenticated();
     }
 
@@ -38,4 +43,12 @@ class AuthenticationBloc
       yield AuthenticationUnauthenticated();
     }
   }
+
+  Future<void> assignExternalUserIDForPushNotifications(
+      String authResponse) async {
+    var userID = json.decode(authResponse)['user_id'];
+    unawaited(PushNotifications.assignExternalUserID(userID));
+  }
+
+  static void unawaited(Future<void> future) {}
 }

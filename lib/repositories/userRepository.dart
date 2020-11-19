@@ -75,8 +75,8 @@ class UserRepository {
     return;
   }
 
-  Future<void> persistToken(String token) async {
-    var authToken = (json.decode(token))['auth_token'];
+  Future<void> persistToken(String authResponse) async {
+    var authToken = (json.decode(authResponse))['auth_token'];
     if (authToken != null) {
       await storage.write(key: 'jwt', value: authToken);
     }
