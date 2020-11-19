@@ -30,12 +30,16 @@ class _CreateEventMapState extends State<CreateEventMap> {
   DateTime endDate = DateTime.now();
   LatLng eventPos;
   GoogleMapController mapController;
+  EventPrivacyRule currentEventPrivacy;
 
   @override
   Widget build(BuildContext context) {
     var screenSize = MediaQuery.of(context).size;
     var _markers = <Marker>{};
     List<Discipline> disciplineList;
+    List<EventPrivacyRule> eventPrivacySettings;
+
+    eventPrivacySettings = eventRepository.getEventPrivacyRules();
 
     void _onCreateEventButtonPressed(CreateEventState state) {
       BlocProvider.of<CreateEventBloc>(context).add(CreateEventButtonPressed(
@@ -45,6 +49,9 @@ class _CreateEventMapState extends State<CreateEventMap> {
         eventPos: eventPos,
         eventStartDate: startDate,
         eventEndDate: endDate,
+        allowInvitations: currentEventPrivacy.allowInvitations,
+        requireParticipationAcceptation:
+            currentEventPrivacy.requireParticipationAcceptation,
       ));
       Navigator.pop(context);
     }
@@ -319,9 +326,9 @@ class _CreateEventMapState extends State<CreateEventMap> {
                               left: 0.1 * screenSize.width,
                               right: 0.1 * screenSize.width,
                             ),
-                            child: DropdownButton<String>(
+                            child: DropdownButton<EventPrivacyRule>(
                               isExpanded: true,
-                              value: eventPrivacySettings,
+                              value: currentEventPrivacy,
                               hint: Text(
                                 'Event privacy settings',
                                 style: TextStyle(
@@ -334,15 +341,15 @@ class _CreateEventMapState extends State<CreateEventMap> {
                                 fontWeight: FontWeight.bold,
                                 color: Colors.black,
                               ),
-                              onChanged: (String newValue) {
+                              onChanged: (EventPrivacyRule newValue) {
                                 FocusScope.of(context).unfocus();
                                 setState(() {
-                                  disciplineID = newValue;
+                                  currentEventPrivacy = newValue;
                                 });
                               },
                               items: eventPrivacySettings.map((privacyRule) {
-                                return DropdownMenuItem<String>(
-                                  value: privacyRule.id,
+                                return DropdownMenuItem<EventPrivacyRule>(
+                                  value: privacyRule,
                                   child: Text(privacyRule.name),
                                 );
                               }).toList(),

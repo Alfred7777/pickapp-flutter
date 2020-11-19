@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:PickApp/event_details/event_details_bloc.dart';
 import 'package:PickApp/event_details/event_details_event.dart';
 import 'package:PickApp/event_details/event_details_state.dart';
@@ -195,27 +196,111 @@ class EventDetailsScrollableState extends State<EventDetailsScrollable> {
     );
   }
 
+  Widget _wrapIconWithCircle(Icon icon) {
+    return Container(
+      width: 34,
+      height: 34,
+      margin: EdgeInsets.all(4.0),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        shape: BoxShape.circle,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.green.withOpacity(0.2),
+            spreadRadius: 2,
+            blurRadius: 4,
+          ),
+        ],
+      ),
+      child: icon,
+    );
+  }
+
+  Widget _privacyBadge(EventPrivacyRule eventPrivacyRule) {
+    switch (eventPrivacyRule.name) {
+      case 'Public':
+        {
+          return _wrapIconWithCircle(
+            Icon(
+              Icons.public,
+              size: 24,
+              color: Colors.grey,
+            ),
+          );
+        }
+        break;
+      case 'Private':
+        {
+          return _wrapIconWithCircle(
+            Icon(
+              Icons.lock,
+              size: 24,
+              color: Colors.grey,
+            ),
+          );
+        }
+        break;
+      case 'Invite Only':
+        {
+          return _wrapIconWithCircle(
+            Icon(
+              Icons.group_add,
+              size: 24,
+              color: Colors.grey,
+            ),
+          );
+        }
+        break;
+    }
+  }
+
   Widget _buildEventDetails(bool joinedEvent, Map<String, dynamic> eventDetails,
       List<User> participantsList) {
     var screenSize = MediaQuery.of(context).size;
+
+    bool allowInvitations = eventDetails['settings']['allow_invitations'];
+    bool requireParticipationAcceptation =
+        eventDetails['settings']['require_participation_acceptation'];
+
+    EventPrivacyRule eventPrivacySetting =
+        eventRepository.convertSettingsToEventPrivacyRule(
+      allowInvitations,
+      requireParticipationAcceptation,
+    );
+
     return SingleChildScrollView(
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Padding(
-            padding: EdgeInsets.only(top: 0.025 * screenSize.height),
-            child: Container(
-              height: 0.19 * screenSize.height,
-              width: 0.19 * 1.4 * screenSize.height,
-              decoration: BoxDecoration(
-                border: Border.all(width: 0.4),
-                image: DecorationImage(
-                  image: AssetImage(
-                    'assets/images/event_placeholder/${eventDetails['discipline_id']}.png',
+          Container(
+            height: 0.21 * screenSize.height,
+            width: 0.20 * 1.4 * screenSize.height,
+            child: Stack(
+              children: [
+                Padding(
+                  padding: EdgeInsets.only(
+                    top: 0.025 * screenSize.height,
+                    bottom: 0.025 * screenSize.width,
                   ),
-                  fit: BoxFit.cover,
+                  child: Container(
+                    height: 0.19 * screenSize.height,
+                    width: 0.19 * 1.4 * screenSize.height,
+                    decoration: BoxDecoration(
+                      image: DecorationImage(
+                        image: AssetImage(
+                          'assets/images/event_placeholder/${eventDetails['discipline_id']}.png',
+                        ),
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  ),
                 ),
-              ),
+                Positioned(
+                  bottom: 0,
+                  right: 0, //give the values according to your requirement
+                  child: _privacyBadge(eventPrivacySetting),
+                ),
+              ],
             ),
           ),
           Padding(

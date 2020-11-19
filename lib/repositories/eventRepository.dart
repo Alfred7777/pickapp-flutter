@@ -131,6 +131,7 @@ class EventRepository {
         'discipline_id': details['discipline_id'],
         'organiser_id': details['organiser_id'],
         'is_participant': details['is_participating?'],
+        'settings': details['settings'],
       };
     } else {
       throw Exception(
@@ -255,7 +256,7 @@ class EventRepository {
 
     var inviteOnly = EventPrivacyRule(
       id: 3,
-      name: 'inviteOnly',
+      name: 'Invite Only',
       allowInvitations: true,
       requireParticipationAcceptation: true,
     );
@@ -265,6 +266,18 @@ class EventRepository {
       public,
       inviteOnly,
     ];
+  }
+
+  EventPrivacyRule convertSettingsToEventPrivacyRule(
+      bool allowInvitations, bool requireParticipationAcceptation) {
+    var eventPrivacySettings = getEventPrivacyRules();
+
+    return eventPrivacySettings
+        .where((a) => (a.allowInvitations == allowInvitations &&
+            a.requireParticipationAcceptation ==
+                requireParticipationAcceptation))
+        .toList()
+        .first;
   }
 }
 
@@ -317,9 +330,7 @@ class Event {
   final LatLng pos;
   final DateTime startDate;
   final DateTime endDate;
-  // Event privacy settings
-  final bool allowInvitations;
-  final bool requireParticipationAcceptation;
+  final List<dynamic> settings;
   Event(
     this.id,
     this.name,
@@ -328,12 +339,10 @@ class Event {
     this.pos,
     this.startDate,
     this.endDate,
-    this.allowInvitations,
-    this.requireParticipationAcceptation,
+    this.settings,
   );
 
   factory Event.fromJson(Map<String, dynamic> json) {
-    print(json);
     return Event(
       json['id'],
       json['name'],
@@ -342,8 +351,7 @@ class Event {
       LatLng(json['lat'], json['lon']),
       DateTime.fromMillisecondsSinceEpoch(json['start_datetime_ms']),
       DateTime.fromMillisecondsSinceEpoch(json['end_datetime_ms']),
-      json['settings']['allow_invitations'],
-      json['settings']['require_participation_acceptation'],
+      json['settings'],
     );
   }
 }
