@@ -103,7 +103,6 @@ class EventRepository {
 
     var response = await client.post('events/$eventID/edit', body: body);
     if (response.statusCode == 201) {
-      print(response);
       return 'Event updated';
     } else {
       throw Exception(beautifyErrorResponse(response.body));

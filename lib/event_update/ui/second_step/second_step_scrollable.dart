@@ -122,7 +122,6 @@ class _SecondStepFormState extends State<SecondStepForm> {
   }
 
   void updateEventTrigger() {
-    print(eventPrivacy.allowInvitations);
     eventUpdateBloc.add(
       UpdateEventButtonPressed(
         eventName: eventName,

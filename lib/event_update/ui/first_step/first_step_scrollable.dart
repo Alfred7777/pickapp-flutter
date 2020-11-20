@@ -158,7 +158,6 @@ class _FirstStepFormState extends State<FirstStepForm> {
     setState(() {
       currentEventPrivacy = childValue;
     });
-    print(currentEventPrivacy.name);
   }
 
   void setFirstStep() {
