@@ -27,7 +27,9 @@ dependencies:
   http: ^0.12.0+1
   flutter_secure_storage: ^3.3.3
   intl: ^0.16.1
-  
+
+  # Push notifications service
+  onesignal_flutter: ^2.0.0
 
   flutter_bloc: ^4.0.0
   equatable: ^1.0.0
