@@ -69,10 +69,21 @@ class EventRepository {
     final String eventID,
     final DateTime startDate,
     final DateTime endDate,
+    // event privacy settings
+    final bool allowInvitations,
+    final bool requireParticipationAcceptation,
   }) async {
     var startDatetime = startDate?.toUtc()?.millisecondsSinceEpoch;
     var endDatetime = endDate?.toUtc()?.millisecondsSinceEpoch;
     var client = AuthenticatedApiClient();
+
+    var new_settings = {
+      'allow_invitations': allowInvitations,
+      'require_participation_acceptation': requireParticipationAcceptation,
+    };
+
+    new_settings.removeWhere(
+        (key, value) => key == null || value == null || value == 'null');
 
     var new_details = {
       'name': '$name',
@@ -80,6 +91,7 @@ class EventRepository {
       'start_datetime_ms': startDatetime,
       'end_datetime_ms': endDatetime,
       'discipline_id': '$disciplineID',
+      'settings': new_settings,
     };
 
     new_details.removeWhere(
@@ -91,6 +103,7 @@ class EventRepository {
 
     var response = await client.post('events/$eventID/edit', body: body);
     if (response.statusCode == 201) {
+      print(response);
       return 'Event updated';
     } else {
       throw Exception(beautifyErrorResponse(response.body));
@@ -314,6 +327,13 @@ class EventPrivacyRule {
   final String name;
   final bool allowInvitations;
   final bool requireParticipationAcceptation;
+
+  @override
+  bool operator ==(dynamic other) =>
+      other != null && other is EventPrivacyRule && this.id == other.id;
+
+  @override
+  int get hashCode => super.hashCode;
 
   EventPrivacyRule(
       {this.id,

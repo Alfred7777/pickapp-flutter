@@ -10,6 +10,8 @@ class EventUpdateBloc extends Bloc<EventUpdateEvent, EventUpdateState> {
   final String initialEventDescription;
   final DateTime initialEventStartDate;
   final DateTime initialEventEndDate;
+  final bool initialAllowInvitations;
+  final bool initialRequireParticipationAcceptation;
   final EventRepository eventRepository;
 
   EventUpdateBloc({
@@ -18,6 +20,8 @@ class EventUpdateBloc extends Bloc<EventUpdateEvent, EventUpdateState> {
     @required this.initialEventDescription,
     @required this.initialEventStartDate,
     @required this.initialEventEndDate,
+    @required this.initialAllowInvitations,
+    @required this.initialRequireParticipationAcceptation,
     @required this.eventRepository,
   });
 
@@ -28,6 +32,8 @@ class EventUpdateBloc extends Bloc<EventUpdateEvent, EventUpdateState> {
         eventDescription: initialEventDescription,
         eventStartDate: initialEventStartDate,
         eventEndDate: initialEventEndDate,
+        allowInvitations: initialAllowInvitations,
+        requireParticipationAcceptation: initialRequireParticipationAcceptation,
       );
 
   @override
@@ -36,6 +42,7 @@ class EventUpdateBloc extends Bloc<EventUpdateEvent, EventUpdateState> {
       yield EventUpdateFirstStepSet(
         eventName: event.eventName,
         eventDisciplineID: event.eventDisciplineID,
+        eventPrivacy: event.eventPrivacy,
       );
     }
     if (event is UpdateEventButtonPressed) {
@@ -60,6 +67,16 @@ class EventUpdateBloc extends Bloc<EventUpdateEvent, EventUpdateState> {
       event.eventEndDate =
           event.eventEndDate == initialEventEndDate ? null : event.eventEndDate;
 
+      event.allowInvitations = event.allowInvitations == initialAllowInvitations
+          ? null
+          : event.allowInvitations;
+
+      event.requireParticipationAcceptation =
+          event.requireParticipationAcceptation ==
+                  initialRequireParticipationAcceptation
+              ? null
+              : event.requireParticipationAcceptation;
+
       try {
         var response = await eventRepository.updateEvent(
           name: event.eventName,
@@ -68,6 +85,9 @@ class EventUpdateBloc extends Bloc<EventUpdateEvent, EventUpdateState> {
           eventID: event.eventID,
           startDate: event.eventStartDate,
           endDate: event.eventEndDate,
+          allowInvitations: event.allowInvitations,
+          requireParticipationAcceptation:
+              event.requireParticipationAcceptation,
         );
 
         yield EventUpdateSuccess(message: response);

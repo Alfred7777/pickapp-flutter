@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'package:PickApp/event_details/event_details_bloc.dart';
 import 'package:PickApp/event_details/event_details_event.dart';
 import 'package:PickApp/event_details/event_details_state.dart';
@@ -262,8 +261,7 @@ class EventDetailsScrollableState extends State<EventDetailsScrollable> {
     bool requireParticipationAcceptation =
         eventDetails['settings']['require_participation_acceptation'];
 
-    EventPrivacyRule eventPrivacySetting =
-        eventRepository.convertSettingsToEventPrivacyRule(
+    var eventPrivacySetting = eventRepository.convertSettingsToEventPrivacyRule(
       allowInvitations,
       requireParticipationAcceptation,
     );

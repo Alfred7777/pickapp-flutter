@@ -80,6 +80,7 @@ class _SecondStepFormState extends State<SecondStepForm> {
   String eventDisciplineID;
   DateTime startDate;
   DateTime endDate;
+  EventPrivacyRule eventPrivacy;
 
   _SecondStepFormState({
     @required this.joinedEvent,
@@ -90,8 +91,9 @@ class _SecondStepFormState extends State<SecondStepForm> {
   @override
   void initState() {
     super.initState();
-    eventName = eventUpdateBloc.state.props.first;
-    eventDisciplineID = eventUpdateBloc.state.props.last;
+    eventName = eventUpdateBloc.state.props[0];
+    eventDisciplineID = eventUpdateBloc.state.props[1];
+    eventPrivacy = eventUpdateBloc.state.props[2];
     description = eventUpdateBloc.initialEventDescription;
     startDate = eventUpdateBloc.initialEventStartDate;
     endDate = eventUpdateBloc.initialEventEndDate;
@@ -120,6 +122,7 @@ class _SecondStepFormState extends State<SecondStepForm> {
   }
 
   void updateEventTrigger() {
+    print(eventPrivacy.allowInvitations);
     eventUpdateBloc.add(
       UpdateEventButtonPressed(
         eventName: eventName,
@@ -128,6 +131,9 @@ class _SecondStepFormState extends State<SecondStepForm> {
         eventDisciplineID: eventDisciplineID,
         eventStartDate: startDate,
         eventEndDate: endDate,
+        allowInvitations: eventPrivacy.allowInvitations,
+        requireParticipationAcceptation:
+            eventPrivacy.requireParticipationAcceptation,
       ),
     );
   }
