@@ -17,8 +17,12 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     if (event is FetchProfile) {
       yield HomeLoading();
       var details = await userRepository.getProfileDetails(event.userID);
-      yield HomeLoaded(details: details);
+      yield HomeLoaded(details: details, index: 0);
       return;
+    }
+    if (event is NavbarSelectedIndexChanged) {
+      var details = state.details;
+      yield HomeLoaded(index: event.index, details: details);
     }
   }
 }

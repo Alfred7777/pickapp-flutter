@@ -16,3 +16,12 @@ class FetchProfile extends HomeEvent {
   @override
   List<Object> get props => [userID];
 }
+
+class NavbarSelectedIndexChanged extends HomeEvent {
+  final int index;
+
+  const NavbarSelectedIndexChanged({@required this.index});
+
+  @override
+  List<Object> get props => [index];
+}

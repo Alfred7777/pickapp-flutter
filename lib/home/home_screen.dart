@@ -1,5 +1,7 @@
 import 'package:PickApp/map/map_screen.dart';
 import 'package:PickApp/my_events/my_events_screen.dart';
+import 'package:PickApp/widgets/bottom_navbar/bottom_navbar.dart';
+import 'package:PickApp/widgets/bottom_navbar/bottom_navbar_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:PickApp/repositories/userRepository.dart';
 import 'package:PickApp/widgets/nav_drawer/nav_drawer.dart';
@@ -14,7 +16,6 @@ class HomeScreen extends StatefulWidget {
 }
 
 class HomeScreenState extends State<HomeScreen> {
-  int _selectedIndex = 0;
   final userRepository = UserRepository();
   HomeBloc _homeBloc;
 
@@ -31,12 +32,6 @@ class HomeScreenState extends State<HomeScreen> {
     _homeBloc = HomeBloc(userRepository: userRepository);
   }
 
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<HomeBloc, HomeState>(
@@ -51,7 +46,11 @@ class HomeScreenState extends State<HomeScreen> {
           );
         }
         if (state is HomeLoaded) {
-          return _buildHomeScreen(context, state.details);
+          return _buildHomeScreen(
+            context,
+            state.details,
+            state.index,
+          );
         }
         if (state is HomeError) {
           return Center(
@@ -63,38 +62,20 @@ class HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildHomeScreen(BuildContext context, User loggedUser) {
+  Widget _buildHomeScreen(BuildContext context, User loggedUser, int index) {
     return Scaffold(
-      body: _screenOptions.elementAt(_selectedIndex),
+      body: _screenOptions.elementAt(index),
       drawer: NavDrawer(
         user: loggedUser,
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _selectedIndex,
-        type: BottomNavigationBarType.fixed,
-        selectedItemColor: Colors.blueAccent,
-        selectedFontSize: 13,
-        unselectedItemColor: Colors.black,
-        unselectedFontSize: 13,
-        onTap: _onItemTapped,
-        items: [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.public),
-            label: 'Map',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.event),
-            label: 'My events',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.people),
-            label: 'Groups',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.notifications),
-            label: 'Alerts',
-          ),
-        ],
+      bottomNavigationBar: BlocProvider(
+        create: (context) {
+          return BottomNavbarBloc(
+            homeBloc: _homeBloc,
+            userRepository: userRepository,
+          );
+        },
+        child: BottomNavbarWidget(),
       ),
     );
   }
