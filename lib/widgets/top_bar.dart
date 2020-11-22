@@ -116,3 +116,62 @@ AppBar editEventScreenTopBar(BuildContext context) {
     ),
   );
 }
+
+class SearchTopBar extends StatelessWidget implements PreferredSizeWidget {
+  final TextEditingController queryTextController;
+  final String searchFieldHint;
+
+  const SearchTopBar({
+    @required this.queryTextController,
+    @required this.searchFieldHint,
+  });
+
+  @override
+  Size get preferredSize => Size.fromHeight(56.0);
+
+  @override
+  Widget build(BuildContext context) {
+    return AppBar(
+      backgroundColor: Colors.grey[100],
+      elevation: 1,
+      brightness: Brightness.light,
+      iconTheme: IconThemeData(
+        color: Colors.grey[500],
+        opacity: 1.0,
+      ),
+      leading: IconButton(
+        iconSize: 30.0,
+        icon: Icon(
+          Icons.arrow_back,
+        ),
+        onPressed: () => Navigator.pop(context),
+      ),
+      actions: [
+        IconButton(
+          iconSize: 30.0,
+          icon: Icon(
+            Icons.clear,
+          ),
+          onPressed: () => queryTextController.clear(),
+        ),
+      ],
+      title: TextField(
+        controller: queryTextController,
+        keyboardType: TextInputType.text,
+        textInputAction: TextInputAction.search,
+        style: TextStyle(
+          color: Colors.grey,
+          fontSize: 18.0,
+        ),
+        decoration: InputDecoration(
+          border: InputBorder.none,
+          hintText: searchFieldHint,
+          hintStyle: TextStyle(
+            color: Colors.grey[400],
+            fontSize: 18.0,
+          ),
+        ),
+      ),
+    );
+  }
+}

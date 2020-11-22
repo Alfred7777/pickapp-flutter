@@ -24,25 +24,39 @@ class EventInvitationBloc
   @override
   Stream<EventInvitationState> mapEventToState(
       EventInvitationEvent event) async* {
+    if (event is SearchRequested) {
+      yield EventInvitationSearchInProgress(query: event.query);
+      try {
+        var searchResult = await userRepository.searchUser(event.query);
+        yield EventInvitationSearchCompleted(
+          query: event.query,
+          searchResult: searchResult,
+        );
+      } catch (error) {
+        yield EventInvitationFailure(error: error.message);
+        yield EventInvitationSearchCompleted(
+          query: event.query,
+          searchResult: [],
+        );
+      }
+    }
     if (event is InviteButtonPressed) {
       try {
         var response = await eventRepository.inviteToEvent(
           event.eventID,
           event.inviteeID,
         );
-        yield EventInvitationInvited(message: response);
+        yield EventInvitationInvited(
+          message: response,
+          inviteeID: event.inviteeID,
+        );
       } catch (error) {
         yield EventInvitationFailure(error: error.message);
       }
-    }
-    if (event is SearchButtonPressed) {
-      try {
-        var searchResult = await userRepository.searchUser(event.searchPhrase);
-        yield EventInvitationUninitialized(eventID: eventID);
-        yield EventInvitationSearchPerformed(searchResult: searchResult);
-      } catch (error) {
-        yield EventInvitationFailure(error: error.message);
-      }
+      yield EventInvitationSearchCompleted(
+        query: event.query,
+        searchResult: event.searchResults,
+      );
     }
   }
 }

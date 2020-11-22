@@ -11,23 +11,36 @@ class MyEventsState extends Equatable {
 
 class MyEventsUninitialized extends MyEventsState {}
 
+class MyEventsLoading extends MyEventsState {}
+
 class MyEventsReady extends MyEventsState {
   final Map<DateTime, List<Event>> myActiveEvents;
   final Map<DateTime, List<Event>> myPastEvents;
+  final List<EventInvitation> eventInvitations;
 
   const MyEventsReady({
     @required this.myActiveEvents,
     @required this.myPastEvents,
+    @required this.eventInvitations,
   });
 
   @override
-  List<Object> get props => [myActiveEvents, myPastEvents];
+  List<Object> get props => [myActiveEvents, myPastEvents, eventInvitations];
 }
 
-class MyEventsFailure extends MyEventsState {
+class FetchEventsFailure extends MyEventsState {
   final String error;
 
-  const MyEventsFailure({@required this.error});
+  const FetchEventsFailure({@required this.error});
+
+  @override
+  List<Object> get props => [error];
+}
+
+class AnswerInvitationFailure extends MyEventsState {
+  final String error;
+
+  const AnswerInvitationFailure({@required this.error});
 
   @override
   List<Object> get props => [error];
