@@ -25,11 +25,11 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       yield LoginLoading();
 
       try {
-        final token = await userRepository.authenticate(
+        final authResponse = await userRepository.authenticate(
           email: event.email,
           password: event.password,
         );
-        authenticationBloc.add(LoggedIn(token: token));
+        authenticationBloc.add(LoggedIn(authResponse: authResponse));
         yield LoginInitial();
       } catch (error) {
         yield LoginFailure(error: 'Invalid credentials');

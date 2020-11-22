@@ -1,4 +1,5 @@
 import 'package:PickApp/home/home_screen.dart';
+import 'package:PickApp/push_notifications.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:PickApp/authentication/authentication_bloc.dart';
@@ -25,10 +26,25 @@ void main() {
   ));
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   final UserRepository userRepository;
 
   MyApp({Key key, @required this.userRepository}) : super(key: key);
+
+  @override
+  _MyAppState createState() => _MyAppState(userRepository: userRepository);
+}
+
+class _MyAppState extends State<MyApp> {
+  final UserRepository userRepository;
+
+  _MyAppState({@required this.userRepository});
+
+  @override
+  void initState() {
+    super.initState();
+    PushNotifications.initialize();
+  }
 
   @override
   Widget build(BuildContext context) {
