@@ -13,6 +13,9 @@ class EventRepository {
     @required LatLng pos,
     @required DateTime startDate,
     @required DateTime endDate,
+    // event privacy settings
+    @required bool allowInvitations,
+    @required bool requireParticipationAcceptation,
   }) async {
     var startDatetime = startDate.toUtc().millisecondsSinceEpoch;
     var endDatetime = endDate.toUtc().millisecondsSinceEpoch;
@@ -27,7 +30,11 @@ class EventRepository {
       'end_datetime_ms': endDatetime,
       'lat': lat,
       'lon': lon,
-      'discipline_id': '$disciplineID'
+      'discipline_id': '$disciplineID',
+      'settings': {
+        'allow_invitations': allowInvitations,
+        'require_participation_acceptation': requireParticipationAcceptation,
+      },
     };
 
     var response = await client.post('events', body: body);
@@ -62,10 +69,21 @@ class EventRepository {
     final String eventID,
     final DateTime startDate,
     final DateTime endDate,
+    // event privacy settings
+    final bool allowInvitations,
+    final bool requireParticipationAcceptation,
   }) async {
     var startDatetime = startDate?.toUtc()?.millisecondsSinceEpoch;
     var endDatetime = endDate?.toUtc()?.millisecondsSinceEpoch;
     var client = AuthenticatedApiClient();
+
+    var new_settings = {
+      'allow_invitations': allowInvitations,
+      'require_participation_acceptation': requireParticipationAcceptation,
+    };
+
+    new_settings.removeWhere(
+        (key, value) => key == null || value == null || value == 'null');
 
     var new_details = {
       'name': '$name',
@@ -73,6 +91,7 @@ class EventRepository {
       'start_datetime_ms': startDatetime,
       'end_datetime_ms': endDatetime,
       'discipline_id': '$disciplineID',
+      'settings': new_settings,
     };
 
     new_details.removeWhere(
@@ -124,6 +143,7 @@ class EventRepository {
         'discipline_id': details['discipline_id'],
         'organiser_id': details['organiser_id'],
         'is_participant': details['is_participating?'],
+        'settings': details['settings'],
       };
     } else {
       throw Exception(
@@ -230,6 +250,47 @@ class EventRepository {
       return {};
     }
   }
+
+  List<EventPrivacyRule> getEventPrivacyRules() {
+    var private = EventPrivacyRule(
+      id: 1,
+      name: 'Private',
+      allowInvitations: false,
+      requireParticipationAcceptation: false,
+    );
+
+    var public = EventPrivacyRule(
+      id: 2,
+      name: 'Public',
+      allowInvitations: true,
+      requireParticipationAcceptation: false,
+    );
+
+    var inviteOnly = EventPrivacyRule(
+      id: 3,
+      name: 'Invite Only',
+      allowInvitations: true,
+      requireParticipationAcceptation: true,
+    );
+
+    return [
+      private,
+      public,
+      inviteOnly,
+    ];
+  }
+
+  EventPrivacyRule convertSettingsToEventPrivacyRule(
+      bool allowInvitations, bool requireParticipationAcceptation) {
+    var eventPrivacySettings = getEventPrivacyRules();
+
+    return eventPrivacySettings
+        .where((a) => (a.allowInvitations == allowInvitations &&
+            a.requireParticipationAcceptation ==
+                requireParticipationAcceptation))
+        .toList()
+        .first;
+  }
 }
 
 class Location {
@@ -260,6 +321,26 @@ class Discipline {
   }
 }
 
+class EventPrivacyRule {
+  final int id;
+  final String name;
+  final bool allowInvitations;
+  final bool requireParticipationAcceptation;
+
+  @override
+  bool operator ==(dynamic other) =>
+      other != null && other is EventPrivacyRule && this.id == other.id;
+
+  @override
+  int get hashCode => super.hashCode;
+
+  EventPrivacyRule(
+      {this.id,
+      this.name,
+      this.allowInvitations,
+      this.requireParticipationAcceptation});
+}
+
 class Event {
   final String id;
   final String name;
@@ -268,7 +349,7 @@ class Event {
   final LatLng pos;
   final DateTime startDate;
   final DateTime endDate;
-
+  final List<dynamic> settings;
   Event(
     this.id,
     this.name,
@@ -277,10 +358,10 @@ class Event {
     this.pos,
     this.startDate,
     this.endDate,
+    this.settings,
   );
 
   factory Event.fromJson(Map<String, dynamic> json) {
-    print(json);
     return Event(
       json['id'],
       json['name'],
@@ -289,6 +370,7 @@ class Event {
       LatLng(json['lat'], json['lon']),
       DateTime.fromMillisecondsSinceEpoch(json['start_datetime_ms']),
       DateTime.fromMillisecondsSinceEpoch(json['end_datetime_ms']),
+      json['settings'],
     );
   }
 }

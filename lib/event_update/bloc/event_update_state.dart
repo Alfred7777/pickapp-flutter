@@ -1,5 +1,6 @@
 import 'package:meta/meta.dart';
 import 'package:equatable/equatable.dart';
+import 'package:PickApp/repositories/eventRepository.dart';
 
 class EventUpdateState extends Equatable {
   const EventUpdateState();
@@ -14,6 +15,8 @@ class EventUpdateInitial extends EventUpdateState {
   final String eventDescription;
   final DateTime eventStartDate;
   final DateTime eventEndDate;
+  final bool allowInvitations;
+  final bool requireParticipationAcceptation;
 
   const EventUpdateInitial({
     @required this.eventName,
@@ -21,6 +24,8 @@ class EventUpdateInitial extends EventUpdateState {
     @required this.eventDescription,
     @required this.eventStartDate,
     @required this.eventEndDate,
+    @required this.allowInvitations,
+    @required this.requireParticipationAcceptation,
   });
 
   @override
@@ -30,17 +35,21 @@ class EventUpdateInitial extends EventUpdateState {
         eventDescription,
         eventStartDate,
         eventEndDate,
+        allowInvitations,
+        requireParticipationAcceptation
       ];
 }
 
 class EventUpdateFirstStepSet extends EventUpdateState {
   final String eventName;
   final String eventDisciplineID;
+  final EventPrivacyRule eventPrivacy;
 
-  const EventUpdateFirstStepSet({this.eventName, this.eventDisciplineID});
+  const EventUpdateFirstStepSet(
+      {this.eventName, this.eventDisciplineID, this.eventPrivacy});
 
   @override
-  List<Object> get props => [eventName, eventDisciplineID];
+  List<Object> get props => [eventName, eventDisciplineID, eventPrivacy];
 }
 
 class EventUpdateLoading extends EventUpdateState {}

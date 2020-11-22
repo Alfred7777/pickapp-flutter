@@ -103,6 +103,9 @@ class _FirstStepFormState extends State<FirstStepForm> {
   String name;
   String disciplineID;
 
+  List<EventPrivacyRule> eventPrivacySettings;
+  EventPrivacyRule currentEventPrivacy;
+
   EventUpdateBloc _eventUpdateBloc;
 
   _FirstStepFormState({
@@ -123,11 +126,18 @@ class _FirstStepFormState extends State<FirstStepForm> {
       initialEventDescription: eventDetails['description'],
       initialEventStartDate: eventDetails['start_date'],
       initialEventEndDate: eventDetails['end_date'],
+      initialAllowInvitations: eventDetails['settings']['allow_invitations'],
+      initialRequireParticipationAcceptation: eventDetails['settings']
+          ['require_participation_acceptation'],
       eventRepository: eventRepository,
     );
 
     name = _eventUpdateBloc.initialEventName;
     disciplineID = _eventUpdateBloc.initialEventDisciplineID;
+    currentEventPrivacy = eventRepository.convertSettingsToEventPrivacyRule(
+      _eventUpdateBloc.initialAllowInvitations,
+      _eventUpdateBloc.initialRequireParticipationAcceptation,
+    );
   }
 
   final EventRepository eventRepository = EventRepository();
@@ -144,11 +154,18 @@ class _FirstStepFormState extends State<FirstStepForm> {
     });
   }
 
+  void setCurrentEventPrivacy(dynamic childValue) {
+    setState(() {
+      currentEventPrivacy = childValue;
+    });
+  }
+
   void setFirstStep() {
     _eventUpdateBloc.add(
       EventUpdateFirstStepFinished(
         eventName: name,
         eventDisciplineID: disciplineID,
+        eventPrivacy: currentEventPrivacy,
       ),
     );
   }
@@ -160,6 +177,7 @@ class _FirstStepFormState extends State<FirstStepForm> {
       eventName: name,
       disciplineID: disciplineID,
       disciplineList: disciplineList,
+      currentEventPrivacy: currentEventPrivacy,
     );
   }
 
@@ -168,6 +186,7 @@ class _FirstStepFormState extends State<FirstStepForm> {
     String eventName,
     String disciplineID,
     List<Discipline> disciplineList,
+    EventPrivacyRule currentEventPrivacy,
   }) {
     return BlocBuilder<EventUpdateBloc, EventUpdateState>(
       bloc: _eventUpdateBloc,
@@ -186,6 +205,10 @@ class _FirstStepFormState extends State<FirstStepForm> {
               disciplineID: disciplineID,
               disciplineList: disciplineList,
               notifyParent: setDisciplineID,
+            ),
+            PrivacySettingsDropdown(
+              currentEventPrivacy: currentEventPrivacy,
+              notifyParent: setCurrentEventPrivacy,
             ),
             NextStepButton(
               eventID: eventID,
@@ -350,6 +373,82 @@ class _DisciplineDropdownState extends State<DisciplineDropdown> {
               child: Text(discipline.name),
             );
           }).toList()),
+    );
+  }
+}
+
+class PrivacySettingsDropdown extends StatefulWidget {
+  final EventPrivacyRule currentEventPrivacy;
+
+  final Function(dynamic childValue) notifyParent;
+
+  const PrivacySettingsDropdown({
+    @required this.currentEventPrivacy,
+    @required this.notifyParent,
+  });
+
+  @override
+  State<PrivacySettingsDropdown> createState() => _PrivacySettingsDropdownState(
+        currentEventPrivacy: currentEventPrivacy,
+        notifyParent: notifyParent,
+      );
+}
+
+class _PrivacySettingsDropdownState extends State<PrivacySettingsDropdown> {
+  EventPrivacyRule currentEventPrivacy;
+  final Function(dynamic childValue) notifyParent;
+  final EventRepository eventRepository = EventRepository();
+
+  List<EventPrivacyRule> eventPrivacySettings;
+
+  _PrivacySettingsDropdownState({
+    @required this.currentEventPrivacy,
+    @required this.notifyParent,
+  });
+
+  @override
+  void initState() {
+    super.initState();
+    eventPrivacySettings = eventRepository.getEventPrivacyRules();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    var screenSize = MediaQuery.of(context).size;
+    return Container(
+      margin: EdgeInsets.only(
+        left: 0.05 * screenSize.width,
+        right: 0.05 * screenSize.width,
+      ),
+      child: DropdownButton<EventPrivacyRule>(
+        isExpanded: true,
+        hint: Text(
+          'Event privacy settings',
+          style: TextStyle(
+            color: Color(0x883D3A3A),
+            fontSize: 16,
+          ),
+        ),
+        style: TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.bold,
+          color: Colors.black,
+        ),
+        onChanged: (EventPrivacyRule newValue) {
+          FocusScope.of(context).unfocus();
+          widget.notifyParent(newValue);
+          setState(() {
+            currentEventPrivacy = newValue;
+          });
+        },
+        value: currentEventPrivacy,
+        items: eventPrivacySettings.map((privacyRule) {
+          return DropdownMenuItem<EventPrivacyRule>(
+            value: privacyRule,
+            child: Text(privacyRule.name),
+          );
+        }).toList(),
+      ),
     );
   }
 }

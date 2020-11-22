@@ -1,5 +1,6 @@
 import 'package:meta/meta.dart';
 import 'package:equatable/equatable.dart';
+import 'package:PickApp/repositories/eventRepository.dart';
 
 class EventUpdateEvent extends Equatable {
   const EventUpdateEvent();
@@ -11,16 +12,19 @@ class EventUpdateEvent extends Equatable {
 class EventUpdateFirstStepFinished extends EventUpdateEvent {
   final String eventName;
   final String eventDisciplineID;
+  final EventPrivacyRule eventPrivacy;
 
   const EventUpdateFirstStepFinished({
     @required this.eventName,
     @required this.eventDisciplineID,
+    @required this.eventPrivacy,
   });
 
   @override
   List<Object> get props => [
         eventName,
         eventDisciplineID,
+        eventPrivacy,
       ];
 }
 
@@ -33,6 +37,8 @@ class UpdateEventButtonPressed extends EventUpdateEvent {
   String eventID;
   DateTime eventStartDate;
   DateTime eventEndDate;
+  bool allowInvitations;
+  bool requireParticipationAcceptation;
 
   UpdateEventButtonPressed({
     this.eventName,
@@ -41,6 +47,8 @@ class UpdateEventButtonPressed extends EventUpdateEvent {
     this.eventID,
     this.eventStartDate,
     this.eventEndDate,
+    this.allowInvitations,
+    this.requireParticipationAcceptation,
   });
 
   @override
@@ -51,5 +59,7 @@ class UpdateEventButtonPressed extends EventUpdateEvent {
         eventID,
         eventStartDate,
         eventEndDate,
+        allowInvitations,
+        requireParticipationAcceptation,
       ];
 }

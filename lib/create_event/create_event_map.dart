@@ -30,12 +30,16 @@ class _CreateEventMapState extends State<CreateEventMap> {
   DateTime endDate = DateTime.now();
   LatLng eventPos;
   GoogleMapController mapController;
+  EventPrivacyRule currentEventPrivacy;
 
   @override
   Widget build(BuildContext context) {
     var screenSize = MediaQuery.of(context).size;
     var _markers = <Marker>{};
     List<Discipline> disciplineList;
+    List<EventPrivacyRule> eventPrivacySettings;
+
+    eventPrivacySettings = eventRepository.getEventPrivacyRules();
 
     void _onCreateEventButtonPressed(CreateEventState state) {
       BlocProvider.of<CreateEventBloc>(context).add(CreateEventButtonPressed(
@@ -45,6 +49,9 @@ class _CreateEventMapState extends State<CreateEventMap> {
         eventPos: eventPos,
         eventStartDate: startDate,
         eventEndDate: endDate,
+        allowInvitations: currentEventPrivacy.allowInvitations,
+        requireParticipationAcceptation:
+            currentEventPrivacy.requireParticipationAcceptation,
       ));
       Navigator.pop(context);
     }
@@ -296,6 +303,54 @@ class _CreateEventMapState extends State<CreateEventMap> {
                                 return DropdownMenuItem<String>(
                                   value: discipline.id,
                                   child: Text(discipline.name),
+                                );
+                              }).toList(),
+                            ),
+                          ),
+                          Padding(
+                            padding: EdgeInsets.only(
+                              top: 0.01 * screenSize.height,
+                            ),
+                            child: Text(
+                              'Privacy',
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black,
+                              ),
+                            ),
+                          ),
+                          Padding(
+                            padding: EdgeInsets.only(
+                              top: 0.01 * screenSize.height,
+                              left: 0.1 * screenSize.width,
+                              right: 0.1 * screenSize.width,
+                            ),
+                            child: DropdownButton<EventPrivacyRule>(
+                              isExpanded: true,
+                              value: currentEventPrivacy,
+                              hint: Text(
+                                'Event privacy settings',
+                                style: TextStyle(
+                                  color: Color(0x883D3A3A),
+                                  fontSize: 16,
+                                ),
+                              ),
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black,
+                              ),
+                              onChanged: (EventPrivacyRule newValue) {
+                                FocusScope.of(context).unfocus();
+                                setState(() {
+                                  currentEventPrivacy = newValue;
+                                });
+                              },
+                              items: eventPrivacySettings.map((privacyRule) {
+                                return DropdownMenuItem<EventPrivacyRule>(
+                                  value: privacyRule,
+                                  child: Text(privacyRule.name),
                                 );
                               }).toList(),
                             ),
