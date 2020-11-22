@@ -37,7 +37,8 @@ class UserRepository {
           .toList();
     } else {
       throw Exception(
-          'We cannot show you search results right now. Please try again later.');
+        'We cannot show you search results right now. Please try again later.',
+      );
     }
   }
 

@@ -15,19 +15,39 @@ class EventInvitationUninitialized extends EventInvitationState {
   const EventInvitationUninitialized({@required this.eventID});
 }
 
-class EventInvitationSearchPerformed extends EventInvitationState {
+class EventInvitationSearchInProgress extends EventInvitationState {
+  final String query;
+
+  const EventInvitationSearchInProgress({@required this.query});
+
+  @override
+  List<Object> get props => [query];
+}
+
+class EventInvitationSearchCompleted extends EventInvitationState {
+  final String query;
   final List<User> searchResult;
 
-  const EventInvitationSearchPerformed({@required this.searchResult});
+  const EventInvitationSearchCompleted({
+    @required this.query,
+    @required this.searchResult,
+  });
+
+  @override
+  List<Object> get props => [query, searchResult];
 }
 
 class EventInvitationInvited extends EventInvitationState {
   final String message;
+  final String inviteeID;
 
-  const EventInvitationInvited({@required this.message});
+  const EventInvitationInvited({
+    @required this.message,
+    @required this.inviteeID,
+  });
 
   @override
-  List<Object> get props => [message];
+  List<Object> get props => [message, inviteeID];
 }
 
 class EventInvitationFailure extends EventInvitationState {

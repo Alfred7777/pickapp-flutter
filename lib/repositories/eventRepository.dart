@@ -142,12 +142,14 @@ class EventRepository {
         ),
         'discipline_id': details['discipline_id'],
         'organiser_id': details['organiser_id'],
+        'event_pos': LatLng(details['lat'], details['lon']),
         'is_participant': details['is_participating?'],
         'settings': details['settings'],
       };
     } else {
       throw Exception(
-          'We cannot show you this event right now. Please try again later.');
+        'We cannot show you this event right now. Please try again later.',
+      );
     }
   }
 
@@ -210,7 +212,7 @@ class EventRepository {
     if (response.statusCode == 201) {
       return 'Successfully invited user to event.';
     } else {
-      return json.decode(response.body)['message'];
+      throw Exception(json.decode(response.body)['message']);
     }
   }
 
@@ -247,7 +249,7 @@ class EventRepository {
           (event) => DateTime(event.startDate.year, event.startDate.month,
               event.startDate.day));
     } else {
-      return {};
+      throw Exception('We cannot show your event list right now. Please try again later.');
     }
   }
 
@@ -290,6 +292,45 @@ class EventRepository {
                 requireParticipationAcceptation))
         .toList()
         .first;
+  }
+  
+  Future<List<EventInvitation>> getEventInvitations() async {
+    final client = AuthenticatedApiClient();
+    final userRepository = UserRepository();
+    final url = 'my_invitations';
+
+    var response = await client.get(url);
+
+    if (response.statusCode == 200) {
+      // ignore: omit_local_variable_types
+      List<EventInvitation> eventInvitations = [];
+      for (var invitation in json.decode(response.body)) {
+        var eventDetails = await getEventDetails(invitation['event_id']);
+        var inviter =
+            await userRepository.getProfileDetails(invitation['inviter_id']);
+        eventInvitations.add(EventInvitation(
+          invitation['id'],
+          invitation['invitee_id'],
+          eventDetails,
+          inviter,
+        ));
+      }
+      return eventInvitations;
+    } else {
+      return [];
+    }
+  }
+
+  void answerInvitation(
+      EventInvitation eventInvitation, String answer) async {
+    final client = AuthenticatedApiClient();
+    final url = 'my_invitations/${eventInvitation.id}/${answer}';
+
+    var response = await client.post(url);
+
+    if (response.statusCode != 201) {
+      throw Exception('Answering invitation failed! Please try again later.');
+    }
   }
 }
 
@@ -373,4 +414,22 @@ class Event {
       json['settings'],
     );
   }
+}
+
+class EventInvitation {
+  final String id;
+  final String inviteeID;
+  final Map<String, dynamic> eventDetails;
+  final User inviter;
+
+  EventInvitation(
+    this.id,
+    this.inviteeID,
+    this.eventDetails,
+    this.inviter,
+  );
+}
+
+String getStaticEventLocationMapString(LatLng eventPos, int zoom) {
+  return 'https://maps.googleapis.com/maps/api/staticmap?size=640x640&zoom=${zoom}&center=${eventPos.latitude},${eventPos.longitude}&markers=color:red|${eventPos.latitude},${eventPos.longitude}&key=AIzaSyBQ6O79g3WKA7Xjf3-Z1DnB4SuRZXbNrug';
 }
