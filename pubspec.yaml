@@ -31,6 +31,9 @@ dependencies:
   # Push notifications service
   onesignal_flutter: ^2.0.0
 
+  # Web socket library
+  phoenix_wings: ^0.2.1
+
   flutter_bloc: ^4.0.0
   equatable: ^1.0.0
 
