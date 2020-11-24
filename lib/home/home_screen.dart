@@ -2,6 +2,7 @@ import 'package:PickApp/map/map_screen.dart';
 import 'package:PickApp/my_events/my_events_screen.dart';
 import 'package:PickApp/widgets/bottom_navbar/bottom_navbar.dart';
 import 'package:PickApp/widgets/bottom_navbar/bottom_navbar_bloc.dart';
+import 'package:PickApp/notifications/notifications_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:PickApp/repositories/userRepository.dart';
 import 'package:PickApp/widgets/nav_drawer/nav_drawer.dart';
@@ -23,7 +24,7 @@ class HomeScreenState extends State<HomeScreen> {
     MapScreen(),
     MyEventsScreen(),
     MapScreen(), //change after groups screen is ready
-    MapScreen(), //change after alerts screen is ready
+    NotificationsScreen(),
   ];
 
   @override
