@@ -12,9 +12,11 @@ class NotificationsEvent extends Equatable {
 class FetchNotifications extends NotificationsEvent {
   final String nextToken;
   final List<Notification> notifications;
+  final int limit;
 
   const FetchNotifications({
     @required this.nextToken,
     @required this.notifications,
+    @required this.limit,
   });
 }

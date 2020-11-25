@@ -603,6 +603,7 @@ class InvitationDetails extends StatelessWidget {
           ),
           child: Text(
             eventInvitation.eventDetails['name'],
+            textAlign: TextAlign.center,
             style: TextStyle(
               color: Colors.grey[850],
               fontSize: 0.072 * screenSize.width,

@@ -25,24 +25,30 @@ class NotificationsScreenState extends State<NotificationsScreen> {
       notificationRepository: notificationRepository,
     );
     _scrollController = ScrollController();
-    _scrollController.addListener(scrollListener);
+    _scrollController.addListener(_scrollListener);
   }
 
   @override
   void dispose() {
     super.dispose();
-    _scrollController.removeListener(scrollListener);
+    _scrollController.removeListener(_scrollListener);
     _scrollController.dispose();
     _notificationsBloc.close();
   }
 
-  void scrollListener() {
+  int _notificationsLimit() {
+    var screenSize = MediaQuery.of(context).size;
+    return (screenSize.height / (0.16 * screenSize.width)).ceil() + 1;
+  }
+
+  void _scrollListener() {
     if (_scrollController.position.pixels ==
         _scrollController.position.maxScrollExtent) {
       if (_notificationsBloc.state.props.first != null) {
         _notificationsBloc.add(FetchNotifications(
           nextToken: _notificationsBloc.state.props.first,
           notifications: _notificationsBloc.state.props.last,
+          limit: _notificationsLimit(),
         ));
       }
     }
@@ -70,6 +76,7 @@ class NotificationsScreenState extends State<NotificationsScreen> {
             _notificationsBloc.add(FetchNotifications(
               nextToken: null,
               notifications: [],
+              limit: _notificationsLimit(),
             ));
           }
           if (state is NotificationsReady) {
