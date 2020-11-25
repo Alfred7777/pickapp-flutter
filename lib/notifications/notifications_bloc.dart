@@ -21,6 +21,7 @@ class NotificationsBloc extends Bloc<NotificationsEvent, NotificationsState> {
       try {
         var _notifications = await notificationRepository.getNotifications(
           event.nextToken,
+          event.limit,
         );
 
         yield NotificationsReady(

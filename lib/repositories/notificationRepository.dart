@@ -3,13 +3,15 @@ import 'package:meta/meta.dart';
 import 'package:PickApp/client.dart';
 
 class NotificationRepository {
-  Future<Map<String, dynamic>> getNotifications(String nextToken) async {
+  Future<Map<String, dynamic>> getNotifications(
+      String nextToken, int limit) async {
     var client = AuthenticatedApiClient();
     var url;
+
     if (nextToken == null) {
-      url = 'my_notifications';
+      url = 'my_notifications?limit=${limit}';
     } else {
-      url = 'my_notifications?next_token=${nextToken}';
+      url = 'my_notifications?limit=${limit}&next_token=${nextToken}';
     }
 
     var response = await client.get(url);
