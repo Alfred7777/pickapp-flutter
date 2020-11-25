@@ -258,7 +258,7 @@ class EventRepository {
       id: 1,
       name: 'Private',
       allowInvitations: false,
-      requireParticipationAcceptation: false,
+      requireParticipationAcceptation: true,
     );
 
     var public = EventPrivacyRule(
