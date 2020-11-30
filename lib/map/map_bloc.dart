@@ -20,6 +20,7 @@ class MapBloc extends Bloc<MapEvent, MapState> {
     var _icons = await assignIconsToDisciplines(_disciplines);
 
     if (event is FetchLocations) {
+      yield MapUninitialized();
       var locations = await eventRepository.getMap();
 
       yield MapReady(locations: locations, icons: _icons);

@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:math' as math;
 import 'package:PickApp/event_details/event_details_scrollable.dart';
+import 'package:PickApp/widgets/loading_screen.dart';
 import 'package:PickApp/widgets/top_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -57,13 +58,15 @@ class MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     return BlocBuilder<MapBloc, MapState>(
       bloc: _mapBloc,
+      condition: (prevState, currState) {
+        if (prevState is MapReady || currState is MapUninitialized) {
+          return false;
+        }
+        return true;
+      },
       builder: (context, state) {
         if (state is MapUninitialized) {
           _mapBloc.add(FetchLocations());
-
-          return Center(
-            child: CircularProgressIndicator(),
-          );
         }
         if (state is MapReady) {
           return Scaffold(
@@ -88,7 +91,7 @@ class MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
             ),
           );
         }
-        return CircularProgressIndicator();
+        return LoadingScreen();
       },
     );
   }
@@ -152,20 +155,19 @@ class MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
             ),
           );
           var initialCameraZoom = await controller.getZoomLevel();
-          final eventRepository = EventRepository();
+          //final eventRepository = EventRepository();
           final result = await Navigator.of(context).push(
             MaterialPageRoute(
               builder: (context) => CreateEventScreen(
-                eventRepository: eventRepository,
-                mapBloc: _mapBloc,
-                initialCameraPos: CameraUpdate.newLatLngZoom(
-                  initialCameraPos,
-                  initialCameraZoom,
+                initialCameraPos: CameraPosition(
+                  target: initialCameraPos,
+                  zoom: initialCameraZoom,
                 ),
               ),
             ),
           );
           if (result != null) {
+            _mapBloc.add(FetchLocations());
             Scaffold.of(context).showSnackBar(
               SnackBar(
                 content: Text('${result[0]}'),

@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'userRepository.dart';
 import 'package:collection/collection.dart';
@@ -6,7 +7,7 @@ import 'dart:convert';
 import 'package:PickApp/client.dart';
 
 class EventRepository {
-  Future<String> createEvent({
+  Future<Map<String, dynamic>> createEvent({
     @required String name,
     @required String description,
     @required String disciplineID,
@@ -17,19 +18,15 @@ class EventRepository {
     @required bool allowInvitations,
     @required bool requireParticipationAcceptation,
   }) async {
-    var startDatetime = startDate.toUtc().millisecondsSinceEpoch;
-    var endDatetime = endDate.toUtc().millisecondsSinceEpoch;
-    var lat = pos.latitude;
-    var lon = pos.longitude;
     var client = AuthenticatedApiClient();
 
     var body = {
       'name': '$name',
       'description': '$description',
-      'start_datetime_ms': startDatetime,
-      'end_datetime_ms': endDatetime,
-      'lat': lat,
-      'lon': lon,
+      'start_datetime_ms': startDate.toUtc().millisecondsSinceEpoch,
+      'end_datetime_ms': endDate.toUtc().millisecondsSinceEpoch,
+      'lat': pos.latitude,
+      'lon': pos.longitude,
       'discipline_id': '$disciplineID',
       'settings': {
         'allow_invitations': allowInvitations,
@@ -39,10 +36,27 @@ class EventRepository {
 
     var response = await client.post('events', body: body);
     if (response.statusCode == 201) {
-      return 'Event created';
+      return {'message': 'Event created'};
     } else {
-      throw Exception('Could not create event');
+      return formatCreateEventErrors(json.decode(response.body)['errors']);
     }
+  }
+
+  Map<String, dynamic> formatCreateEventErrors(Map<String, dynamic> errors) {
+    var errorsMap = <String, dynamic>{};
+    errors.keys.forEach((key) {
+      var errorMessage = '';
+      errors[key].forEach((message) {
+        if (message.contains('blank')) {
+          errorMessage = errorMessage +
+              '${key[0].toUpperCase()}${key.substring(1)} is required!\n';
+        } else {
+          errorMessage = errorMessage + message + '\n';
+        }
+      });
+      errorsMap[key] = errorMessage.substring(0, errorMessage.length - 1);
+    });
+    return errorsMap;
   }
 
   // For sure this could be improved ;)
@@ -249,7 +263,8 @@ class EventRepository {
           (event) => DateTime(event.startDate.year, event.startDate.month,
               event.startDate.day));
     } else {
-      throw Exception('We cannot show your event list right now. Please try again later.');
+      throw Exception(
+          'We cannot show your event list right now. Please try again later.');
     }
   }
 
@@ -293,7 +308,7 @@ class EventRepository {
         .toList()
         .first;
   }
-  
+
   Future<List<EventInvitation>> getEventInvitations() async {
     final client = AuthenticatedApiClient();
     final userRepository = UserRepository();
@@ -321,8 +336,7 @@ class EventRepository {
     }
   }
 
-  void answerInvitation(
-      EventInvitation eventInvitation, String answer) async {
+  void answerInvitation(EventInvitation eventInvitation, String answer) async {
     final client = AuthenticatedApiClient();
     final url = 'my_invitations/${eventInvitation.id}/${answer}';
 
@@ -375,11 +389,12 @@ class EventPrivacyRule {
   @override
   int get hashCode => super.hashCode;
 
-  EventPrivacyRule(
-      {this.id,
-      this.name,
-      this.allowInvitations,
-      this.requireParticipationAcceptation});
+  EventPrivacyRule({
+    this.id,
+    this.name,
+    this.allowInvitations,
+    this.requireParticipationAcceptation,
+  });
 }
 
 class Event {
