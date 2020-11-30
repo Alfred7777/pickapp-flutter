@@ -24,6 +24,7 @@ class UnreadNotificationsCountSocket {
     channel.join();
   }
 
+  // ignore: missing_return
   PhoenixMessageCallback handleNewNotificationsCount(
       Map payload, String _ref, String _joinRef) {
     var newCount = payload['count'];

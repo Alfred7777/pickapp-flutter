@@ -1,37 +1,804 @@
-import 'package:PickApp/map/map_bloc.dart';
+import 'package:PickApp/main.dart';
+import 'package:PickApp/widgets/date_picker.dart';
+import 'package:PickApp/widgets/loading_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'create_event_map.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'create_event_bloc.dart';
+import 'create_event_state.dart';
+import 'create_event_event.dart';
 import 'package:PickApp/repositories/eventRepository.dart';
 
-class CreateEventScreen extends StatelessWidget {
-  final EventRepository eventRepository;
-  final MapBloc mapBloc;
-  final initialCameraPos;
+class CreateEventScreen extends StatefulWidget {
+  final CameraPosition initialCameraPos;
 
-  CreateEventScreen({
-    Key key,
-    @required this.eventRepository,
-    @required this.mapBloc,
+  CreateEventScreen({@required this.initialCameraPos});
+
+  @override
+  State<CreateEventScreen> createState() =>
+      CreateEventScreenState(initialCameraPos: initialCameraPos);
+}
+
+class CreateEventScreenState extends State<CreateEventScreen> {
+  final CameraPosition initialCameraPos;
+  final eventRepository = EventRepository();
+  CreateEventBloc _createEventBloc;
+
+  TextEditingController _nameController;
+  TextEditingController _descriptionController;
+  String _disciplineID;
+  DateTime _startDate;
+  DateTime _endDate;
+  EventPrivacyRule _eventPrivacyRule;
+
+  CreateEventScreenState({
     @required this.initialCameraPos,
-  })  : assert(eventRepository != null),
-        assert(mapBloc != null),
-        assert(initialCameraPos != null),
-        super(key: key);
+  });
+
+  @override
+  void initState() {
+    super.initState();
+    _createEventBloc = CreateEventBloc(
+      eventRepository: eventRepository,
+    );
+
+    _nameController = TextEditingController();
+    _descriptionController = TextEditingController();
+
+    _startDate = DateTime.now().add(Duration(minutes: 15));
+    _endDate = DateTime.now().add(Duration(hours: 2, minutes: 15));
+
+    _eventPrivacyRule = eventRepository.convertSettingsToEventPrivacyRule(
+      true,
+      false,
+    );
+  }
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _descriptionController.dispose();
+    _createEventBloc.close();
+    super.dispose();
+  }
+
+  void _pickLocation(LatLng pos) {
+    _createEventBloc.add(
+      LocationPicked(
+        disciplines: _createEventBloc.state.props[0],
+        eventPrivacySettings: _createEventBloc.state.props[1],
+        pickedPos: pos,
+      ),
+    );
+  }
+
+  void _setDiscipline(String disciplineID) {
+    _disciplineID = disciplineID;
+  }
+
+  void _setStartDate(DateTime startDate) {
+    _startDate = startDate;
+  }
+
+  void _setEndDate(DateTime endDate) {
+    _endDate = endDate;
+  }
+
+  void _setEventPrivacy(EventPrivacyRule eventPrivacyRule) {
+    _eventPrivacyRule = eventPrivacyRule;
+  }
+
+  void _createEvent() {
+    _createEventBloc.add(
+      CreateEventButtonPressed(
+        disciplines: _createEventBloc.state.props[0],
+        eventPrivacySettings: _createEventBloc.state.props[1],
+        eventName: _nameController.text,
+        eventDescription: _descriptionController.text,
+        eventDisciplineID: _disciplineID,
+        eventPos: _createEventBloc.state.props[2],
+        eventStartDate: _startDate,
+        eventEndDate: _endDate,
+        allowInvitations: _eventPrivacyRule.allowInvitations,
+        requireParticipationAcceptation:
+            _eventPrivacyRule.requireParticipationAcceptation,
+      ),
+    );
+  }
+
+  void _showCreateEventPopup(Map<String, dynamic> errors) {
+    showDialog(
+      context: navigatorKey.currentContext,
+      builder: (BuildContext context) {
+        return CreateEventPopup(
+          nameController: _nameController,
+          descriptionController: _descriptionController,
+          disciplines: _createEventBloc.state.props[0],
+          eventPrivacySettings: _createEventBloc.state.props[1],
+          createEvent: _createEvent,
+          setDiscipline: _setDiscipline,
+          setStartDate: _setStartDate,
+          setEndDate: _setEndDate,
+          setEventPrivacy: _setEventPrivacy,
+          initDisciplineID: _disciplineID,
+          initStartDate: _startDate,
+          initEndDate: _endDate,
+          initEventPrivacy: _eventPrivacyRule,
+          errors: errors,
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: BlocProvider(
-        create: (context) {
-          return CreateEventBloc(
-            eventRepository: eventRepository,
-            mapBloc: mapBloc,
+    return BlocListener<CreateEventBloc, CreateEventState>(
+      bloc: _createEventBloc,
+      listener: (context, state) {
+        if (state is FetchDisciplinesFailure) {
+          Scaffold.of(context).showSnackBar(
+            SnackBar(
+              content: Text('${state.error}'),
+              backgroundColor: Colors.red,
+            ),
           );
+        }
+        if (state is CreateEventFailure) {
+          Navigator.pop(context);
+          _showCreateEventPopup(state.errors);
+        }
+        if (state is CreateEventCreated) {
+          Navigator.pop(context);
+          Navigator.pop(context, ['Event created', state.props.first]);
+        }
+      },
+      child: BlocBuilder<CreateEventBloc, CreateEventState>(
+        bloc: _createEventBloc,
+        condition: (prevState, currState) {
+          if (currState is CreateEventLoading) {
+            return false;
+          }
+          return true;
         },
-        child: CreateEventMap(initialCameraPos: initialCameraPos),
+        builder: (context, state) {
+          if (state is CreateEventInitial) {
+            _createEventBloc.add(FetchDisciplines());
+          }
+          if (state is CreateEventReady) {
+            return Scaffold(
+              body: CreateEventMap(
+                initialCameraPos: initialCameraPos,
+                pickedPos: state.pickedPos,
+                pickLocation: _pickLocation,
+                showCreateEventPopup: _showCreateEventPopup,
+              ),
+            );
+          }
+          return LoadingScreen();
+        },
       ),
+    );
+  }
+}
+
+class CreateEventMap extends StatelessWidget {
+  final CameraPosition initialCameraPos;
+  final LatLng pickedPos;
+  final Function pickLocation;
+  final Function showCreateEventPopup;
+
+  const CreateEventMap({
+    @required this.initialCameraPos,
+    @required this.pickedPos,
+    @required this.pickLocation,
+    @required this.showCreateEventPopup,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    var screenSize = MediaQuery.of(context).size;
+    return Stack(
+      alignment: Alignment.center,
+      overflow: Overflow.visible,
+      children: [
+        GoogleMap(
+          initialCameraPosition: initialCameraPos,
+          mapToolbarEnabled: false,
+          zoomControlsEnabled: false,
+          myLocationButtonEnabled: false,
+          markers: pickedPos == null
+              ? {}
+              : {
+                  Marker(
+                    markerId: MarkerId('pickedPos'),
+                    position: pickedPos,
+                  )
+                },
+          onTap: (LatLng point) {
+            pickLocation(point);
+          },
+        ),
+        Positioned(
+          bottom: 0.064 * screenSize.height,
+          child: MaterialButton(
+            onPressed: () {
+              if (pickedPos == null) {
+                Scaffold.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('Pick event location!'),
+                    backgroundColor: Colors.red,
+                  ),
+                );
+              } else {
+                showCreateEventPopup({
+                  'OK': [],
+                });
+              }
+            },
+            height: 0.06 * screenSize.height,
+            minWidth: 0.32 * screenSize.width,
+            color: Colors.green,
+            child: Text(
+              'CREATE EVENT',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 0.026 * screenSize.height,
+              ),
+            ),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(
+                0.02 * screenSize.width,
+              ),
+            ),
+          ),
+        ),
+        Positioned.fill(
+          child: Align(
+            alignment: Alignment.topCenter,
+            child: Container(
+              height: 0.15 * screenSize.height,
+              width: screenSize.width,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Colors.green,
+                    Colors.green,
+                    Colors.green.withAlpha(0),
+                  ],
+                ),
+              ),
+              child: Align(
+                alignment: Alignment.center,
+                child: Text(
+                  'Tap on map to choose location',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 0.026 * screenSize.height,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class CreateEventPopup extends StatelessWidget {
+  final TextEditingController nameController;
+  final TextEditingController descriptionController;
+  final List<Discipline> disciplines;
+  final List<EventPrivacyRule> eventPrivacySettings;
+  final Function createEvent;
+  final Function setDiscipline;
+  final Function setStartDate;
+  final Function setEndDate;
+  final Function setEventPrivacy;
+  final String initDisciplineID;
+  final DateTime initStartDate;
+  final DateTime initEndDate;
+  final EventPrivacyRule initEventPrivacy;
+  final Map<String, dynamic> errors;
+
+  CreateEventPopup({
+    @required this.nameController,
+    @required this.descriptionController,
+    @required this.disciplines,
+    @required this.eventPrivacySettings,
+    @required this.createEvent,
+    @required this.setDiscipline,
+    @required this.setStartDate,
+    @required this.setEndDate,
+    @required this.setEventPrivacy,
+    @required this.initDisciplineID,
+    @required this.initStartDate,
+    @required this.initEndDate,
+    @required this.initEventPrivacy,
+    @required this.errors,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    var screenSize = MediaQuery.of(context).size;
+    return Padding(
+      padding: EdgeInsets.only(
+        top: 0.16 * screenSize.height,
+        bottom: 0.03 * screenSize.height,
+        left: 0.04 * screenSize.width,
+        right: 0.04 * screenSize.width,
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(0.02 * screenSize.width),
+        child: Material(
+          child: CreateEventStepper(
+            nameController: nameController,
+            descriptionController: descriptionController,
+            disciplines: disciplines,
+            eventPrivacySettings: eventPrivacySettings,
+            createEvent: createEvent,
+            setDiscipline: setDiscipline,
+            setStartDate: setStartDate,
+            setEndDate: setEndDate,
+            setEventPrivacy: setEventPrivacy,
+            initDisciplineID: initDisciplineID,
+            initStartDate: initStartDate,
+            initEndDate: initEndDate,
+            initEventPrivacy: initEventPrivacy,
+            errors: errors,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class CreateEventStepper extends StatefulWidget {
+  final TextEditingController nameController;
+  final TextEditingController descriptionController;
+  final List<Discipline> disciplines;
+  final List<EventPrivacyRule> eventPrivacySettings;
+  final Function createEvent;
+  final Function setDiscipline;
+  final Function setStartDate;
+  final Function setEndDate;
+  final Function setEventPrivacy;
+  final String initDisciplineID;
+  final DateTime initStartDate;
+  final DateTime initEndDate;
+  final EventPrivacyRule initEventPrivacy;
+  final Map<String, dynamic> errors;
+
+  CreateEventStepper({
+    @required this.nameController,
+    @required this.descriptionController,
+    @required this.disciplines,
+    @required this.eventPrivacySettings,
+    @required this.createEvent,
+    @required this.setDiscipline,
+    @required this.setStartDate,
+    @required this.setEndDate,
+    @required this.setEventPrivacy,
+    @required this.initDisciplineID,
+    @required this.initStartDate,
+    @required this.initEndDate,
+    @required this.initEventPrivacy,
+    @required this.errors,
+  });
+
+  @override
+  State<CreateEventStepper> createState() => CreateEventStepperState(
+        nameController: nameController,
+        descriptionController: descriptionController,
+        disciplines: disciplines,
+        eventPrivacySettings: eventPrivacySettings,
+        createEvent: createEvent,
+        setDiscipline: setDiscipline,
+        setStartDate: setStartDate,
+        setEndDate: setEndDate,
+        setEventPrivacy: setEventPrivacy,
+        initDisciplineID: initDisciplineID,
+        initStartDate: initStartDate,
+        initEndDate: initEndDate,
+        initEventPrivacy: initEventPrivacy,
+        errors: errors,
+      );
+}
+
+class CreateEventStepperState extends State<CreateEventStepper> {
+  final TextEditingController nameController;
+  final TextEditingController descriptionController;
+  final List<Discipline> disciplines;
+  final List<EventPrivacyRule> eventPrivacySettings;
+  final Function createEvent;
+  final Function setDiscipline;
+  final Function setStartDate;
+  final Function setEndDate;
+  final Function setEventPrivacy;
+  final String initDisciplineID;
+  final DateTime initStartDate;
+  final DateTime initEndDate;
+  final EventPrivacyRule initEventPrivacy;
+  final Map<String, dynamic> errors;
+  int _currentStep = 0;
+
+  CreateEventStepperState({
+    @required this.nameController,
+    @required this.descriptionController,
+    @required this.disciplines,
+    @required this.eventPrivacySettings,
+    @required this.createEvent,
+    @required this.setDiscipline,
+    @required this.setStartDate,
+    @required this.setEndDate,
+    @required this.setEventPrivacy,
+    @required this.initDisciplineID,
+    @required this.initStartDate,
+    @required this.initEndDate,
+    @required this.initEventPrivacy,
+    @required this.errors,
+  });
+
+  StepState getStepState(int stepNumber, String stepLabel) {
+    if (stepLabel == 'Information') {
+      if (errors.containsKey('name') ||
+          errors.containsKey('description') ||
+          errors.containsKey('discipline_id')) {
+        return StepState.error;
+      }
+    }
+    if (stepLabel == 'Date') {
+      if (errors.containsKey('start_datetime') ||
+          errors.containsKey('end_datetime')) {
+        return StepState.error;
+      }
+    }
+    if (stepLabel == 'Privacy Settings') {
+      if (errors.containsKey('settings')) {
+        return StepState.error;
+      }
+    }
+    if (stepNumber < _currentStep) {
+      return StepState.complete;
+    }
+    if (stepNumber == _currentStep) {
+      return StepState.editing;
+    }
+    return StepState.indexed;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Stepper(
+      currentStep: _currentStep,
+      onStepTapped: (int stepNumber) => setState(() {
+        _currentStep = stepNumber;
+      }),
+      onStepContinue: () => setState(() {
+        if (_currentStep != 2) {
+          _currentStep += 1;
+        } else {
+          createEvent();
+        }
+      }),
+      onStepCancel: () => setState(() {
+        if (_currentStep != 0) {
+          _currentStep -= 1;
+        } else {
+          Navigator.pop(context);
+        }
+      }),
+      controlsBuilder: (BuildContext context,
+          {VoidCallback onStepContinue, VoidCallback onStepCancel}) {
+        return Row(
+          children: [
+            MaterialButton(
+              child: Text(
+                _currentStep < 2 ? 'Next' : 'Create',
+                style: TextStyle(
+                  fontSize: 16,
+                ),
+              ),
+              color: Colors.green,
+              textColor: Colors.white,
+              onPressed: onStepContinue,
+            ),
+            SizedBox(width: 4),
+            MaterialButton(
+              child: Text(
+                'Back',
+                style: TextStyle(
+                  fontSize: 16,
+                ),
+              ),
+              textColor: Colors.grey[600],
+              onPressed: onStepCancel,
+            ),
+          ],
+        );
+      },
+      steps: [
+        Step(
+          title: const Text('Information'),
+          isActive: true,
+          state: getStepState(0, 'Information'),
+          content: InformationStep(
+            nameController: nameController,
+            descriptionController: descriptionController,
+            disciplines: disciplines,
+            setDiscipline: setDiscipline,
+            initDisciplineID: initDisciplineID,
+            errors: errors,
+          ),
+        ),
+        Step(
+          title: const Text('Date'),
+          isActive: true,
+          state: getStepState(1, 'Date'),
+          content: DateStep(
+            setStartDate: setStartDate,
+            setEndDate: setEndDate,
+            initStartDate: initStartDate,
+            initEndDate: initEndDate,
+            errors: errors,
+          ),
+        ),
+        Step(
+          title: const Text('Privacy Settings'),
+          isActive: true,
+          state: getStepState(2, 'Privacy Settings'),
+          content: PrivacySettingsStep(
+            eventPrivacySettings: eventPrivacySettings,
+            setEventPrivacy: setEventPrivacy,
+            initEventPrivacy: initEventPrivacy,
+            errors: errors,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class InformationStep extends StatelessWidget {
+  final TextEditingController nameController;
+  final TextEditingController descriptionController;
+  final List<Discipline> disciplines;
+  final Function setDiscipline;
+  final String initDisciplineID;
+  final Map<String, dynamic> errors;
+
+  const InformationStep({
+    @required this.nameController,
+    @required this.descriptionController,
+    @required this.disciplines,
+    @required this.setDiscipline,
+    @required this.initDisciplineID,
+    @required this.errors,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final node = FocusScope.of(context);
+    var _disciplineID = initDisciplineID;
+    return Column(
+      children: [
+        SizedBox(height: 2.0),
+        TextFormField(
+          autovalidateMode: AutovalidateMode.always,
+          controller: nameController,
+          textInputAction: TextInputAction.next,
+          decoration: InputDecoration(
+            border: OutlineInputBorder(),
+            errorBorder: OutlineInputBorder(
+              borderSide: BorderSide(
+                color: Colors.red,
+              ),
+            ),
+            focusedErrorBorder: OutlineInputBorder(
+              borderSide: BorderSide(
+                color: Colors.red,
+                width: 2.0,
+              ),
+            ),
+            errorStyle: TextStyle(color: Colors.red),
+            labelText: 'Event Name',
+          ),
+          onEditingComplete: () => node.nextFocus(),
+          validator: (value) {
+            if (errors.containsKey('name')) {
+              return errors['name'];
+            }
+            return null;
+          },
+        ),
+        SizedBox(height: 14.0),
+        TextFormField(
+          autovalidateMode: AutovalidateMode.always,
+          controller: descriptionController,
+          maxLines: 3,
+          keyboardType: TextInputType.text,
+          textInputAction: TextInputAction.done,
+          decoration: InputDecoration(
+            border: OutlineInputBorder(),
+            errorBorder: OutlineInputBorder(
+              borderSide: BorderSide(
+                color: Colors.red,
+              ),
+            ),
+            focusedErrorBorder: OutlineInputBorder(
+              borderSide: BorderSide(
+                color: Colors.red,
+                width: 2.0,
+              ),
+            ),
+            errorStyle: TextStyle(color: Colors.red),
+            labelText: 'Event Description',
+          ),
+          onEditingComplete: () => node.unfocus(),
+          validator: (value) {
+            if (errors.containsKey('description')) {
+              return errors['description'];
+            }
+            return null;
+          },
+        ),
+        SizedBox(height: 14.0),
+        DropdownButtonFormField<String>(
+          autovalidateMode: AutovalidateMode.always,
+          isExpanded: true,
+          decoration: const InputDecoration(
+            border: OutlineInputBorder(),
+            errorBorder: OutlineInputBorder(
+              borderSide: BorderSide(
+                color: Colors.red,
+              ),
+            ),
+            focusedErrorBorder: OutlineInputBorder(
+              borderSide: BorderSide(
+                color: Colors.red,
+                width: 2.0,
+              ),
+            ),
+            errorStyle: TextStyle(color: Colors.red),
+            labelText: 'Discipline',
+          ),
+          value: _disciplineID,
+          items: disciplines.map((discipline) {
+            return DropdownMenuItem<String>(
+              value: discipline.id,
+              child: Text(discipline.name),
+            );
+          }).toList(),
+          onChanged: (String newValue) {
+            _disciplineID = newValue;
+            setDiscipline(newValue);
+          },
+          validator: (value) {
+            if (errors.containsKey('discipline_id')) {
+              return errors['discipline_id'];
+            }
+            return null;
+          },
+        ),
+        SizedBox(height: 8.0),
+      ],
+    );
+  }
+}
+
+class DateStep extends StatelessWidget {
+  final Function setStartDate;
+  final Function setEndDate;
+  final DateTime initStartDate;
+  final DateTime initEndDate;
+  final Map<String, dynamic> errors;
+
+  const DateStep({
+    @required this.setStartDate,
+    @required this.setEndDate,
+    @required this.initStartDate,
+    @required this.initEndDate,
+    @required this.errors,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        SizedBox(height: 2.0),
+        TextFieldDateTimePicker(
+          labelText: 'Start date',
+          prefixIcon: Icon(
+            Icons.date_range,
+            color: Colors.grey[850],
+          ),
+          firstDate: DateTime(DateTime.now().year - 10),
+          lastDate: DateTime(DateTime.now().year + 10),
+          initialDate: initStartDate,
+          onDateChanged: (DateTime date) {
+            setStartDate(date);
+          },
+          validator: (value) {
+            if (errors.containsKey('start_datetime')) {
+              return errors['start_datetime'];
+            }
+            return null;
+          },
+        ),
+        SizedBox(height: 14.0),
+        TextFieldDateTimePicker(
+          labelText: 'End date',
+          prefixIcon: Icon(
+            Icons.date_range,
+            color: Colors.grey[850],
+          ),
+          firstDate: DateTime(DateTime.now().year - 10),
+          lastDate: DateTime(DateTime.now().year + 10),
+          initialDate: initEndDate,
+          onDateChanged: (DateTime date) {
+            setEndDate(date);
+          },
+          validator: (value) {
+            if (errors.containsKey('end_datetime')) {
+              return errors['end_datetime'];
+            }
+            return null;
+          },
+        ),
+        SizedBox(height: 8.0),
+      ],
+    );
+  }
+}
+
+class PrivacySettingsStep extends StatelessWidget {
+  final List<EventPrivacyRule> eventPrivacySettings;
+  final Function setEventPrivacy;
+  final EventPrivacyRule initEventPrivacy;
+  final Map<String, dynamic> errors;
+
+  const PrivacySettingsStep({
+    @required this.eventPrivacySettings,
+    @required this.setEventPrivacy,
+    @required this.initEventPrivacy,
+    @required this.errors,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    var _eventPrivacy = initEventPrivacy;
+    return Column(
+      children: [
+        SizedBox(height: 2.0),
+        DropdownButtonFormField<EventPrivacyRule>(
+          isExpanded: true,
+          decoration: const InputDecoration(
+            border: OutlineInputBorder(),
+            labelText: 'Privacy Settings',
+          ),
+          value: _eventPrivacy,
+          items: eventPrivacySettings.map((privacyRule) {
+            return DropdownMenuItem<EventPrivacyRule>(
+              value: privacyRule,
+              child: Text(privacyRule.name),
+            );
+          }).toList(),
+          onChanged: (EventPrivacyRule newValue) {
+            _eventPrivacy = newValue;
+            setEventPrivacy(newValue);
+          },
+          validator: (value) {
+            if (errors.containsKey('settings')) {
+              errors['settings'];
+            }
+            return null;
+          },
+        ),
+        SizedBox(height: 8.0),
+      ],
     );
   }
 }
