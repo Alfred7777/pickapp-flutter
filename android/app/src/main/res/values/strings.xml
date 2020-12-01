@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">PickApp</string>
+    <string name="facebook_app_id">184383603396137</string>
+    <string name="fb_login_protocol_scheme">fb184383603396137</string>
+</resources>

@@ -18,9 +18,7 @@ void main() {
 
   runApp(BlocProvider<AuthenticationBloc>(
     create: (context) {
-      return AuthenticationBloc(
-        userRepository: userRepository,
-      )..add(AppStarted());
+      return AuthenticationBloc()..add(AppStarted());
     },
     child: MyApp(userRepository: userRepository),
   ));

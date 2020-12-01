@@ -72,7 +72,6 @@ class LocationRepository {
     var response = await client.get(url);
 
     if (response.statusCode == 200) {
-      print(json.decode(response.body));
       return json
           .decode(response.body)
           .map<Location>((location) => Location.fromJson(location))

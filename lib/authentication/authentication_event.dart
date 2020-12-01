@@ -10,13 +10,35 @@ abstract class AuthenticationEvent extends Equatable {
 
 class AppStarted extends AuthenticationEvent {}
 
-class LoggedIn extends AuthenticationEvent {
+class LoggedInByEmail extends AuthenticationEvent {
   final String authResponse;
 
-  const LoggedIn({@required this.authResponse});
+  const LoggedInByEmail({@required this.authResponse});
 
   @override
   List<Object> get props => [authResponse];
+}
+
+class LoggedInByFacebook extends AuthenticationEvent {
+  final String authToken;
+  final Map<String, dynamic> userData;
+  final String fbAuthToken;
+  final String userId;
+
+  const LoggedInByFacebook({
+    @required this.authToken,
+    @required this.userData,
+    @required this.fbAuthToken,
+    @required this.userId,
+  });
+
+  @override
+  List<Object> get props => [
+        authToken,
+        userData,
+        fbAuthToken,
+        userId,
+      ];
 }
 
 class LoggedOut extends AuthenticationEvent {}

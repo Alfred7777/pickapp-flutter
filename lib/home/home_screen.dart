@@ -71,10 +71,7 @@ class HomeScreenState extends State<HomeScreen> {
       ),
       bottomNavigationBar: BlocProvider(
         create: (context) {
-          return BottomNavbarBloc(
-            homeBloc: _homeBloc,
-            userRepository: userRepository,
-          );
+          return BottomNavbarBloc(homeBloc: _homeBloc);
         },
         child: BottomNavbarWidget(),
       ),

@@ -1,18 +1,12 @@
 import 'dart:convert';
+import 'package:PickApp/repositories/authentication_repository.dart';
 import 'package:bloc/bloc.dart';
-import 'package:meta/meta.dart';
 import '../push_notifications.dart';
 import 'authentication_event.dart';
 import 'authentication_state.dart';
-import 'package:PickApp/repositories/user_repository.dart';
 
 class AuthenticationBloc
     extends Bloc<AuthenticationEvent, AuthenticationState> {
-  final UserRepository userRepository;
-
-  AuthenticationBloc({@required this.userRepository})
-      : assert(userRepository != null);
-
   @override
   AuthenticationState get initialState => AuthenticationUninitialized();
 
@@ -20,7 +14,7 @@ class AuthenticationBloc
   Stream<AuthenticationState> mapEventToState(
       AuthenticationEvent event) async* {
     if (event is AppStarted) {
-      final hasToken = await userRepository.hasToken();
+      final hasToken = await AuthenticationRepository.hasToken();
 
       if (hasToken) {
         yield AuthenticationAuthenticated();
@@ -29,23 +23,30 @@ class AuthenticationBloc
       }
     }
 
-    if (event is LoggedIn) {
+    if (event is LoggedInByEmail) {
+      var userID = json.decode(event.authResponse)['user_id'];
+      var authToken = (json.decode(event.authResponse))['auth_token'];
+
       yield AuthenticationLoading();
-      await userRepository.persistToken(event.authResponse);
-      unawaited(assignExternalUserIDForPushNotifications(event.authResponse));
+      initializeSession(userID, authToken);
+      yield AuthenticationAuthenticated();
+    }
+
+    if (event is LoggedInByFacebook) {
+      yield AuthenticationLoading();
+      initializeSession(event.userId, event.authToken);
       yield AuthenticationAuthenticated();
     }
 
     if (event is LoggedOut) {
       yield AuthenticationLoading();
-      await userRepository.deleteToken();
+      await AuthenticationRepository.deleteToken();
       yield AuthenticationUnauthenticated();
     }
   }
 
-  Future<void> assignExternalUserIDForPushNotifications(
-      String authResponse) async {
-    var userID = json.decode(authResponse)['user_id'];
+  void initializeSession(String userID, String authToken) async {
+    await AuthenticationRepository.persistToken(authToken);
     unawaited(PushNotifications.assignExternalUserID(userID));
   }
 

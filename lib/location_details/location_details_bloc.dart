@@ -36,7 +36,6 @@ class LocationDetailsBloc
           eventList: _eventList,
         );
       } catch (exception) {
-        print(exception.toString());
         yield LocationDetailsFailure(error: exception.message);
       }
     }
