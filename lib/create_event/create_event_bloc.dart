@@ -48,8 +48,7 @@ class CreateEventBloc extends Bloc<CreateEventEvent, CreateEventState> {
         startDate: event.eventStartDate,
         endDate: event.eventEndDate,
         allowInvitations: event.allowInvitations,
-        requireParticipationAcceptation:
-            event.requireParticipationAcceptation,
+        requireParticipationAcceptation: event.requireParticipationAcceptation,
       );
       if (response.containsKey('message')) {
         yield CreateEventCreated(

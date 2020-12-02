@@ -28,10 +28,10 @@ class AnswerInvitation extends MyEventsEvent {
 
   @override
   List<Object> get props => [
-    invitation,
-    myActiveEvents,
-    myPastEvents,
-    eventInvitations,
-    answer,
-  ];
+        invitation,
+        myActiveEvents,
+        myPastEvents,
+        eventInvitations,
+        answer,
+      ];
 }

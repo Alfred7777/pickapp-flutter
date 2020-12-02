@@ -138,7 +138,8 @@ class ProfileScreenState extends State<ProfileScreen> {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20.0),
         ),
-        child: Text('FOLLOW',
+        child: Text(
+          'FOLLOW',
           style: TextStyle(
             fontSize: 17.0,
             fontWeight: FontWeight.bold,

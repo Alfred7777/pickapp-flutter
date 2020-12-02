@@ -23,7 +23,6 @@ class _EventLocationScreenState extends State<EventLocationScreen> {
     target: LatLng(52.4064, 16.9252),
     zoom: 13,
   );
-  
 
   _EventLocationScreenState({@required this.event});
 

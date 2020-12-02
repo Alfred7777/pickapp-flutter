@@ -108,7 +108,8 @@ class MapScreenState extends State<FilterMapScreen> {
                                 child: DropdownButton<String>(
                                   isExpanded: true,
                                   value: _dropdownCurrentDisciplineId,
-                                  hint: Text('Discipline',
+                                  hint: Text(
+                                    'Discipline',
                                     style: TextStyle(
                                       color: Color(0x883D3A3A),
                                       fontSize: 16,
@@ -120,22 +121,22 @@ class MapScreenState extends State<FilterMapScreen> {
                                     });
                                   },
                                   items: [
-                                    DropdownMenuItem<String>(
-                                      child: Text('None'),
-                                      value: null,
-                                    ),
-                                  ] +
-                                  disciplines.map(
-                                    (discipline) {
-                                      return DropdownMenuItem<String>(
-                                        key: Key(discipline.id),
-                                        value: discipline.id,
-                                        child: Text(
-                                          discipline.name,
+                                        DropdownMenuItem<String>(
+                                          child: Text('None'),
+                                          value: null,
                                         ),
-                                      );
-                                    },
-                                  ).toList(),
+                                      ] +
+                                      disciplines.map(
+                                        (discipline) {
+                                          return DropdownMenuItem<String>(
+                                            key: Key(discipline.id),
+                                            value: discipline.id,
+                                            child: Text(
+                                              discipline.name,
+                                            ),
+                                          );
+                                        },
+                                      ).toList(),
                                 ),
                               ),
                             ),

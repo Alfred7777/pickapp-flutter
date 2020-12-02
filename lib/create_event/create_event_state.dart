@@ -56,7 +56,8 @@ class CreateEventFailure extends CreateEventState {
   });
 
   @override
-  List<Object> get props => [disciplines, eventPrivacySettings, pickedPos, errors];
+  List<Object> get props =>
+      [disciplines, eventPrivacySettings, pickedPos, errors];
 }
 
 class FetchDisciplinesFailure extends CreateEventState {
