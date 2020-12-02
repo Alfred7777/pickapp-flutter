@@ -1,8 +1,14 @@
 image: cirrusci/flutter:stable
 
 stages:
+  - check_format
   - analyze
   - test
+
+flutter_check_format:
+  stage: check_format
+  script:
+    - flutter format --set-exit-if-changed .
 
 flutter_analyze:
   stage: analyze
@@ -13,6 +19,3 @@ flutter_test:
   stage: test
   script:
     - flutter test
-
-
-  
