@@ -374,6 +374,8 @@ class EventBar extends StatelessWidget {
                 padding: EdgeInsets.only(left: 0.04 * screenSize.width),
                 child: Text(
                   event.name,
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 2,
                   style: TextStyle(
                     color: Color(0xFF3D3A3A),
                     fontSize: 0.05 * screenSize.width,
@@ -484,6 +486,8 @@ class InvitationBar extends StatelessWidget {
                   children: [
                     Text(
                       eventInvitation.eventDetails['name'],
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 2,
                       style: TextStyle(
                         color: Color(0xFF3D3A3A),
                         fontSize: 0.048 * screenSize.width,
@@ -492,6 +496,8 @@ class InvitationBar extends StatelessWidget {
                     ),
                     Text(
                       '@${eventInvitation.inviter.uniqueUsername} has invited you',
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
                       style: TextStyle(
                         color: Color(0xFFA7A7A7),
                         fontSize: 0.03 * screenSize.width,
