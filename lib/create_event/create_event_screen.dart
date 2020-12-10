@@ -84,6 +84,23 @@ class CreateEventScreenState extends State<CreateEventScreen> {
     _endDate = endDate;
   }
 
+  String _validateStartDate() {
+    if (_startDate.isAfter(_endDate)) {
+      return 'Event can\'t start after the end of it!';
+    }
+    if (DateTime.now().isAfter(_startDate)) {
+      return 'Event can\'t start in the past!';
+    }
+    return null;
+  }
+
+  String _validateEndDate() {
+    if (DateTime.now().isAfter(_endDate)) {
+      return 'Event can\'t end in the past!';
+    }
+    return null;
+  }
+
   void _setEventPrivacy(EventPrivacyRule eventPrivacyRule) {
     _eventPrivacyRule = eventPrivacyRule;
   }
@@ -106,7 +123,7 @@ class CreateEventScreenState extends State<CreateEventScreen> {
     );
   }
 
-  void _showCreateEventPopup(Map<String, dynamic> errors) {
+  void _showCreateEventPopup() {
     showDialog(
       context: navigatorKey.currentContext,
       builder: (BuildContext context) {
@@ -124,7 +141,8 @@ class CreateEventScreenState extends State<CreateEventScreen> {
           initStartDate: _startDate,
           initEndDate: _endDate,
           initEventPrivacy: _eventPrivacyRule,
-          errors: errors,
+          validateStartDate: _validateStartDate,
+          validateEndDate: _validateEndDate,
         );
       },
     );
@@ -132,50 +150,58 @@ class CreateEventScreenState extends State<CreateEventScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<CreateEventBloc, CreateEventState>(
-      bloc: _createEventBloc,
-      listener: (context, state) {
-        if (state is FetchDisciplinesFailure) {
-          Scaffold.of(context).showSnackBar(
-            SnackBar(
-              content: Text('${state.error}'),
-              backgroundColor: Colors.red,
-            ),
-          );
-        }
-        if (state is CreateEventFailure) {
-          Navigator.pop(context);
-          _showCreateEventPopup(state.errors);
-        }
-        if (state is CreateEventCreated) {
-          Navigator.pop(context);
-          Navigator.pop(context, ['Event created', state.props.first]);
-        }
-      },
-      child: BlocBuilder<CreateEventBloc, CreateEventState>(
+    return Scaffold(
+      body: BlocListener<CreateEventBloc, CreateEventState>(
         bloc: _createEventBloc,
-        condition: (prevState, currState) {
-          if (currState is CreateEventLoading) {
-            return false;
+        listener: (context, state) {
+          if (state is FetchDisciplinesFailure) {
+            Scaffold.of(context).showSnackBar(
+              SnackBar(
+                content: Text('${state.error}'),
+                backgroundColor: Colors.red,
+              ),
+            );
           }
-          return true;
+          if (state is CreateEventFailure) {
+            Navigator.pop(context);
+            Scaffold.of(context).showSnackBar(
+              SnackBar(
+                content: Text('${state.error}'),
+                backgroundColor: Colors.red,
+              ),
+            );
+          }
+          if (state is CreateEventCreated) {
+            Navigator.pop(context);
+            Navigator.pop(context, ['Event created', state.props.first]);
+          }
         },
-        builder: (context, state) {
-          if (state is CreateEventInitial) {
-            _createEventBloc.add(FetchDisciplines());
-          }
-          if (state is CreateEventReady) {
-            return Scaffold(
-              body: CreateEventMap(
+        child: BlocBuilder<CreateEventBloc, CreateEventState>(
+          bloc: _createEventBloc,
+          condition: (prevState, currState) {
+            if (currState is CreateEventLoading) {
+              return false;
+            }
+            if (currState is CreateEventFailure) {
+              return false;
+            }
+            return true;
+          },
+          builder: (context, state) {
+            if (state is CreateEventInitial) {
+              _createEventBloc.add(FetchDisciplines());
+            }
+            if (state is CreateEventReady) {
+              return CreateEventMap(
                 initialCameraPos: initialCameraPos,
                 pickedPos: state.pickedPos,
                 pickLocation: _pickLocation,
                 showCreateEventPopup: _showCreateEventPopup,
-              ),
-            );
-          }
-          return LoadingScreen();
-        },
+              );
+            }
+            return LoadingScreen();
+          },
+        ),
       ),
     );
   }
@@ -230,9 +256,7 @@ class CreateEventMap extends StatelessWidget {
                   ),
                 );
               } else {
-                showCreateEventPopup({
-                  'OK': [],
-                });
+                showCreateEventPopup();
               }
             },
             height: 0.06 * screenSize.height,
@@ -302,7 +326,8 @@ class CreateEventPopup extends StatelessWidget {
   final DateTime initStartDate;
   final DateTime initEndDate;
   final EventPrivacyRule initEventPrivacy;
-  final Map<String, dynamic> errors;
+  final Function validateStartDate;
+  final Function validateEndDate;
 
   CreateEventPopup({
     @required this.nameController,
@@ -318,7 +343,8 @@ class CreateEventPopup extends StatelessWidget {
     @required this.initStartDate,
     @required this.initEndDate,
     @required this.initEventPrivacy,
-    @required this.errors,
+    @required this.validateStartDate,
+    @required this.validateEndDate,
   });
 
   @override
@@ -348,7 +374,8 @@ class CreateEventPopup extends StatelessWidget {
             initStartDate: initStartDate,
             initEndDate: initEndDate,
             initEventPrivacy: initEventPrivacy,
-            errors: errors,
+            validateStartDate: validateStartDate,
+            validateEndDate: validateEndDate,
           ),
         ),
       ),
@@ -370,7 +397,8 @@ class CreateEventStepper extends StatefulWidget {
   final DateTime initStartDate;
   final DateTime initEndDate;
   final EventPrivacyRule initEventPrivacy;
-  final Map<String, dynamic> errors;
+  final Function validateStartDate;
+  final Function validateEndDate;
 
   CreateEventStepper({
     @required this.nameController,
@@ -386,7 +414,8 @@ class CreateEventStepper extends StatefulWidget {
     @required this.initStartDate,
     @required this.initEndDate,
     @required this.initEventPrivacy,
-    @required this.errors,
+    @required this.validateStartDate,
+    @required this.validateEndDate,
   });
 
   @override
@@ -404,7 +433,8 @@ class CreateEventStepper extends StatefulWidget {
         initStartDate: initStartDate,
         initEndDate: initEndDate,
         initEventPrivacy: initEventPrivacy,
-        errors: errors,
+        validateStartDate: validateStartDate,
+        validateEndDate: validateEndDate,
       );
 }
 
@@ -422,8 +452,15 @@ class CreateEventStepperState extends State<CreateEventStepper> {
   final DateTime initStartDate;
   final DateTime initEndDate;
   final EventPrivacyRule initEventPrivacy;
-  final Map<String, dynamic> errors;
+  final Function validateStartDate;
+  final Function validateEndDate;
+
   int _currentStep = 0;
+  final _formKeys = [
+    GlobalKey<FormState>(),
+    GlobalKey<FormState>(),
+    GlobalKey<FormState>(),
+  ];
 
   CreateEventStepperState({
     @required this.nameController,
@@ -439,28 +476,11 @@ class CreateEventStepperState extends State<CreateEventStepper> {
     @required this.initStartDate,
     @required this.initEndDate,
     @required this.initEventPrivacy,
-    @required this.errors,
+    @required this.validateStartDate,
+    @required this.validateEndDate,
   });
 
-  StepState getStepState(int stepNumber, String stepLabel) {
-    if (stepLabel == 'Information') {
-      if (errors.containsKey('name') ||
-          errors.containsKey('description') ||
-          errors.containsKey('discipline_id')) {
-        return StepState.error;
-      }
-    }
-    if (stepLabel == 'Date') {
-      if (errors.containsKey('start_datetime') ||
-          errors.containsKey('end_datetime')) {
-        return StepState.error;
-      }
-    }
-    if (stepLabel == 'Privacy Settings') {
-      if (errors.containsKey('settings')) {
-        return StepState.error;
-      }
-    }
+  StepState _getStepState(int stepNumber, String stepLabel) {
     if (stepNumber < _currentStep) {
       return StepState.complete;
     }
@@ -470,18 +490,39 @@ class CreateEventStepperState extends State<CreateEventStepper> {
     return StepState.indexed;
   }
 
+  bool _isStepValid(int stepNumber) {
+    if (_formKeys[stepNumber].currentState == null) {
+      return true;
+    } else {
+      if (_formKeys[stepNumber].currentState.validate()) {
+        return true;
+      }
+      return false;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Stepper(
       currentStep: _currentStep,
       onStepTapped: (int stepNumber) => setState(() {
-        _currentStep = stepNumber;
+        if (_isStepValid(_currentStep)) {
+          _currentStep = stepNumber;
+        }
       }),
       onStepContinue: () => setState(() {
-        if (_currentStep != 2) {
-          _currentStep += 1;
-        } else {
-          createEvent();
+        if (_isStepValid(_currentStep)) {
+          if (_currentStep != 2) {
+            _currentStep += 1;
+          } else {
+            if (!_isStepValid(0)) {
+              _currentStep = 0;
+            } else if (!_isStepValid(1)) {
+              _currentStep = 1;
+            } else {
+              createEvent();
+            }
+          }
         }
       }),
       onStepCancel: () => setState(() {
@@ -496,6 +537,7 @@ class CreateEventStepperState extends State<CreateEventStepper> {
         return Row(
           children: [
             MaterialButton(
+              elevation: 0,
               child: Text(
                 _currentStep < 2 ? 'Next' : 'Create',
                 style: TextStyle(
@@ -524,37 +566,39 @@ class CreateEventStepperState extends State<CreateEventStepper> {
         Step(
           title: const Text('Information'),
           isActive: true,
-          state: getStepState(0, 'Information'),
+          state: _getStepState(0, 'Information'),
           content: InformationStep(
+            formKey: _formKeys[0],
             nameController: nameController,
             descriptionController: descriptionController,
             disciplines: disciplines,
             setDiscipline: setDiscipline,
             initDisciplineID: initDisciplineID,
-            errors: errors,
           ),
         ),
         Step(
           title: const Text('Date'),
           isActive: true,
-          state: getStepState(1, 'Date'),
+          state: _getStepState(1, 'Date'),
           content: DateStep(
+            formKey: _formKeys[1],
             setStartDate: setStartDate,
             setEndDate: setEndDate,
             initStartDate: initStartDate,
             initEndDate: initEndDate,
-            errors: errors,
+            validateStartDate: validateStartDate,
+            validateEndDate: validateEndDate,
           ),
         ),
         Step(
           title: const Text('Privacy Settings'),
           isActive: true,
-          state: getStepState(2, 'Privacy Settings'),
+          state: _getStepState(2, 'Privacy Settings'),
           content: PrivacySettingsStep(
+            formKey: _formKeys[2],
             eventPrivacySettings: eventPrivacySettings,
             setEventPrivacy: setEventPrivacy,
             initEventPrivacy: initEventPrivacy,
-            errors: errors,
           ),
         ),
       ],
@@ -563,242 +607,255 @@ class CreateEventStepperState extends State<CreateEventStepper> {
 }
 
 class InformationStep extends StatelessWidget {
+  final GlobalKey<FormState> formKey;
   final TextEditingController nameController;
   final TextEditingController descriptionController;
   final List<Discipline> disciplines;
   final Function setDiscipline;
   final String initDisciplineID;
-  final Map<String, dynamic> errors;
 
   const InformationStep({
+    @required this.formKey,
     @required this.nameController,
     @required this.descriptionController,
     @required this.disciplines,
     @required this.setDiscipline,
     @required this.initDisciplineID,
-    @required this.errors,
   });
 
   @override
   Widget build(BuildContext context) {
     final node = FocusScope.of(context);
     var _disciplineID = initDisciplineID;
-    return Column(
-      children: [
-        SizedBox(height: 2.0),
-        TextFormField(
-          autovalidateMode: AutovalidateMode.always,
-          controller: nameController,
-          textInputAction: TextInputAction.next,
-          decoration: InputDecoration(
-            border: OutlineInputBorder(),
-            errorBorder: OutlineInputBorder(
-              borderSide: BorderSide(
-                color: Colors.red,
+    return Form(
+      key: formKey,
+      child: Column(
+        children: [
+          SizedBox(height: 2.0),
+          TextFormField(
+            autovalidateMode: AutovalidateMode.onUserInteraction,
+            controller: nameController,
+            textInputAction: TextInputAction.next,
+            decoration: InputDecoration(
+              border: OutlineInputBorder(),
+              errorBorder: OutlineInputBorder(
+                borderSide: BorderSide(
+                  color: Colors.red,
+                ),
               ),
-            ),
-            focusedErrorBorder: OutlineInputBorder(
-              borderSide: BorderSide(
-                color: Colors.red,
-                width: 2.0,
+              focusedErrorBorder: OutlineInputBorder(
+                borderSide: BorderSide(
+                  color: Colors.red,
+                  width: 2.0,
+                ),
               ),
+              errorStyle: TextStyle(color: Colors.red),
+              labelText: 'Event Name',
             ),
-            errorStyle: TextStyle(color: Colors.red),
-            labelText: 'Event Name',
+            onEditingComplete: () => node.nextFocus(),
+            validator: (value) {
+              if (value.isEmpty) {
+                return 'Event Name is required!';
+              }
+              if (value.length > 80) {
+                return 'Event Name can\'t be longer than 80 characters!';
+              }
+              return null;
+            },
           ),
-          onEditingComplete: () => node.nextFocus(),
-          validator: (value) {
-            if (errors.containsKey('name')) {
-              return errors['name'];
-            }
-            return null;
-          },
-        ),
-        SizedBox(height: 14.0),
-        TextFormField(
-          autovalidateMode: AutovalidateMode.always,
-          controller: descriptionController,
-          maxLines: 3,
-          keyboardType: TextInputType.text,
-          textInputAction: TextInputAction.done,
-          decoration: InputDecoration(
-            border: OutlineInputBorder(),
-            errorBorder: OutlineInputBorder(
-              borderSide: BorderSide(
-                color: Colors.red,
+          SizedBox(height: 14.0),
+          TextFormField(
+            autovalidateMode: AutovalidateMode.onUserInteraction,
+            controller: descriptionController,
+            maxLines: 3,
+            keyboardType: TextInputType.text,
+            textInputAction: TextInputAction.done,
+            decoration: InputDecoration(
+              border: OutlineInputBorder(),
+              errorBorder: OutlineInputBorder(
+                borderSide: BorderSide(
+                  color: Colors.red,
+                ),
               ),
-            ),
-            focusedErrorBorder: OutlineInputBorder(
-              borderSide: BorderSide(
-                color: Colors.red,
-                width: 2.0,
+              focusedErrorBorder: OutlineInputBorder(
+                borderSide: BorderSide(
+                  color: Colors.red,
+                  width: 2.0,
+                ),
               ),
+              errorStyle: TextStyle(color: Colors.red),
+              labelText: 'Event Description',
             ),
-            errorStyle: TextStyle(color: Colors.red),
-            labelText: 'Event Description',
+            onEditingComplete: () => node.unfocus(),
+            validator: (value) {
+              if (value.length > 280) {
+                return 'Description can\'t be longer than 280 characters!';
+              }
+              return null;
+            },
           ),
-          onEditingComplete: () => node.unfocus(),
-          validator: (value) {
-            if (errors.containsKey('description')) {
-              return errors['description'];
-            }
-            return null;
-          },
-        ),
-        SizedBox(height: 14.0),
-        DropdownButtonFormField<String>(
-          autovalidateMode: AutovalidateMode.always,
-          isExpanded: true,
-          decoration: const InputDecoration(
-            border: OutlineInputBorder(),
-            errorBorder: OutlineInputBorder(
-              borderSide: BorderSide(
-                color: Colors.red,
+          SizedBox(height: 14.0),
+          DropdownButtonFormField<String>(
+            autovalidateMode: AutovalidateMode.onUserInteraction,
+            isExpanded: true,
+            decoration: const InputDecoration(
+              border: OutlineInputBorder(),
+              errorBorder: OutlineInputBorder(
+                borderSide: BorderSide(
+                  color: Colors.red,
+                ),
               ),
-            ),
-            focusedErrorBorder: OutlineInputBorder(
-              borderSide: BorderSide(
-                color: Colors.red,
-                width: 2.0,
+              focusedErrorBorder: OutlineInputBorder(
+                borderSide: BorderSide(
+                  color: Colors.red,
+                  width: 2.0,
+                ),
               ),
+              errorStyle: TextStyle(color: Colors.red),
+              labelText: 'Discipline',
             ),
-            errorStyle: TextStyle(color: Colors.red),
-            labelText: 'Discipline',
+            value: _disciplineID,
+            items: disciplines.map((discipline) {
+              return DropdownMenuItem<String>(
+                value: discipline.id,
+                child: Text(discipline.name),
+              );
+            }).toList(),
+            onChanged: (String newValue) {
+              _disciplineID = newValue;
+              setDiscipline(newValue);
+            },
+            validator: (value) {
+              if (value == null) {
+                return 'Discipline is required!';
+              }
+              return null;
+            },
           ),
-          value: _disciplineID,
-          items: disciplines.map((discipline) {
-            return DropdownMenuItem<String>(
-              value: discipline.id,
-              child: Text(discipline.name),
-            );
-          }).toList(),
-          onChanged: (String newValue) {
-            _disciplineID = newValue;
-            setDiscipline(newValue);
-          },
-          validator: (value) {
-            if (errors.containsKey('discipline_id')) {
-              return errors['discipline_id'];
-            }
-            return null;
-          },
-        ),
-        SizedBox(height: 8.0),
-      ],
+          SizedBox(height: 8.0),
+        ],
+      ),
     );
   }
 }
 
 class DateStep extends StatelessWidget {
+  final GlobalKey<FormState> formKey;
   final Function setStartDate;
   final Function setEndDate;
   final DateTime initStartDate;
   final DateTime initEndDate;
-  final Map<String, dynamic> errors;
+  final Function validateStartDate;
+  final Function validateEndDate;
 
   const DateStep({
+    @required this.formKey,
     @required this.setStartDate,
     @required this.setEndDate,
     @required this.initStartDate,
     @required this.initEndDate,
-    @required this.errors,
+    @required this.validateStartDate,
+    @required this.validateEndDate,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        SizedBox(height: 2.0),
-        TextFieldDateTimePicker(
-          labelText: 'Start date',
-          prefixIcon: Icon(
-            Icons.date_range,
-            color: Colors.grey[850],
+    return Form(
+      key: formKey,
+      child: Column(
+        children: [
+          SizedBox(height: 2.0),
+          TextFieldDateTimePicker(
+            autovalidateMode: AutovalidateMode.onUserInteraction,
+            labelText: 'Start date',
+            prefixIcon: Icon(
+              Icons.date_range,
+              color: Colors.grey[850],
+            ),
+            firstDate: DateTime(DateTime.now().year - 10),
+            lastDate: DateTime(DateTime.now().year + 10),
+            initialDate: initStartDate,
+            onDateChanged: (DateTime date) {
+              setStartDate(date);
+            },
+            validator: (value) {
+              return validateStartDate();
+            },
           ),
-          firstDate: DateTime(DateTime.now().year - 10),
-          lastDate: DateTime(DateTime.now().year + 10),
-          initialDate: initStartDate,
-          onDateChanged: (DateTime date) {
-            setStartDate(date);
-          },
-          validator: (value) {
-            if (errors.containsKey('start_datetime')) {
-              return errors['start_datetime'];
-            }
-            return null;
-          },
-        ),
-        SizedBox(height: 14.0),
-        TextFieldDateTimePicker(
-          labelText: 'End date',
-          prefixIcon: Icon(
-            Icons.date_range,
-            color: Colors.grey[850],
+          SizedBox(height: 14.0),
+          TextFieldDateTimePicker(
+            autovalidateMode: AutovalidateMode.onUserInteraction,
+            labelText: 'End date',
+            prefixIcon: Icon(
+              Icons.date_range,
+              color: Colors.grey[850],
+            ),
+            firstDate: DateTime(DateTime.now().year - 10),
+            lastDate: DateTime(DateTime.now().year + 10),
+            initialDate: initEndDate,
+            onDateChanged: (DateTime date) {
+              setEndDate(date);
+            },
+            validator: (value) {
+              return validateEndDate();
+            },
           ),
-          firstDate: DateTime(DateTime.now().year - 10),
-          lastDate: DateTime(DateTime.now().year + 10),
-          initialDate: initEndDate,
-          onDateChanged: (DateTime date) {
-            setEndDate(date);
-          },
-          validator: (value) {
-            if (errors.containsKey('end_datetime')) {
-              return errors['end_datetime'];
-            }
-            return null;
-          },
-        ),
-        SizedBox(height: 8.0),
-      ],
+          SizedBox(height: 8.0),
+        ],
+      ),
     );
   }
 }
 
 class PrivacySettingsStep extends StatelessWidget {
+  final GlobalKey<FormState> formKey;
   final List<EventPrivacyRule> eventPrivacySettings;
   final Function setEventPrivacy;
   final EventPrivacyRule initEventPrivacy;
-  final Map<String, dynamic> errors;
 
   const PrivacySettingsStep({
+    @required this.formKey,
     @required this.eventPrivacySettings,
     @required this.setEventPrivacy,
     @required this.initEventPrivacy,
-    @required this.errors,
   });
 
   @override
   Widget build(BuildContext context) {
     var _eventPrivacy = initEventPrivacy;
-    return Column(
-      children: [
-        SizedBox(height: 2.0),
-        DropdownButtonFormField<EventPrivacyRule>(
-          isExpanded: true,
-          decoration: const InputDecoration(
-            border: OutlineInputBorder(),
-            labelText: 'Privacy Settings',
+    return Form(
+      key: formKey,
+      child: Column(
+        children: [
+          SizedBox(height: 2.0),
+          DropdownButtonFormField<EventPrivacyRule>(
+            autovalidateMode: AutovalidateMode.onUserInteraction,
+            isExpanded: true,
+            decoration: const InputDecoration(
+              border: OutlineInputBorder(),
+              labelText: 'Privacy Settings',
+            ),
+            value: _eventPrivacy,
+            items: eventPrivacySettings.map((privacyRule) {
+              return DropdownMenuItem<EventPrivacyRule>(
+                value: privacyRule,
+                child: Text(privacyRule.name),
+              );
+            }).toList(),
+            onChanged: (EventPrivacyRule newValue) {
+              _eventPrivacy = newValue;
+              setEventPrivacy(newValue);
+            },
+            validator: (value) {
+              if (value == null) {
+                'Privacy Settings are required!';
+              }
+              return null;
+            },
           ),
-          value: _eventPrivacy,
-          items: eventPrivacySettings.map((privacyRule) {
-            return DropdownMenuItem<EventPrivacyRule>(
-              value: privacyRule,
-              child: Text(privacyRule.name),
-            );
-          }).toList(),
-          onChanged: (EventPrivacyRule newValue) {
-            _eventPrivacy = newValue;
-            setEventPrivacy(newValue);
-          },
-          validator: (value) {
-            if (errors.containsKey('settings')) {
-              errors['settings'];
-            }
-            return null;
-          },
-        ),
-        SizedBox(height: 8.0),
-      ],
+          SizedBox(height: 8.0),
+        ],
+      ),
     );
   }
 }
