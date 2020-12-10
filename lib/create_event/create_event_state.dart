@@ -46,18 +46,18 @@ class CreateEventFailure extends CreateEventState {
   final List<Discipline> disciplines;
   final List<EventPrivacyRule> eventPrivacySettings;
   final LatLng pickedPos;
-  final Map<String, dynamic> errors;
+  final String error;
 
   const CreateEventFailure({
     @required this.disciplines,
     @required this.eventPrivacySettings,
     @required this.pickedPos,
-    @required this.errors,
+    @required this.error,
   });
 
   @override
   List<Object> get props =>
-      [disciplines, eventPrivacySettings, pickedPos, errors];
+      [disciplines, eventPrivacySettings, pickedPos, error];
 }
 
 class FetchDisciplinesFailure extends CreateEventState {

@@ -7,7 +7,24 @@ import 'dart:convert';
 import 'package:PickApp/client.dart';
 
 class EventRepository {
-  Future<Map<String, dynamic>> createEvent({
+  Map<String, dynamic> formatErrors(Map<String, dynamic> errors) {
+    var errorsMap = <String, dynamic>{};
+    errors.keys.forEach((key) {
+      var errorMessage = '';
+      errors[key].forEach((message) {
+        if (message.contains('blank')) {
+          errorMessage = errorMessage +
+              '${key[0].toUpperCase()}${key.substring(1)} is required!\n';
+        } else {
+          errorMessage = errorMessage + message + '\n';
+        }
+      });
+      errorsMap[key] = errorMessage.substring(0, errorMessage.length - 1);
+    });
+    return errorsMap;
+  }
+
+  Future<String> createEvent({
     @required String name,
     @required String description,
     @required String disciplineID,
@@ -36,27 +53,14 @@ class EventRepository {
 
     var response = await client.post('events', body: body);
     if (response.statusCode == 201) {
-      return {'message': 'Event created'};
+      return 'Event created';
     } else {
-      return formatCreateEventErrors(json.decode(response.body)['errors']);
-    }
-  }
-
-  Map<String, dynamic> formatCreateEventErrors(Map<String, dynamic> errors) {
-    var errorsMap = <String, dynamic>{};
-    errors.keys.forEach((key) {
       var errorMessage = '';
-      errors[key].forEach((message) {
-        if (message.contains('blank')) {
-          errorMessage = errorMessage +
-              '${key[0].toUpperCase()}${key.substring(1)} is required!\n';
-        } else {
-          errorMessage = errorMessage + message + '\n';
-        }
+      formatErrors(json.decode(response.body)['errors']).forEach((k, v) {
+        errorMessage = errorMessage + v + '\n';
       });
-      errorsMap[key] = errorMessage.substring(0, errorMessage.length - 1);
-    });
-    return errorsMap;
+      return errorMessage.substring(0, errorMessage.length - 1);
+    }
   }
 
   // For sure this could be improved ;)

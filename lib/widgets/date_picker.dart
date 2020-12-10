@@ -10,6 +10,7 @@ class TextFieldDateTimePicker extends StatefulWidget {
   final FocusNode focusNode;
   final String labelText;
   final Icon prefixIcon;
+  final AutovalidateMode autovalidateMode;
   final FormFieldValidator validator;
 
   TextFieldDateTimePicker({
@@ -18,6 +19,7 @@ class TextFieldDateTimePicker extends StatefulWidget {
     this.focusNode,
     this.dateFormat,
     this.validator,
+    this.autovalidateMode,
     @required this.firstDate,
     @required this.lastDate,
     @required this.initialDate,
@@ -62,7 +64,7 @@ class TextFieldDateTimePickerState extends State<TextFieldDateTimePicker> {
   @override
   Widget build(BuildContext context) {
     return TextFormField(
-      autovalidateMode: AutovalidateMode.always,
+      autovalidateMode: widget.autovalidateMode ?? AutovalidateMode.disabled,
       focusNode: widget.focusNode,
       controller: _dateController,
       decoration: InputDecoration(

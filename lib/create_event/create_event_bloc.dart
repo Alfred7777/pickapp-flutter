@@ -50,17 +50,17 @@ class CreateEventBloc extends Bloc<CreateEventEvent, CreateEventState> {
         allowInvitations: event.allowInvitations,
         requireParticipationAcceptation: event.requireParticipationAcceptation,
       );
-      if (response.containsKey('message')) {
+      if (response == 'Event created') {
         yield CreateEventCreated(
           pos: event.eventPos,
-          message: response['message'],
+          message: response,
         );
       } else {
         yield CreateEventFailure(
           disciplines: event.disciplines,
           eventPrivacySettings: event.eventPrivacySettings,
           pickedPos: event.eventPos,
-          errors: response,
+          error: response,
         );
       }
       yield CreateEventReady(
