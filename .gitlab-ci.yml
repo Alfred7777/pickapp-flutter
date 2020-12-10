@@ -1,21 +1,41 @@
-image: cirrusci/flutter:stable
-
 stages:
   - check_format
   - analyze
   - test
+  - build
 
 flutter_check_format:
   stage: check_format
   script:
     - flutter format --set-exit-if-changed .
+  tags:
+    - flutter
 
 flutter_analyze:
   stage: analyze
   script:
     - flutter analyze
+  tags:
+    - flutter
 
 flutter_test:
   stage: test
   script:
     - flutter test
+  tags:
+    - flutter
+    
+flutter_build_android:
+  stage: build
+  before_script:
+    - flutter packages get
+    - flutter clean
+  script:
+     - flutter build apk
+  artifacts:
+    paths:
+      - build/app/outputs/apk/release/app-release.apk
+  tags:
+    - flutter
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "master"'

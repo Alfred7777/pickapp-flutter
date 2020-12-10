@@ -100,8 +100,7 @@ class EventRepository {
       'require_participation_acceptation': requireParticipationAcceptation,
     };
 
-    new_settings.removeWhere(
-        (key, value) => key == null || value == null || value == 'null');
+    new_settings.removeWhere((key, value) => key == null || value == null);
 
     var new_details = {
       'name': '$name',
@@ -388,7 +387,7 @@ class EventPrivacyRule {
 
   @override
   bool operator ==(dynamic other) =>
-      other != null && other is EventPrivacyRule && this.id == other.id;
+      other is EventPrivacyRule && id == other.id;
 
   @override
   int get hashCode => super.hashCode;
