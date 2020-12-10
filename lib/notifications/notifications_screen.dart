@@ -200,9 +200,11 @@ class NotificationBar extends StatelessWidget {
             ),
             child: Text(
               notification.title,
+              overflow: TextOverflow.ellipsis,
+              maxLines: 1,
               style: TextStyle(
                 fontWeight: FontWeight.bold,
-                fontSize: 0.04 * screenSize.width,
+                fontSize: 0.036 * screenSize.width,
               ),
             ),
           ),
@@ -212,8 +214,10 @@ class NotificationBar extends StatelessWidget {
             ),
             child: Text(
               notification.description,
+              overflow: TextOverflow.ellipsis,
+              maxLines: 2,
               style: TextStyle(
-                fontSize: 0.035 * screenSize.width,
+                fontSize: 0.032 * screenSize.width,
               ),
             ),
           ),
