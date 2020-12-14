@@ -1,53 +1,74 @@
 import 'package:bloc/bloc.dart';
-import 'package:flutter/material.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:meta/meta.dart';
-import 'package:PickApp/map/map_event.dart';
-import 'package:PickApp/map/map_state.dart';
-import 'package:PickApp/repositories/eventRepository.dart';
+import 'package:flutter/material.dart';
+import 'package:fluster/fluster.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:PickApp/repositories/mapRepository.dart';
+import 'map_event.dart';
+import 'map_state.dart';
 
 class MapBloc extends Bloc<MapEvent, MapState> {
-  final EventRepository eventRepository;
+  final MapRepository mapRepository;
 
-  MapBloc({@required this.eventRepository}) : assert(eventRepository != null);
+  MapBloc({@required this.mapRepository}) : assert(mapRepository != null);
 
   @override
   MapState get initialState => MapUninitialized();
 
   @override
   Stream<MapState> mapEventToState(MapEvent event) async* {
-    var _disciplines = await eventRepository.getDisciplines();
-    var _icons = await assignIconsToDisciplines(_disciplines);
-
     if (event is FetchLocations) {
-      yield MapUninitialized();
-      var locations = await eventRepository.getMap();
-
-      yield MapReady(locations: locations, icons: _icons);
-      return;
+      yield MapLoading();
+      try {
+        var _eventMarkers = await mapRepository.getEventMap();
+        var _eventFluster = initEventFluster(_eventMarkers);
+        yield MapReady(
+          eventMarkers: _eventMarkers,
+          eventFluster: _eventFluster,
+        );
+      } catch (exception) {
+        yield FetchMapFailure(error: exception.message);
+      }
     }
     if (event is FilterMapByDiscipline) {
-      var filteredLocations = await eventRepository.filterMapByDiscipline(
-        event.disciplineId,
-      );
-
-      yield MapReady(locations: filteredLocations, icons: _icons);
-      return;
+      yield MapLoading();
+      try {
+        var _filteredEventMarkers = await mapRepository.getEventMap(
+          event.disciplineId,
+        );
+        var _eventFluster = initEventFluster(_filteredEventMarkers);
+        yield MapReady(
+          eventMarkers: _filteredEventMarkers,
+          eventFluster: _eventFluster,
+        );
+      } catch (exception) {
+        yield FetchMapFailure(error: exception.message);
+      }
     }
   }
 
-  Future<Map<String, BitmapDescriptor>> assignIconsToDisciplines(
-      List<Discipline> disciplines) async {
-    var icons = <String, BitmapDescriptor>{};
-
-    for (var discipline in disciplines) {
-      var icon = await BitmapDescriptor.fromAssetImage(
-        ImageConfiguration(devicePixelRatio: 2.5),
-        'assets/images/marker/${discipline.id}.png',
-      );
-      icons.addAll({discipline.id: icon});
-    }
-
-    return icons;
+  Fluster<EventMarker> initEventFluster(List<EventMarker> locations) {
+    return Fluster<EventMarker>(
+      minZoom: 0,
+      maxZoom: 20,
+      radius: 200,
+      extent: 2048,
+      nodeSize: 64,
+      points: locations,
+      createCluster: (
+        BaseCluster cluster,
+        double lng,
+        double lat,
+      ) =>
+          EventMarker(
+        id: cluster.id.toString(),
+        position: LatLng(lat, lng),
+        disciplineID: null,
+        isCluster: cluster.isCluster,
+        clusterId: cluster.id,
+        pointsSize: cluster.pointsSize,
+        childMarkerId: cluster.childMarkerId,
+      ),
+    );
   }
 }

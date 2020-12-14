@@ -1,5 +1,5 @@
 name: PickApp
-description: PickApp.
+description: PickApp
 
 # The following defines the version and build number for your application.
 # A version number is three numbers separated by dots, like 1.2.43
@@ -11,7 +11,7 @@ description: PickApp.
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 1.0.0+1
+version: 1.22.4
 
 environment:
   sdk: ">=2.2.0 <3.0.0"
@@ -25,8 +25,16 @@ dependencies:
   cupertino_icons: ^0.1.2
   google_maps_flutter: ^1.0.1
   http: ^0.12.0+1
-  flutter_secure_storage: ^3.3.3
   intl: ^0.16.1
+  equatable: ^1.0.0
+  flutter_bloc: ^4.0.0
+  shimmer: ^1.1.2
+
+  # Google Maps marker clusters
+  fluster: ^1.1.2
+
+  # Secure storage
+  flutter_secure_storage: 3.3.3
 
   # Push notifications service
   onesignal_flutter: ^2.0.0
@@ -34,28 +42,13 @@ dependencies:
   # Web socket library
   phoenix_wings: ^0.2.1
 
-  flutter_bloc: ^4.0.0
-  equatable: ^1.0.0
-
-  bloc_test: ^5.1.0
-  mockito: ^4.1.1
-  shimmer: ^1.1.2
-  animate_icons: ^0.0.4
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  pedantic: 1.8.0+1
-
-dependency_overrides: 
-  pedantic: 1.9.0
-  
-  
-
-#there is an error when trying to use the newest version of pedantic
-#so I've found a workaround - dependency ovverridee
-#for more info see https://github.com/dart-lang/pedantic/issues/46
-
+  pedantic: ^1.9.2
+  bloc_test: ^5.1.0
+  mockito: ^4.1.1
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -69,10 +62,6 @@ flutter:
   uses-material-design: true
 
   # To add assets to your application, add an assets section, like this:
-
-  # assets:
-  #  - images/a_dot_burr.jpeg
-  #  - images/a_dot_ham.jpeg
   assets:
     - assets/images/pickapp_logo.png
     - assets/images/profile_placeholder.png
@@ -111,9 +100,7 @@ flutter:
         - asset: assets/fonts/Montserrat/Montserrat-SemiBold.ttf
         - asset: assets/fonts/Montserrat/Montserrat-SemiBoldItalic.ttf
         - asset: assets/fonts/Montserrat/Montserrat-Thin.ttf
-        - asset: assets/fonts/Montserrat/Montserrat-ThinItalic.ttf
-
-          
+        - asset: assets/fonts/Montserrat/Montserrat-ThinItalic.ttf    
   
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages

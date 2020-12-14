@@ -1,5 +1,10 @@
+import 'package:PickApp/event_details/event_details_scrollable.dart';
+import 'package:PickApp/main.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:fluster/fluster.dart';
 import 'userRepository.dart';
 import 'package:collection/collection.dart';
 import 'package:meta/meta.dart';
@@ -126,21 +131,6 @@ class EventRepository {
     }
   }
 
-  Future<Set<Location>> getMap() async {
-    final client = AuthenticatedApiClient();
-    final url = 'map';
-    var response = await client.get(url);
-
-    if (response.statusCode == 200) {
-      return json
-          .decode(response.body)
-          .map<Location>((locationJson) => Location.fromJson(locationJson))
-          .toSet();
-    } else {
-      throw Exception('Failed to fetch map');
-    }
-  }
-
   Future<Map<String, dynamic>> getEventDetails(String eventID) async {
     final client = AuthenticatedApiClient();
     final url = 'events/$eventID';
@@ -167,21 +157,6 @@ class EventRepository {
       throw Exception(
         'We cannot show you this event right now. Please try again later.',
       );
-    }
-  }
-
-  Future<Set<Location>> filterMapByDiscipline(disciplineId) async {
-    final client = AuthenticatedApiClient();
-    final url = 'map?discipline_id=${disciplineId}';
-    var response = await client.get(url);
-
-    if (response.statusCode == 200) {
-      return json
-          .decode(response.body)
-          .map<Location>((locationJson) => Location.fromJson(locationJson))
-          .toSet();
-    } else {
-      throw Exception('Failed to fetch map');
     }
   }
 
@@ -262,12 +237,17 @@ class EventRepository {
           .map<Event>((event) => Event.fromJson(event))
           .toList();
       return groupBy(
-          eventList,
-          (event) => DateTime(event.startDate.year, event.startDate.month,
-              event.startDate.day));
+        eventList,
+        (event) => DateTime(
+          event.startDate.year,
+          event.startDate.month,
+          event.startDate.day,
+        ),
+      );
     } else {
       throw Exception(
-          'We cannot show your event list right now. Please try again later.');
+        'We cannot show your event list right now. Please try again later.',
+      );
     }
   }
 
@@ -351,20 +331,61 @@ class EventRepository {
   }
 }
 
-class Location {
+class Location extends Clusterable {
   final String id;
-  final double lat;
-  final double lon;
+  final LatLng position;
   final String disciplineID;
+  final BitmapDescriptor icon;
 
-  Location({this.id, this.lat, this.lon, this.disciplineID});
+  Location({
+    @required this.id,
+    @required this.position,
+    this.disciplineID,
+    @required this.icon,
+    isCluster = false,
+    clusterId,
+    pointsSize,
+    childMarkerId,
+  }) : super(
+          markerId: id,
+          latitude: position.latitude,
+          longitude: position.longitude,
+          isCluster: isCluster,
+          clusterId: clusterId,
+          pointsSize: pointsSize,
+          childMarkerId: childMarkerId,
+        );
 
-  factory Location.fromJson(Map<String, dynamic> json) {
-    return Location(
-      id: json['id'],
-      lat: json['lat'],
-      lon: json['lon'],
-      disciplineID: json['discipline_id'],
+  Marker toMarker(Function zoomCluster) {
+    return Marker(
+      markerId: MarkerId(id),
+      position: position,
+      icon: icon,
+      onTap: isCluster
+          ? () => zoomCluster(clusterId)
+          : () {
+              showDialog(
+                context: navigatorKey.currentContext,
+                builder: (BuildContext context) {
+                  var screenSize = MediaQuery.of(context).size;
+                  return Padding(
+                    padding: EdgeInsets.only(
+                      top: 0.12 * screenSize.height,
+                      bottom: 0.02 * screenSize.height,
+                      left: 0.02 * screenSize.width,
+                      right: 0.02 * screenSize.width,
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(32.0),
+                      child: Material(
+                        color: Color(0xFFF3F3F3),
+                        child: EventDetailsScrollable(eventID: id),
+                      ),
+                    ),
+                  );
+                },
+              );
+            },
     );
   }
 }
