@@ -1,6 +1,6 @@
-import 'package:PickApp/repositories/eventRepository.dart';
+import 'package:PickApp/repositories/mapRepository.dart';
 import 'package:equatable/equatable.dart';
-import 'package:google_maps_flutter_platform_interface/src/types/bitmap.dart';
+import 'package:fluster/fluster.dart';
 import 'package:meta/meta.dart';
 
 class MapState extends Equatable {
@@ -12,12 +12,28 @@ class MapState extends Equatable {
 
 class MapUninitialized extends MapState {}
 
-class MapReady extends MapState {
-  final Set<Location> locations;
-  final Map<String, BitmapDescriptor> icons;
+class MapLoading extends MapState {}
 
-  const MapReady({@required this.locations, @required this.icons});
+class MapReady extends MapState {
+  final List<EventMarker> eventMarkers;
+  final Fluster<EventMarker> eventFluster;
+
+  const MapReady({
+    @required this.eventMarkers,
+    @required this.eventFluster,
+  });
 
   @override
-  List<Object> get props => [locations];
+  List<Object> get props => [eventMarkers, eventFluster];
+}
+
+class FetchMapFailure extends MapState {
+  final String error;
+
+  const FetchMapFailure({
+    @required this.error,
+  });
+
+  @override
+  List<Object> get props => [error];
 }
