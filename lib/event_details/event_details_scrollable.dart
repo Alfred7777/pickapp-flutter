@@ -217,17 +217,6 @@ class EventDetailsScrollableState extends State<EventDetailsScrollable> {
 
   Widget _privacyBadge(EventPrivacyRule eventPrivacyRule) {
     switch (eventPrivacyRule.name) {
-      case 'Public':
-        {
-          return _wrapIconWithCircle(
-            Icon(
-              Icons.public,
-              size: 24,
-              color: Colors.grey,
-            ),
-          );
-        }
-        break;
       case 'Private':
         {
           return _wrapIconWithCircle(
@@ -251,6 +240,13 @@ class EventDetailsScrollableState extends State<EventDetailsScrollable> {
         }
         break;
     }
+    return _wrapIconWithCircle(
+      Icon(
+        Icons.public,
+        size: 24,
+        color: Colors.grey,
+      ),
+    );
   }
 
   Widget _buildEventDetails(bool joinedEvent, Map<String, dynamic> eventDetails,

@@ -1,6 +1,6 @@
 # flutterplayground
 
-A new Flutter application.
+A new Flutter application
 
 ## iOS
 `$ cd ios && pod install`
