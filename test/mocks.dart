@@ -1,6 +1,6 @@
-import 'package:PickApp/repositories/mapRepository.dart';
-import 'package:PickApp/repositories/eventRepository.dart';
-import 'package:PickApp/repositories/userRepository.dart';
+import 'package:PickApp/repositories/map_repository.dart';
+import 'package:PickApp/repositories/event_repository.dart';
+import 'package:PickApp/repositories/user_repository.dart';
 import 'package:mockito/mockito.dart';
 
 class MockMapRepository extends Mock implements MapRepository {}

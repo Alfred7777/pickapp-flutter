@@ -3,7 +3,7 @@ import 'package:meta/meta.dart';
 import 'package:flutter/material.dart';
 import 'package:fluster/fluster.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:PickApp/repositories/mapRepository.dart';
+import 'package:PickApp/repositories/map_repository.dart';
 import 'map_event.dart';
 import 'map_state.dart';
 

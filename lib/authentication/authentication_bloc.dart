@@ -1,11 +1,10 @@
 import 'dart:convert';
-
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
 import '../push_notifications.dart';
 import 'authentication_event.dart';
 import 'authentication_state.dart';
-import 'package:PickApp/repositories/userRepository.dart';
+import 'package:PickApp/repositories/user_repository.dart';
 
 class AuthenticationBloc
     extends Bloc<AuthenticationEvent, AuthenticationState> {

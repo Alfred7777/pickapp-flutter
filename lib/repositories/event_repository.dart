@@ -5,7 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:fluster/fluster.dart';
-import 'userRepository.dart';
+import 'user_repository.dart';
 import 'package:collection/collection.dart';
 import 'package:meta/meta.dart';
 import 'dart:convert';

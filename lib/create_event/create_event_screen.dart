@@ -7,7 +7,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'create_event_bloc.dart';
 import 'create_event_state.dart';
 import 'create_event_event.dart';
-import 'package:PickApp/repositories/eventRepository.dart';
+import 'package:PickApp/repositories/event_repository.dart';
 
 class CreateEventScreen extends StatefulWidget {
   final CameraPosition initialCameraPos;
@@ -173,7 +173,7 @@ class CreateEventScreenState extends State<CreateEventScreen> {
           }
           if (state is CreateEventCreated) {
             Navigator.pop(context);
-            Navigator.pop(context, ['Event created', state.props.first]);
+            Navigator.pop(context, [state.props.last, state.props.first]);
           }
         },
         child: BlocBuilder<CreateEventBloc, CreateEventState>(

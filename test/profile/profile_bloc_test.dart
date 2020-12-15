@@ -1,7 +1,7 @@
 import 'package:PickApp/profile/profile_bloc.dart';
 import 'package:PickApp/profile/profile_event.dart';
 import 'package:PickApp/profile/profile_state.dart';
-import 'package:PickApp/repositories/userRepository.dart';
+import 'package:PickApp/repositories/user_repository.dart';
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 

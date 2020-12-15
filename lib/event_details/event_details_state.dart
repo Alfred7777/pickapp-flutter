@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
-import 'package:PickApp/repositories/userRepository.dart';
+import 'package:PickApp/repositories/user_repository.dart';
 
 class EventDetailsState extends Equatable {
   const EventDetailsState();

@@ -1,4 +1,4 @@
-import 'package:PickApp/repositories/eventRepository.dart';
+import 'package:PickApp/repositories/event_repository.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:meta/meta.dart';
 import 'package:equatable/equatable.dart';

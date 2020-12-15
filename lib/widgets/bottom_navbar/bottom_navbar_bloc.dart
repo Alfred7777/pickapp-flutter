@@ -1,6 +1,6 @@
 import 'package:PickApp/home/home_bloc.dart';
 import 'package:PickApp/home/home_event.dart';
-import 'package:PickApp/repositories/userRepository.dart';
+import 'package:PickApp/repositories/user_repository.dart';
 import 'package:PickApp/widgets/bottom_navbar/unread_notifications_count_socket.dart';
 import 'package:bloc/bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

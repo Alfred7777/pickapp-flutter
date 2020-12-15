@@ -2,7 +2,7 @@ import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
 import 'notifications_event.dart';
 import 'notifications_state.dart';
-import 'package:PickApp/repositories/notificationRepository.dart';
+import 'package:PickApp/repositories/notification_repository.dart';
 
 class NotificationsBloc extends Bloc<NotificationsEvent, NotificationsState> {
   final NotificationRepository notificationRepository;

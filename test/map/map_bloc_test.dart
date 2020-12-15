@@ -1,7 +1,7 @@
 import 'package:PickApp/map/map_bloc.dart';
 import 'package:PickApp/map/map_event.dart';
 import 'package:PickApp/map/map_state.dart';
-import 'package:PickApp/repositories/mapRepository.dart';
+import 'package:PickApp/repositories/map_repository.dart';
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';

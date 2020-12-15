@@ -1,4 +1,4 @@
-import 'package:PickApp/repositories/mapRepository.dart';
+import 'package:PickApp/repositories/map_repository.dart';
 import 'package:equatable/equatable.dart';
 import 'package:fluster/fluster.dart';
 import 'package:meta/meta.dart';

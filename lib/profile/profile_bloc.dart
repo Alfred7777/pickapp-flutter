@@ -1,6 +1,6 @@
 import 'package:PickApp/profile/profile_event.dart';
 import 'package:PickApp/profile/profile_state.dart';
-import 'package:PickApp/repositories/userRepository.dart';
+import 'package:PickApp/repositories/user_repository.dart';
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
 

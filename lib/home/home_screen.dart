@@ -4,7 +4,7 @@ import 'package:PickApp/widgets/bottom_navbar/bottom_navbar.dart';
 import 'package:PickApp/widgets/bottom_navbar/bottom_navbar_bloc.dart';
 import 'package:PickApp/notifications/notifications_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:PickApp/repositories/userRepository.dart';
+import 'package:PickApp/repositories/user_repository.dart';
 import 'package:PickApp/widgets/nav_drawer/nav_drawer.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'home_bloc.dart';

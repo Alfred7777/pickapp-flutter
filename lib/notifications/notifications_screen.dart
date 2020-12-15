@@ -3,7 +3,7 @@ import 'notifications_bloc.dart';
 import 'notifications_event.dart';
 import 'notifications_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:PickApp/repositories/notificationRepository.dart' as nr;
+import 'package:PickApp/repositories/notification_repository.dart' as nr;
 import 'package:PickApp/widgets/top_bar.dart';
 
 class NotificationsScreen extends StatefulWidget {
