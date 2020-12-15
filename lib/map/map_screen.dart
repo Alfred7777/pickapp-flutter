@@ -1,18 +1,19 @@
 import 'dart:math' as math;
-import 'package:PickApp/event_details/event_details_scrollable.dart';
-import 'package:PickApp/main.dart';
-import 'package:PickApp/repositories/mapRepository.dart';
-import 'package:PickApp/widgets/loading_screen.dart';
-import 'package:PickApp/widgets/top_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:fluster/fluster.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:fluster/fluster.dart';
+import 'package:PickApp/main.dart';
+import 'package:PickApp/event_details/event_details_scrollable.dart';
+import 'package:PickApp/widgets/loading_screen.dart';
+import 'package:PickApp/widgets/top_bar.dart';
 import 'package:PickApp/map/map_bloc.dart';
 import 'package:PickApp/map/map_event.dart';
 import 'package:PickApp/map/map_state.dart';
-import 'package:PickApp/repositories/eventRepository.dart';
+import 'package:PickApp/repositories/map_repository.dart';
+import 'package:PickApp/repositories/event_repository.dart';
 import 'package:PickApp/create_event/create_event_screen.dart';
+import 'package:PickApp/create_location/create_location_screen.dart';
 
 class MapScreen extends StatefulWidget {
   @override
@@ -99,7 +100,36 @@ class MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
     }
   }
 
-  void _navigateToCreateLocation() async {}
+  void _navigateToCreateLocation() async {
+    var mapBounds = await _mapController.getVisibleRegion();
+    var initialCameraZoom = await _mapController.getZoomLevel();
+    final result = await Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => CreateLocationScreen(
+          initialCameraPos: CameraPosition(
+            target: LatLng(
+              (mapBounds.northeast.latitude + mapBounds.southwest.latitude) / 2,
+              (mapBounds.northeast.longitude + mapBounds.southwest.longitude) /
+                  2,
+            ),
+            zoom: initialCameraZoom,
+          ),
+        ),
+      ),
+    );
+    if (result != null) {
+      _mapBloc.add(FetchLocations());
+      Scaffold.of(context).showSnackBar(
+        SnackBar(
+          content: Text('${result[0]}'),
+          backgroundColor: Colors.green,
+        ),
+      );
+      await _mapController.moveCamera(
+        CameraUpdate.newLatLngZoom(result[1], 16),
+      );
+    }
+  }
 
   void _showEventDetails(String eventID) async {
     await showDialog(

@@ -2,7 +2,7 @@ import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
 import 'create_event_event.dart';
 import 'create_event_state.dart';
-import 'package:PickApp/repositories/eventRepository.dart';
+import 'package:PickApp/repositories/event_repository.dart';
 
 class CreateEventBloc extends Bloc<CreateEventEvent, CreateEventState> {
   final EventRepository eventRepository;

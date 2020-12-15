@@ -6,7 +6,7 @@ import 'package:PickApp/authentication/authentication_bloc.dart';
 import 'package:PickApp/authentication/authentication_state.dart';
 import 'package:PickApp/authentication/authentication_event.dart';
 import 'package:PickApp/login/login_screen.dart';
-import 'package:PickApp/repositories/userRepository.dart';
+import 'package:PickApp/repositories/user_repository.dart';
 import 'package:PickApp/widgets/loading_screen.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 

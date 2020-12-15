@@ -8,7 +8,7 @@ import 'package:PickApp/widgets/event_location_screen.dart';
 import 'package:PickApp/widgets/loading_screen.dart';
 import 'package:PickApp/widgets/sliver_map_header.dart';
 import 'package:PickApp/widgets/top_bar.dart';
-import 'package:PickApp/repositories/eventRepository.dart';
+import 'package:PickApp/repositories/event_repository.dart';
 import 'package:PickApp/event_details/event_details_screen.dart';
 
 class MyEventsScreen extends StatefulWidget {

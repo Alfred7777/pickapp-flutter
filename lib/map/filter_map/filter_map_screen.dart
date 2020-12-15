@@ -2,7 +2,7 @@ import 'package:PickApp/map/filter_map/filter_map_bloc.dart';
 import 'package:PickApp/map/filter_map/filter_map_event.dart';
 import 'package:PickApp/map/filter_map/filter_map_state.dart';
 import 'package:PickApp/map/map_bloc.dart';
-import 'package:PickApp/repositories/eventRepository.dart';
+import 'package:PickApp/repositories/event_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

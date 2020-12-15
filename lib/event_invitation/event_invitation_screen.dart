@@ -7,8 +7,8 @@ import 'event_invitation_bloc.dart';
 import 'event_invitation_state.dart';
 import 'event_invitation_event.dart';
 import 'package:PickApp/profile/profile_screen.dart';
-import 'package:PickApp/repositories/eventRepository.dart';
-import 'package:PickApp/repositories/userRepository.dart';
+import 'package:PickApp/repositories/event_repository.dart';
+import 'package:PickApp/repositories/user_repository.dart';
 
 class EventInvitationScreen extends StatefulWidget {
   final String eventID;

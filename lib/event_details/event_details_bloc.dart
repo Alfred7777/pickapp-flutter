@@ -1,4 +1,4 @@
-import 'package:PickApp/repositories/eventRepository.dart';
+import 'package:PickApp/repositories/event_repository.dart';
 import 'package:meta/meta.dart';
 import 'package:bloc/bloc.dart';
 import 'event_details_event.dart';

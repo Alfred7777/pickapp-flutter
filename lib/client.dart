@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:PickApp/main.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'repositories/userRepository.dart';
+import 'repositories/user_repository.dart';
 
 class AuthenticatedApiClient {
   final userRepository = UserRepository();

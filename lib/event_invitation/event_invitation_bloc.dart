@@ -2,8 +2,8 @@ import 'event_invitation_event.dart';
 import 'event_invitation_state.dart';
 import 'package:meta/meta.dart';
 import 'package:bloc/bloc.dart';
-import 'package:PickApp/repositories/eventRepository.dart';
-import 'package:PickApp/repositories/userRepository.dart';
+import 'package:PickApp/repositories/event_repository.dart';
+import 'package:PickApp/repositories/user_repository.dart';
 
 class EventInvitationBloc
     extends Bloc<EventInvitationEvent, EventInvitationState> {

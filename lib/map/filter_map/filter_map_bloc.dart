@@ -2,7 +2,7 @@ import 'package:PickApp/map/map_bloc.dart';
 import 'package:PickApp/map/map_event.dart';
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
-import 'package:PickApp/repositories/eventRepository.dart';
+import 'package:PickApp/repositories/event_repository.dart';
 
 import 'filter_map_event.dart';
 import 'filter_map_state.dart';

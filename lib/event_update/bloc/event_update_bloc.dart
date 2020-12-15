@@ -1,6 +1,6 @@
 import 'package:PickApp/event_update/bloc/event_update_state.dart';
 import 'package:PickApp/event_update/bloc/event_update_event.dart';
-import 'package:PickApp/repositories/eventRepository.dart';
+import 'package:PickApp/repositories/event_repository.dart';
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
 

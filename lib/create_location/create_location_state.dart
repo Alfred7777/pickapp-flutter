@@ -3,37 +3,35 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
 
-class CreateEventState extends Equatable {
-  const CreateEventState();
+class CreateLocationState extends Equatable {
+  const CreateLocationState();
 
   @override
   List<Object> get props => [];
 }
 
-class CreateEventInitial extends CreateEventState {}
+class CreateLocationInitial extends CreateLocationState {}
 
-class CreateEventLoading extends CreateEventState {}
+class CreateLocationLoading extends CreateLocationState {}
 
-class CreateEventReady extends CreateEventState {
+class CreateLocationReady extends CreateLocationState {
   final List<Discipline> disciplines;
-  final List<EventPrivacyRule> eventPrivacySettings;
   final LatLng pickedPos;
 
-  const CreateEventReady({
+  const CreateLocationReady({
     @required this.disciplines,
-    @required this.eventPrivacySettings,
     @required this.pickedPos,
   });
 
   @override
-  List<Object> get props => [disciplines, eventPrivacySettings, pickedPos];
+  List<Object> get props => [disciplines, pickedPos];
 }
 
-class CreateEventCreated extends CreateEventState {
+class CreateLocationCreated extends CreateLocationState {
   final LatLng pos;
   final String message;
 
-  const CreateEventCreated({
+  const CreateLocationCreated({
     @required this.pos,
     @required this.message,
   });
@@ -42,25 +40,22 @@ class CreateEventCreated extends CreateEventState {
   List<Object> get props => [pos, message];
 }
 
-class CreateEventFailure extends CreateEventState {
+class CreateLocationFailure extends CreateLocationState {
   final List<Discipline> disciplines;
-  final List<EventPrivacyRule> eventPrivacySettings;
   final LatLng pickedPos;
   final String error;
 
-  const CreateEventFailure({
+  const CreateLocationFailure({
     @required this.disciplines,
-    @required this.eventPrivacySettings,
     @required this.pickedPos,
     @required this.error,
   });
 
   @override
-  List<Object> get props =>
-      [disciplines, eventPrivacySettings, pickedPos, error];
+  List<Object> get props => [disciplines, pickedPos, error];
 }
 
-class FetchDisciplinesFailure extends CreateEventState {
+class FetchDisciplinesFailure extends CreateLocationState {
   final String error;
 
   const FetchDisciplinesFailure({@required this.error});

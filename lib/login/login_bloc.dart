@@ -4,7 +4,7 @@ import 'login_event.dart';
 import 'login_state.dart';
 import 'package:PickApp/authentication/authentication_event.dart';
 import 'package:PickApp/authentication/authentication_bloc.dart';
-import 'package:PickApp/repositories/userRepository.dart';
+import 'package:PickApp/repositories/user_repository.dart';
 
 class LoginBloc extends Bloc<LoginEvent, LoginState> {
   final UserRepository userRepository;

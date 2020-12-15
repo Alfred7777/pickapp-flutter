@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
-import 'package:PickApp/repositories/notificationRepository.dart';
+import 'package:PickApp/repositories/notification_repository.dart';
 
 class NotificationsState extends Equatable {
   const NotificationsState();

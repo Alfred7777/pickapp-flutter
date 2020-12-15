@@ -2,7 +2,7 @@ import 'package:PickApp/map/map_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:PickApp/widgets/nav_drawer/nav_drawer_item.dart';
 import 'package:PickApp/profile/profile_screen.dart';
-import 'package:PickApp/repositories/userRepository.dart';
+import 'package:PickApp/repositories/user_repository.dart';
 
 class NavDrawer extends StatelessWidget {
   final User user;

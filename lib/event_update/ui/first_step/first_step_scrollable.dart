@@ -5,13 +5,10 @@ import 'package:PickApp/event_update/bloc/event_update_bloc.dart';
 import 'package:PickApp/event_update/bloc/event_update_state.dart';
 import 'package:PickApp/event_update/bloc/event_update_event.dart';
 import 'package:PickApp/event_update/ui/second_step/second_step_screen.dart';
-
-import 'package:PickApp/repositories/eventRepository.dart';
-import 'package:PickApp/repositories/userRepository.dart';
-
+import 'package:PickApp/repositories/event_repository.dart';
+import 'package:PickApp/repositories/user_repository.dart';
 import 'package:PickApp/event_update/widgets/user_widget.dart';
 import 'package:PickApp/event_update/widgets/header.dart';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 

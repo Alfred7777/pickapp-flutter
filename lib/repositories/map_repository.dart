@@ -48,7 +48,7 @@ Future<BitmapDescriptor> getEventMarkerIcon(String disciplineID) {
           0.05 * screenSize.width,
         ),
       ),
-      'assets/images/marker/group_event_marker.png',
+      'assets/images/marker/event_group_marker.png',
     );
   } else {
     return BitmapDescriptor.fromAssetImage(
@@ -100,5 +100,3 @@ class EventMarker extends Clusterable {
     );
   }
 }
-
-class LocationMarker {}

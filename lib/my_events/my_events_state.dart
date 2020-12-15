@@ -1,4 +1,4 @@
-import 'package:PickApp/repositories/eventRepository.dart';
+import 'package:PickApp/repositories/event_repository.dart';
 import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
 
