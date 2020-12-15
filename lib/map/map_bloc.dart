@@ -81,7 +81,6 @@ class MapBloc extends Bloc<MapEvent, MapState> {
       ),
     );
   }
-
   Fluster<LocationMarker> initLocationFluster(List<LocationMarker> locations) {
     return Fluster<LocationMarker>(
       minZoom: 0,
