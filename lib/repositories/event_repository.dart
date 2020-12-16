@@ -39,16 +39,13 @@ class EventRepository {
   }) async {
     var client = AuthenticatedApiClient();
 
-    var tempLocationID = '55e4dd7d-ab55-4548-b8fd-db89a50d8b80';
-
     var body = {
       'name': '$name',
       'description': '$description',
       'start_datetime_ms': startDate.toUtc().millisecondsSinceEpoch,
       'end_datetime_ms': endDate.toUtc().millisecondsSinceEpoch,
-      'location_id': tempLocationID,
-      // 'lat': pos.latitude,
-      // 'lon': pos.longitude,
+      'lat': pos.latitude,
+      'lon': pos.longitude,
       'discipline_id': '$disciplineID',
       'settings': {
         'allow_invitations': allowInvitations,
