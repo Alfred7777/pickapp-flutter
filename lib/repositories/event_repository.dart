@@ -329,6 +329,49 @@ class EventRepository {
       throw Exception('Answering invitation failed! Please try again later.');
     }
   }
+
+  Future<List<ParticipationRequest>> getParticipationRequests(
+      String eventID) async {
+    final client = AuthenticatedApiClient();
+    final userRepository = UserRepository();
+    final url = 'events/${eventID}/participation_requests';
+
+    var response = await client.get(url);
+
+    if (response.statusCode == 200) {
+      // ignore: omit_local_variable_types
+      List<ParticipationRequest> participationRequests = [];
+      for (var request in json.decode(response.body)) {
+        var requester = await userRepository.getProfileDetails(
+          request['requester_id'],
+        );
+        participationRequests.add(ParticipationRequest(
+          request['event_id'],
+          requester,
+        ));
+      }
+      return participationRequests;
+    } else {
+      return [];
+    }
+  }
+
+  void answerParticipationRequest(
+      String eventID, String requesterID, String answer) async {
+    final client = AuthenticatedApiClient();
+    final url = 'events/${eventID}/participation_request/${answer}';
+    final body = {
+      'requester_id': '$requesterID',
+    };
+
+    var response = await client.post(url, body: body);
+
+    if (response.statusCode != 201) {
+      throw Exception(
+        'Answering participation request failed! Please try again later.',
+      );
+    }
+  }
 }
 
 class Location extends Clusterable {
@@ -466,6 +509,16 @@ class EventInvitation {
     this.inviteeID,
     this.eventDetails,
     this.inviter,
+  );
+}
+
+class ParticipationRequest {
+  final String eventID;
+  final User requester;
+
+  ParticipationRequest(
+    this.eventID,
+    this.requester,
   );
 }
 
