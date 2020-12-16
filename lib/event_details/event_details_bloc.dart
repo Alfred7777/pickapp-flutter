@@ -20,6 +20,7 @@ class EventDetailsBloc extends Bloc<EventDetailsEvent, EventDetailsState> {
   @override
   Stream<EventDetailsState> mapEventToState(EventDetailsEvent event) async* {
     if (event is FetchEventDetails) {
+      yield EventDetailsLoading();
       try {
         var eventDetails = await eventRepository.getEventDetails(event.eventID);
         var participantsList = await eventRepository.getParticipants(

@@ -1,13 +1,14 @@
-import 'package:PickApp/event_details/event_details_bloc.dart';
-import 'package:PickApp/event_details/event_details_event.dart';
-import 'package:PickApp/event_details/event_details_state.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
+import 'event_details_bloc.dart';
+import 'event_details_event.dart';
+import 'event_details_state.dart';
+import 'participation_request/participation_request_screen.dart';
 import 'package:PickApp/profile/profile_screen.dart';
 import 'package:PickApp/event_invitation/event_invitation_screen.dart';
 import 'package:PickApp/repositories/event_repository.dart';
 import 'package:PickApp/repositories/user_repository.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:intl/intl.dart';
 
 class EventDetailsScrollable extends StatefulWidget {
   final String eventID;
@@ -51,6 +52,15 @@ class EventDetailsScrollableState extends State<EventDetailsScrollable> {
       },
       child: BlocBuilder<EventDetailsBloc, EventDetailsState>(
         bloc: _eventDetailsBloc,
+        condition: (prevState, currState) {
+          if (currState is EventDetailsFailure) {
+            return false;
+          }
+          if (currState is EventDetailsLoading) {
+            return false;
+          }
+          return true;
+        },
         builder: (context, state) {
           if (state is EventDetailsUninitialized) {
             _eventDetailsBloc.add(FetchEventDetails(eventID: eventID));
@@ -80,7 +90,7 @@ class EventDetailsScrollableState extends State<EventDetailsScrollable> {
           child: Text('Try Again'),
           onPressed: () {
             Navigator.of(context).pop();
-            _eventDetailsBloc.add(EventDetailsFetchFailure(eventID: eventID));
+            _eventDetailsBloc.add(FetchEventDetails(eventID: eventID));
           },
         ),
         FlatButton(
@@ -387,28 +397,66 @@ class EventDetailsScrollableState extends State<EventDetailsScrollable> {
               color: Colors.black,
             ),
           ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                participantsList.length.toString(),
-                style: TextStyle(
-                  color: Color(0xFF3D3A3A),
-                  fontSize: 0.04 * screenSize.height,
-                  fontWeight: FontWeight.bold,
+          InkWell(
+            onTap: () async {
+              var route = MaterialPageRoute<void>(
+                builder: (context) => ParticipationRequestScreen(
+                  eventID: eventID,
                 ),
-              ),
-              Padding(
-                padding: EdgeInsets.only(
-                  left: 0.01 * screenSize.width,
+              );
+              await Navigator.push(context, route);
+              _eventDetailsBloc.add(FetchEventDetails(eventID: eventID));
+            },
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  participantsList.length.toString(),
+                  style: TextStyle(
+                    color: Color(0xFF3D3A3A),
+                    fontSize: 0.04 * screenSize.height,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-                child: Icon(
-                  Icons.group,
-                  color: Colors.black,
-                  size: 0.06 * screenSize.height,
+                Padding(
+                  padding: EdgeInsets.only(
+                    left: 0.01 * screenSize.width,
+                  ),
+                  child: Stack(
+                    children: [
+                      Icon(
+                        Icons.group,
+                        color: Colors.black,
+                        size: 0.06 * screenSize.height,
+                      ),
+                      Positioned(
+                        right: 0,
+                        child: Container(
+                          padding: EdgeInsets.all(1),
+                          decoration: BoxDecoration(
+                            color: Colors.red,
+                            borderRadius: BorderRadius.circular(60),
+                          ),
+                          constraints: BoxConstraints(
+                            minWidth: 10,
+                            minHeight: 10,
+                          ),
+                          child: Text(
+                            '10',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 10,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,

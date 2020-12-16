@@ -15,6 +15,8 @@ class EventDetailsUninitialized extends EventDetailsState {
   const EventDetailsUninitialized({@required this.eventID});
 }
 
+class EventDetailsLoading extends EventDetailsState {}
+
 class EventDetailsUnjoined extends EventDetailsState {
   final String eventID;
   final Map<String, dynamic> eventDetails;
