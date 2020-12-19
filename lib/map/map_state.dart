@@ -17,14 +17,23 @@ class MapLoading extends MapState {}
 class MapReady extends MapState {
   final List<EventMarker> eventMarkers;
   final Fluster<EventMarker> eventFluster;
+  final List<LocationMarker> locationMarkers;
+  final Fluster<LocationMarker> locationFluster;
 
   const MapReady({
     @required this.eventMarkers,
     @required this.eventFluster,
+    @required this.locationMarkers,
+    @required this.locationFluster,
   });
 
   @override
-  List<Object> get props => [eventMarkers, eventFluster];
+  List<Object> get props => [
+        eventMarkers,
+        eventFluster,
+        locationMarkers,
+        locationFluster,
+      ];
 }
 
 class FetchMapFailure extends MapState {

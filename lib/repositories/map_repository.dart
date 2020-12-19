@@ -19,7 +19,7 @@ class MapRepository {
     var response = await client.get(url);
 
     if (response.statusCode == 200) {
-      var locationList =
+      var eventList =
           json.decode(response.body).map<EventMarker>((eventMarkerJson) {
         return EventMarker(
           id: eventMarkerJson['id'],
@@ -27,10 +27,33 @@ class MapRepository {
           disciplineID: eventMarkerJson['discipline_id'],
         );
       }).toList();
-      return locationList;
+      return eventList;
     } else {
       throw Exception(
         'We can\'t show you events map right now. Please try again later.',
+      );
+    }
+  }
+
+  Future<List<LocationMarker>> getLocationMap() async {
+    final client = AuthenticatedApiClient();
+    var url = 'locations/get';
+
+    var response = await client.get(url);
+
+    if (response.statusCode == 200) {
+      var locationList =
+          json.decode(response.body).map<LocationMarker>((locationMarkerJson) {
+        return LocationMarker(
+          id: locationMarkerJson['id'],
+          position:
+              LatLng(locationMarkerJson['lat'], locationMarkerJson['lon']),
+        );
+      }).toList();
+      return locationList;
+    } else {
+      throw Exception(
+        'We can\'t show you locations map right now. Please try again later.',
       );
     }
   }
@@ -61,6 +84,35 @@ Future<BitmapDescriptor> getEventMarkerIcon(String disciplineID) {
         ),
       ),
       'assets/images/marker/${disciplineID}.png',
+    );
+  }
+}
+
+Future<BitmapDescriptor> getLocationMarkerIcon(bool isCluster) {
+  var screenSize = MediaQuery.of(navigatorKey.currentContext).size;
+  if (isCluster) {
+    return BitmapDescriptor.fromAssetImage(
+      ImageConfiguration(
+        devicePixelRatio:
+            MediaQuery.of(navigatorKey.currentContext).devicePixelRatio,
+        size: Size(
+          0.05 * screenSize.width,
+          0.05 * screenSize.width,
+        ),
+      ),
+      'assets/images/marker/location_group_marker.png',
+    );
+  } else {
+    return BitmapDescriptor.fromAssetImage(
+      ImageConfiguration(
+        devicePixelRatio:
+            MediaQuery.of(navigatorKey.currentContext).devicePixelRatio,
+        size: Size(
+          0.05 * screenSize.width,
+          0.05 * screenSize.width,
+        ),
+      ),
+      'assets/images/marker/location_marker.png',
     );
   }
 }
@@ -96,7 +148,45 @@ class EventMarker extends Clusterable {
       markerId: MarkerId(id),
       position: position,
       icon: await getEventMarkerIcon(disciplineID),
-      onTap: isCluster ? () => zoomCluster(clusterId) : () => showDetails(id),
+      onTap: isCluster
+          ? () => zoomCluster(clusterId, 'Event')
+          : () => showDetails(id),
+    );
+  }
+}
+
+class LocationMarker extends Clusterable {
+  final String id;
+  final LatLng position;
+
+  LocationMarker({
+    @required this.id,
+    @required this.position,
+    isCluster = false,
+    clusterId,
+    pointsSize,
+    childMarkerId,
+  }) : super(
+          markerId: id,
+          latitude: position.latitude,
+          longitude: position.longitude,
+          isCluster: isCluster,
+          clusterId: clusterId,
+          pointsSize: pointsSize,
+          childMarkerId: childMarkerId,
+        );
+
+  Future<Marker> toMarker(
+    Function zoomCluster,
+    Function showDetails,
+  ) async {
+    return Marker(
+      markerId: MarkerId(id),
+      position: position,
+      icon: await getLocationMarkerIcon(isCluster),
+      onTap: isCluster
+          ? () => zoomCluster(clusterId, 'Location')
+          : () => showDetails(id),
     );
   }
 }

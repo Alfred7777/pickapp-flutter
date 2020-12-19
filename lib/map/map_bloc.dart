@@ -17,14 +17,19 @@ class MapBloc extends Bloc<MapEvent, MapState> {
 
   @override
   Stream<MapState> mapEventToState(MapEvent event) async* {
-    if (event is FetchLocations) {
+    if (event is FetchMap) {
       yield MapLoading();
       try {
         var _eventMarkers = await mapRepository.getEventMap();
         var _eventFluster = initEventFluster(_eventMarkers);
+        var _locationMarkers = await mapRepository.getLocationMap();
+        var _locationFluster = initLocationFluster(_locationMarkers);
+
         yield MapReady(
           eventMarkers: _eventMarkers,
           eventFluster: _eventFluster,
+          locationMarkers: _locationMarkers,
+          locationFluster: _locationFluster,
         );
       } catch (exception) {
         yield FetchMapFailure(error: exception.message);
@@ -37,9 +42,14 @@ class MapBloc extends Bloc<MapEvent, MapState> {
           event.disciplineId,
         );
         var _eventFluster = initEventFluster(_filteredEventMarkers);
+        var _locationMarkers = await mapRepository.getLocationMap();
+        var _locationFluster = initLocationFluster(_locationMarkers);
+
         yield MapReady(
           eventMarkers: _filteredEventMarkers,
           eventFluster: _eventFluster,
+          locationMarkers: _locationMarkers,
+          locationFluster: _locationFluster,
         );
       } catch (exception) {
         yield FetchMapFailure(error: exception.message);
@@ -47,14 +57,14 @@ class MapBloc extends Bloc<MapEvent, MapState> {
     }
   }
 
-  Fluster<EventMarker> initEventFluster(List<EventMarker> locations) {
+  Fluster<EventMarker> initEventFluster(List<EventMarker> events) {
     return Fluster<EventMarker>(
       minZoom: 0,
       maxZoom: 20,
       radius: 200,
       extent: 2048,
       nodeSize: 64,
-      points: locations,
+      points: events,
       createCluster: (
         BaseCluster cluster,
         double lng,
@@ -64,6 +74,30 @@ class MapBloc extends Bloc<MapEvent, MapState> {
         id: cluster.id.toString(),
         position: LatLng(lat, lng),
         disciplineID: null,
+        isCluster: cluster.isCluster,
+        clusterId: cluster.id,
+        pointsSize: cluster.pointsSize,
+        childMarkerId: cluster.childMarkerId,
+      ),
+    );
+  }
+
+  Fluster<LocationMarker> initLocationFluster(List<LocationMarker> locations) {
+    return Fluster<LocationMarker>(
+      minZoom: 0,
+      maxZoom: 20,
+      radius: 160,
+      extent: 2048,
+      nodeSize: 64,
+      points: locations,
+      createCluster: (
+        BaseCluster cluster,
+        double lng,
+        double lat,
+      ) =>
+          LocationMarker(
+        id: cluster.id.toString(),
+        position: LatLng(lat, lng),
         isCluster: cluster.isCluster,
         clusterId: cluster.id,
         pointsSize: cluster.pointsSize,
