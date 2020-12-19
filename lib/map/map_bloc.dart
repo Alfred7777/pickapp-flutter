@@ -61,8 +61,8 @@ class MapBloc extends Bloc<MapEvent, MapState> {
     return Fluster<EventMarker>(
       minZoom: 0,
       maxZoom: 20,
-      radius: 200,
-      extent: 2048,
+      radius: 48,
+      extent: 256,
       nodeSize: 64,
       points: events,
       createCluster: (
@@ -71,7 +71,7 @@ class MapBloc extends Bloc<MapEvent, MapState> {
         double lat,
       ) =>
           EventMarker(
-        id: cluster.id.toString(),
+        id: UniqueKey().toString(),
         position: LatLng(lat, lng),
         disciplineID: null,
         isCluster: cluster.isCluster,
@@ -86,8 +86,8 @@ class MapBloc extends Bloc<MapEvent, MapState> {
     return Fluster<LocationMarker>(
       minZoom: 0,
       maxZoom: 20,
-      radius: 160,
-      extent: 2048,
+      radius: 48,
+      extent: 256,
       nodeSize: 64,
       points: locations,
       createCluster: (
@@ -96,7 +96,7 @@ class MapBloc extends Bloc<MapEvent, MapState> {
         double lat,
       ) =>
           LocationMarker(
-        id: cluster.id.toString(),
+        id: UniqueKey().toString(),
         position: LatLng(lat, lng),
         isCluster: cluster.isCluster,
         clusterId: cluster.id,
