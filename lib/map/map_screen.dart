@@ -212,29 +212,45 @@ class MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
     );
   }
 
-  Future<Set<Marker>> getMapMarkers(int currentZoom) async {
+  Future<Set<Marker>> getMapMarkers() async {
+    var _mapBounds = await _mapController.getVisibleRegion();
+    var _currentZoom = await _mapController.getZoomLevel();
     Fluster<EventMarker> _eventFluster = _mapBloc.state.props[1];
     Fluster<LocationMarker> _locationFluster = _mapBloc.state.props[3];
     var markerSet = <Marker>{};
-    var _futureEventMarkerSet = _eventFluster
-        .clusters([-180, -85, 180, 85], currentZoom)
-        .map((cluster) => cluster.toMarker(
-              _zoomCluster,
-              _showEventDetails,
-            ))
-        .toSet();
-    var _futureLocationMarkerSet = _locationFluster
-        .clusters([-180, -85, 180, 85], currentZoom)
-        .map((cluster) => cluster.toMarker(
-              _zoomCluster,
-              _showLocationDetails,
-            ))
-        .toSet();
-    for (var marker in _futureEventMarkerSet) {
-      markerSet.add(await marker);
+
+    if (_mapBounds.southwest == LatLng(0.0, 0.0) &&
+        _mapBounds.northeast == LatLng(0.0, 0.0)) {
+      _mapBounds = LatLngBounds(
+        northeast: LatLng(-180.0, -90.0),
+        southwest: LatLng(-180.0, -90.0),
+      );
     }
-    for (var marker in _futureLocationMarkerSet) {
-      markerSet.add(await marker);
+
+    var _eventMarkerClusters = _eventFluster.clusters([
+      _mapBounds.southwest.longitude,
+      _mapBounds.southwest.latitude,
+      _mapBounds.northeast.longitude,
+      _mapBounds.northeast.latitude,
+    ], _currentZoom.round());
+    var _locationMarkerClusters = _locationFluster.clusters([
+      _mapBounds.southwest.longitude,
+      _mapBounds.southwest.latitude,
+      _mapBounds.northeast.longitude,
+      _mapBounds.northeast.latitude,
+    ], _currentZoom.round());
+
+    for (var _cluster in _eventMarkerClusters) {
+      markerSet.add(await _cluster.toMarker(
+        _zoomCluster,
+        _showEventDetails,
+      ));
+    }
+    for (var _cluster in _locationMarkerClusters) {
+      markerSet.add(await _cluster.toMarker(
+        _zoomCluster,
+        _showLocationDetails,
+      ));
     }
     return markerSet;
   }
@@ -256,11 +272,13 @@ class MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
             );
           }
           if (state is MapReady) {
-            getMapMarkers(16).then((markers) {
-              setState(() {
-                _markers = markers;
+            if (_mapController != null) {
+              getMapMarkers().then((markers) {
+                setState(() {
+                  _markers = markers;
+                });
               });
-            });
+            }
           }
         },
         child: BlocBuilder<MapBloc, MapState>(
@@ -285,14 +303,14 @@ class MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
                 markers: _markers,
                 onMapCreated: (GoogleMapController controller) {
                   _mapController = controller;
-                  getMapMarkers(12).then((markers) {
+                  getMapMarkers().then((markers) {
                     setState(() {
                       _markers = markers;
                     });
                   });
                 },
                 onCameraMove: (position) {
-                  getMapMarkers(position.zoom.round()).then((markers) {
+                  getMapMarkers().then((markers) {
                     setState(() {
                       _markers = markers;
                     });
