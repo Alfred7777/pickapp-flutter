@@ -176,14 +176,24 @@ class EventRepository {
   Future<String> joinEvent(String eventID) async {
     final client = AuthenticatedApiClient();
     final url = 'events/$eventID/participants';
-    var body = {
-      'event_id': '$eventID',
-    };
 
-    var response = await client.post(url, body: body);
+    var response = await client.post(url, body: {});
 
     if (response.statusCode == 201) {
       return 'Successfully joined event.';
+    } else {
+      return json.decode(response.body)['message'];
+    }
+  }
+
+  Future<String> leaveEvent(String eventID) async {
+    final client = AuthenticatedApiClient();
+    final url = 'events/$eventID/participants';
+
+    var response = await client.delete(url);
+
+    if (response.statusCode == 201) {
+      return 'Successfully left event.';
     } else {
       return json.decode(response.body)['message'];
     }

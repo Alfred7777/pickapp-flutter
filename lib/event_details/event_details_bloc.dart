@@ -64,6 +64,28 @@ class EventDetailsBloc extends Bloc<EventDetailsEvent, EventDetailsState> {
         );
       }
     }
+    if (event is LeaveEvent) {
+      await eventRepository.leaveEvent(event.eventID);
+      var eventDetails = await eventRepository.getEventDetails(event.eventID);
+      var participantsList = await eventRepository.getParticipants(
+        event.eventID,
+      );
+
+      if (eventDetails['is_participant']) {
+        yield EventDetailsJoined(
+          eventID: event.eventID,
+          eventDetails: eventDetails,
+          participantsList: participantsList,
+        );
+      } else {
+        yield EventDetailsUnjoined(
+          eventID: event.eventID,
+          eventDetails: eventDetails,
+          participantsList: participantsList,
+        );
+      }
+    }
+
     if (event is EventDetailsFetchFailure) {
       yield EventDetailsUninitialized(eventID: event.eventID);
     }

@@ -26,6 +26,15 @@ class JoinEvent extends EventDetailsEvent {
   List<Object> get props => [eventID];
 }
 
+class LeaveEvent extends EventDetailsEvent {
+  final String eventID;
+
+  LeaveEvent({@required this.eventID});
+
+  @override
+  List<Object> get props => [eventID];
+}
+
 class EventDetailsFetchFailure extends EventDetailsEvent {
   final String eventID;
 
