@@ -12,20 +12,28 @@ void main() async {
   TestWidgetsFlutterBinding.ensureInitialized();
   var _mapRepositoryMock = MockMapRepository();
 
+  var _locationMarker = LocationMarker(
+    id: 'id1',
+    position: LatLng(52.50, 61.50),
+  );
+
   var _eventMarker = EventMarker(
-    id: 'id',
+    id: 'id2',
     position: LatLng(30.50, 60.50),
     disciplineID: 'disciplineId',
   );
 
   var _anotherEventMarker = EventMarker(
-    id: 'id',
+    id: 'id3',
     position: LatLng(40.50, 75.50),
     disciplineID: 'anotherDisciplineId',
   );
 
-  var fetchMapError =
+  var fetchEventMapError =
       'We can\'t show you events map right now. Please try again later.';
+
+  var fetchLocationMapError =
+      'We can\'t show you locations map right now. Please try again later.';
 
   group('MapBloc', () {
     blocTest(
@@ -47,13 +55,15 @@ void main() async {
     );
 
     blocTest(
-      'emits [Map Loading, MapReady] when FetchLocations is succesful',
+      'emits [Map Loading, MapReady] when FetchMap is succesful',
       build: () async {
         when(_mapRepositoryMock.getEventMap())
             .thenAnswer((_) async => [_eventMarker]);
+        when(_mapRepositoryMock.getLocationMap())
+            .thenAnswer((_) async => [_locationMarker]);
         return MapBloc(mapRepository: _mapRepositoryMock);
       },
-      act: (bloc) => bloc.add(FetchLocations()),
+      act: (bloc) => bloc.add(FetchMap()),
       expect: [
         isA<MapLoading>(),
         isA<MapReady>(),
@@ -61,6 +71,9 @@ void main() async {
       verify: (bloc) async {
         verify(
           _mapRepositoryMock.getEventMap(),
+        ).called(1);
+        verify(
+          _mapRepositoryMock.getLocationMap(),
         ).called(1);
         // expect(
         //   bloc.state,
@@ -75,14 +88,14 @@ void main() async {
     );
 
     blocTest(
-      'emits [Map Loading, FetchMapFailure] when FetchLocations is unsuccesful',
+      'emits [Map Loading, FetchMapFailure] when getEventMap is unsuccesful',
       build: () async {
         when(_mapRepositoryMock.getEventMap()).thenThrow(
-          Exception(fetchMapError),
+          Exception(fetchEventMapError),
         );
         return MapBloc(mapRepository: _mapRepositoryMock);
       },
-      act: (bloc) => bloc.add(FetchLocations()),
+      act: (bloc) => bloc.add(FetchMap()),
       expect: [
         isA<MapLoading>(),
         isA<FetchMapFailure>(),
@@ -91,11 +104,47 @@ void main() async {
         verify(
           _mapRepositoryMock.getEventMap(),
         ).called(1);
+        verifyNever(
+          _mapRepositoryMock.getLocationMap(),
+        );
         expect(
           bloc.state,
           equals(
             FetchMapFailure(
-              error: fetchMapError,
+              error: fetchEventMapError,
+            ),
+          ),
+        );
+      },
+    );
+
+    blocTest(
+      'emits [Map Loading, FetchMapFailure] when getLocationMap is unsuccesful',
+      build: () async {
+        when(_mapRepositoryMock.getEventMap())
+            .thenAnswer((_) async => [_eventMarker]);
+        when(_mapRepositoryMock.getLocationMap()).thenThrow(
+          Exception(fetchLocationMapError),
+        );
+        return MapBloc(mapRepository: _mapRepositoryMock);
+      },
+      act: (bloc) => bloc.add(FetchMap()),
+      expect: [
+        isA<MapLoading>(),
+        isA<FetchMapFailure>(),
+      ],
+      verify: (bloc) async {
+        verify(
+          _mapRepositoryMock.getEventMap(),
+        ).called(1);
+        verify(
+          _mapRepositoryMock.getLocationMap(),
+        ).called(1);
+        expect(
+          bloc.state,
+          equals(
+            FetchMapFailure(
+              error: fetchLocationMapError,
             ),
           ),
         );
@@ -107,6 +156,8 @@ void main() async {
       build: () async {
         when(_mapRepositoryMock.getEventMap('anotherDisciplineId'))
             .thenAnswer((_) async => [_anotherEventMarker]);
+        when(_mapRepositoryMock.getLocationMap())
+            .thenAnswer((_) async => [_locationMarker]);
         return MapBloc(mapRepository: _mapRepositoryMock);
       },
       act: (bloc) => bloc.add(
@@ -120,6 +171,9 @@ void main() async {
         verify(
           _mapRepositoryMock.getEventMap('anotherDisciplineId'),
         ).called(1);
+        verify(
+          _mapRepositoryMock.getLocationMap(),
+        ).called(1);
         // expect(
         //   bloc.state,
         //   equals(
@@ -129,36 +183,6 @@ void main() async {
         //     ),
         //   ),
         // );
-      },
-    );
-
-    blocTest(
-      'emits [Map Loading, FetchMapFailure] when FilterMapByDiscipline is unsuccesful',
-      build: () async {
-        when(_mapRepositoryMock.getEventMap('anotherDisciplineId')).thenThrow(
-          Exception(fetchMapError),
-        );
-        return MapBloc(mapRepository: _mapRepositoryMock);
-      },
-      act: (bloc) => bloc.add(
-        FilterMapByDiscipline(disciplineId: 'anotherDisciplineId'),
-      ),
-      expect: [
-        isA<MapLoading>(),
-        isA<FetchMapFailure>(),
-      ],
-      verify: (bloc) async {
-        verify(
-          _mapRepositoryMock.getEventMap('anotherDisciplineId'),
-        ).called(1);
-        expect(
-          bloc.state,
-          equals(
-            FetchMapFailure(
-              error: fetchMapError,
-            ),
-          ),
-        );
       },
     );
   });

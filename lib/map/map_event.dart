@@ -8,7 +8,7 @@ class MapEvent extends Equatable {
   List<Object> get props => [];
 }
 
-class FetchLocations extends MapEvent {}
+class FetchMap extends MapEvent {}
 
 class FilterMapByDiscipline extends MapEvent {
   final String disciplineId;

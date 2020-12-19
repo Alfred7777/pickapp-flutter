@@ -31,7 +31,7 @@ class FilterMapBloc extends Bloc<FilterMapEvent, FilterMapState> {
       mapBloc.add(FilterMapByDiscipline(disciplineId: event.disciplineId));
     }
     if (event is RevokeFilter) {
-      mapBloc.add(FetchLocations());
+      mapBloc.add(FetchMap());
     }
   }
 }

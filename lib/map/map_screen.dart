@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:PickApp/main.dart';
 import 'package:PickApp/event_details/event_details_scrollable.dart';
+import 'package:PickApp/location_details/location_details_scrollable.dart';
 import 'package:PickApp/widgets/loading_screen.dart';
 import 'package:PickApp/widgets/top_bar.dart';
 import 'package:PickApp/map/map_bloc.dart';
@@ -87,7 +88,7 @@ class MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
       ),
     );
     if (result != null) {
-      _mapBloc.add(FetchLocations());
+      _mapBloc.add(FetchMap());
       Scaffold.of(context).showSnackBar(
         SnackBar(
           content: Text('${result[0]}'),
@@ -118,7 +119,7 @@ class MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
       ),
     );
     if (result != null) {
-      _mapBloc.add(FetchLocations());
+      _mapBloc.add(FetchMap());
       Scaffold.of(context).showSnackBar(
         SnackBar(
           content: Text('${result[0]}'),
@@ -155,8 +156,37 @@ class MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
     );
   }
 
-  void _zoomCluster(int clusterID) async {
-    Fluster<EventMarker> _fluster = _mapBloc.state.props.last;
+  void _showLocationDetails(String locationID) async {
+    await showDialog(
+      context: navigatorKey.currentContext,
+      builder: (BuildContext context) {
+        var screenSize = MediaQuery.of(context).size;
+        return Padding(
+          padding: EdgeInsets.only(
+            top: 0.12 * screenSize.height,
+            bottom: 0.02 * screenSize.height,
+            left: 0.02 * screenSize.width,
+            right: 0.02 * screenSize.width,
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(32.0),
+            child: Material(
+              color: Color(0xFFF3F3F3),
+              child: LocationDetailsScrollable(locationID: locationID),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  void _zoomCluster(int clusterID, String clusterType) async {
+    var _fluster;
+    if (clusterType == 'Location') {
+      _fluster = _mapBloc.state.props[3];
+    } else {
+      _fluster = _mapBloc.state.props[1];
+    }
     var _clusterLocations = _fluster.points(clusterID);
     double x0, x1, y0, y1;
 
@@ -183,16 +213,27 @@ class MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
   }
 
   Future<Set<Marker>> getMapMarkers(int currentZoom) async {
-    Fluster<EventMarker> _fluster = _mapBloc.state.props.last;
+    Fluster<EventMarker> _eventFluster = _mapBloc.state.props[1];
+    Fluster<LocationMarker> _locationFluster = _mapBloc.state.props[3];
     var markerSet = <Marker>{};
-    var futureMarkerSet = _fluster
+    var _futureEventMarkerSet = _eventFluster
         .clusters([-180, -85, 180, 85], currentZoom)
         .map((cluster) => cluster.toMarker(
               _zoomCluster,
               _showEventDetails,
             ))
         .toSet();
-    for (var marker in futureMarkerSet) {
+    var _futureLocationMarkerSet = _locationFluster
+        .clusters([-180, -85, 180, 85], currentZoom)
+        .map((cluster) => cluster.toMarker(
+              _zoomCluster,
+              _showLocationDetails,
+            ))
+        .toSet();
+    for (var marker in _futureEventMarkerSet) {
+      markerSet.add(await marker);
+    }
+    for (var marker in _futureLocationMarkerSet) {
       markerSet.add(await marker);
     }
     return markerSet;
@@ -232,7 +273,7 @@ class MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
           },
           builder: (context, state) {
             if (state is MapUninitialized) {
-              _mapBloc.add(FetchLocations());
+              _mapBloc.add(FetchMap());
             }
             if (state is MapReady) {
               return GoogleMap(

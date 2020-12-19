@@ -22,8 +22,7 @@ class LocationRepository {
     };
 
     var response = await client.post(url, body: body);
-    print(response.statusCode);
-    print(json.decode(response.body));
+
     if (response.statusCode == 201) {
       return 'Location created';
     } else {
@@ -36,6 +35,56 @@ class LocationRepository {
       return errorMessage.substring(0, errorMessage.length - 1);
     }
   }
+
+  Future<Location> getLocationDetails(String locationID) async {
+    var client = AuthenticatedApiClient();
+    var url = 'locations/${locationID}';
+
+    var response = await client.get(url);
+
+    if (response.statusCode == 200) {
+      return Location.fromJson(json.decode(response.body));
+    } else {
+      throw Exception(
+        'We can\'t show you this location right now. Please try again later.',
+      );
+    }
+  }
+
+  Future<List<Event>> getEventList(String locationID) async {
+    var client = AuthenticatedApiClient();
+    var url = 'locations/${locationID}/active_events';
+
+    var response = await client.get(url);
+
+    if (response.statusCode == 200) {
+      // will be changed when events in location will be fixed
+      return [];
+    } else {
+      return [];
+    }
+  }
 }
 
-class LocationMarker {}
+class Location {
+  final String id;
+  final String name;
+  final String description;
+  final LatLng position;
+
+  const Location({
+    @required this.id,
+    @required this.name,
+    @required this.description,
+    @required this.position,
+  });
+
+  factory Location.fromJson(Map<String, dynamic> json) {
+    return Location(
+      id: json['id'],
+      name: json['name'],
+      description: json['description'],
+      position: LatLng(json['lat'], json['lon']),
+    );
+  }
+}

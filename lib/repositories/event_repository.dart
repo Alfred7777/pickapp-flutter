@@ -1,10 +1,7 @@
-import 'package:PickApp/event_details/event_details_scrollable.dart';
-import 'package:PickApp/main.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:fluster/fluster.dart';
 import 'user_repository.dart';
 import 'package:collection/collection.dart';
 import 'package:meta/meta.dart';
@@ -371,65 +368,6 @@ class EventRepository {
         'Answering participation request failed! Please try again later.',
       );
     }
-  }
-}
-
-class Location extends Clusterable {
-  final String id;
-  final LatLng position;
-  final String disciplineID;
-  final BitmapDescriptor icon;
-
-  Location({
-    @required this.id,
-    @required this.position,
-    this.disciplineID,
-    @required this.icon,
-    isCluster = false,
-    clusterId,
-    pointsSize,
-    childMarkerId,
-  }) : super(
-          markerId: id,
-          latitude: position.latitude,
-          longitude: position.longitude,
-          isCluster: isCluster,
-          clusterId: clusterId,
-          pointsSize: pointsSize,
-          childMarkerId: childMarkerId,
-        );
-
-  Marker toMarker(Function zoomCluster) {
-    return Marker(
-      markerId: MarkerId(id),
-      position: position,
-      icon: icon,
-      onTap: isCluster
-          ? () => zoomCluster(clusterId)
-          : () {
-              showDialog(
-                context: navigatorKey.currentContext,
-                builder: (BuildContext context) {
-                  var screenSize = MediaQuery.of(context).size;
-                  return Padding(
-                    padding: EdgeInsets.only(
-                      top: 0.12 * screenSize.height,
-                      bottom: 0.02 * screenSize.height,
-                      left: 0.02 * screenSize.width,
-                      right: 0.02 * screenSize.width,
-                    ),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(32.0),
-                      child: Material(
-                        color: Color(0xFFF3F3F3),
-                        child: EventDetailsScrollable(eventID: id),
-                      ),
-                    ),
-                  );
-                },
-              );
-            },
-    );
   }
 }
 
