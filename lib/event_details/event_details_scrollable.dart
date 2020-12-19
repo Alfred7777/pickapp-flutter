@@ -494,13 +494,17 @@ class EventDetailsScrollableState extends State<EventDetailsScrollable> {
                 minWidth: 0.34 * screenSize.width,
                 child: FlatButton(
                   onPressed: joinedEvent
-                      ? () {}
+                      ? () {
+                          _eventDetailsBloc.add(
+                            LeaveEvent(eventID: eventID),
+                          );
+                        }
                       : () {
                           _eventDetailsBloc.add(
                             JoinEvent(eventID: eventID),
                           );
                         },
-                  color: Colors.green,
+                  color: joinedEvent ? Colors.redAccent : Colors.green,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20.0),
                   ),
@@ -512,13 +516,13 @@ class EventDetailsScrollableState extends State<EventDetailsScrollable> {
                               padding: EdgeInsets.only(
                                   right: 0.01 * screenSize.width),
                               child: Icon(
-                                Icons.check,
+                                Icons.clear,
                                 color: Colors.white,
                                 size: 20.0,
                               ),
                             ),
                             Text(
-                              'JOINED',
+                              'LEAVE',
                               style: TextStyle(
                                 color: Colors.white,
                                 fontSize: 20,
