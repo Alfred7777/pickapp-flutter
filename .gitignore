@@ -44,3 +44,6 @@ lib/generated_plugin_registrant.dart
 
 # iOS
 /ios/build
+
+# app signature key
+/android/key.properties

@@ -1,4 +1,4 @@
-package com.example.PickApp
+package com.pickapp_uniproject
 
 import androidx.annotation.NonNull;
 import io.flutter.embedding.android.FlutterActivity
