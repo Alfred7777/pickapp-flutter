@@ -379,6 +379,14 @@ class EventRepository {
       );
     }
   }
+
+  Future<List<Event>> searchEvent(String searchPhrase) async {
+    //final client = AuthenticatedApiClient();
+    //final url = 'profile/search?phrase=${searchPhrase}';
+    // will be implemented when event search endpoint will be ready
+
+    return [];
+  }
 }
 
 class Discipline {

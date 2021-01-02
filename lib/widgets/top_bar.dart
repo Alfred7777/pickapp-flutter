@@ -1,4 +1,5 @@
 import 'package:PickApp/map/filter_map/filter_map_screen.dart';
+import 'package:PickApp/search/search_screen.dart';
 import 'package:PickApp/map/map_bloc.dart';
 import 'package:flutter/material.dart';
 
@@ -23,7 +24,12 @@ AppBar mapScreenTopBar(BuildContext context, MapBloc mapBloc) {
           minWidth: 170,
           height: 28,
           child: FlatButton(
-            onPressed: () {},
+            onPressed: () {
+              var route = MaterialPageRoute<void>(
+                builder: (context) => SearchScreen(),
+              );
+              Navigator.push(context, route);
+            },
             color: Color(0x55C4C4C4),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(20.0),
@@ -120,10 +126,12 @@ AppBar editEventScreenTopBar(BuildContext context) {
 class SearchTopBar extends StatelessWidget implements PreferredSizeWidget {
   final TextEditingController queryTextController;
   final String searchFieldHint;
+  final double elevation;
 
   const SearchTopBar({
     @required this.queryTextController,
     @required this.searchFieldHint,
+    @required this.elevation,
   });
 
   @override
@@ -133,7 +141,7 @@ class SearchTopBar extends StatelessWidget implements PreferredSizeWidget {
   Widget build(BuildContext context) {
     return AppBar(
       backgroundColor: Colors.grey[100],
-      elevation: 1,
+      elevation: elevation,
       brightness: Brightness.light,
       iconTheme: IconThemeData(
         color: Colors.grey[500],
