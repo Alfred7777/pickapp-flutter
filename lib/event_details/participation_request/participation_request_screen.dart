@@ -5,9 +5,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'participation_request_bloc.dart';
 import 'participation_request_state.dart';
 import 'participation_request_event.dart';
-import 'package:PickApp/profile/profile_screen.dart';
+import 'package:PickApp/widgets/list_bar/user_bar.dart';
 import 'package:PickApp/repositories/event_repository.dart';
-import 'package:PickApp/repositories/user_repository.dart';
 
 class ParticipationRequestScreen extends StatefulWidget {
   final String eventID;
@@ -152,114 +151,6 @@ class ParticipationRequestScreenState
   }
 }
 
-class UserWidget extends StatelessWidget {
-  final User user;
-  final Function acceptParticipant;
-  final Function rejectParticipant;
-
-  const UserWidget({
-    @required this.user,
-    @required this.acceptParticipant,
-    @required this.rejectParticipant,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    var screenSize = MediaQuery.of(context).size;
-    return InkWell(
-      onTap: () {
-        var route = MaterialPageRoute<void>(
-          builder: (context) => ProfileScreen(
-            userID: user.userID,
-          ),
-        );
-        Navigator.push(context, route);
-      },
-      child: Padding(
-        padding: EdgeInsets.symmetric(
-          vertical: 0.01 * screenSize.width,
-          horizontal: 0.04 * screenSize.width,
-        ),
-        child: Card(
-          color: Colors.transparent,
-          elevation: 0,
-          child: Row(
-            children: [
-              Container(
-                height: 0.16 * screenSize.width,
-                width: 0.16 * screenSize.width,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  image: DecorationImage(
-                    fit: BoxFit.fill,
-                    image: AssetImage('assets/images/profile_placeholder.png'),
-                  ),
-                ),
-              ),
-              Expanded(
-                child: Padding(
-                  padding: EdgeInsets.only(left: 0.04 * screenSize.width),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        '${user.name}',
-                        style: TextStyle(
-                          color: Color(0xFF3D3A3A),
-                          fontSize: 0.05 * screenSize.width,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      Text(
-                        '@${user.uniqueUsername}',
-                        style: TextStyle(
-                          color: Color(0xFFA7A7A7),
-                          fontSize: 0.034 * screenSize.width,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              MaterialButton(
-                onPressed: () => acceptParticipant(user.userID),
-                padding: EdgeInsets.zero,
-                elevation: 0,
-                height: 0.12 * screenSize.width,
-                minWidth: 0.12 * screenSize.width,
-                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                color: Colors.transparent,
-                shape: CircleBorder(),
-                child: Icon(
-                  Icons.check,
-                  size: 0.08 * screenSize.width,
-                  color: Colors.green,
-                ),
-              ),
-              MaterialButton(
-                onPressed: () => rejectParticipant(user.userID),
-                padding: EdgeInsets.zero,
-                elevation: 0,
-                height: 0.12 * screenSize.width,
-                minWidth: 0.12 * screenSize.width,
-                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                color: Colors.transparent,
-                shape: CircleBorder(),
-                child: Icon(
-                  Icons.clear,
-                  size: 0.08 * screenSize.width,
-                  color: Colors.red,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
 class ParticipationRequestList extends StatelessWidget {
   final List<ParticipationRequest> participationRequestList;
   final Function acceptParticipant;
@@ -280,10 +171,42 @@ class ParticipationRequestList extends StatelessWidget {
         physics: ClampingScrollPhysics(),
         itemCount: participationRequestList.length,
         itemBuilder: (BuildContext context, int index) {
-          return UserWidget(
+          return UserBar(
             user: participationRequestList[index].requester,
-            acceptParticipant: acceptParticipant,
-            rejectParticipant: rejectParticipant,
+            actionList: [
+              MaterialButton(
+                onPressed: () => acceptParticipant(
+                  participationRequestList[index].requester.userID,
+                ),
+                elevation: 0,
+                height: 0.12 * screenSize.width,
+                minWidth: 0.12 * screenSize.width,
+                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                color: Colors.transparent,
+                shape: CircleBorder(),
+                child: Icon(
+                  Icons.check,
+                  size: 0.08 * screenSize.width,
+                  color: Colors.green,
+                ),
+              ),
+              MaterialButton(
+                onPressed: () => rejectParticipant(
+                  participationRequestList[index].requester.userID,
+                ),
+                elevation: 0,
+                height: 0.12 * screenSize.width,
+                minWidth: 0.12 * screenSize.width,
+                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                color: Colors.transparent,
+                shape: CircleBorder(),
+                child: Icon(
+                  Icons.clear,
+                  size: 0.08 * screenSize.width,
+                  color: Colors.red,
+                ),
+              ),
+            ],
           );
         },
       );
