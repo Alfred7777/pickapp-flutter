@@ -54,6 +54,14 @@ class NotificationsScreenState extends State<NotificationsScreen> {
     }
   }
 
+  Future<void> _refreshView() async {
+    _notificationsBloc.add(FetchNotifications(
+      nextToken: null,
+      notifications: [],
+      limit: _notificationsLimit(),
+    ));
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocListener<NotificationsBloc, NotificationsState>(
@@ -83,13 +91,16 @@ class NotificationsScreenState extends State<NotificationsScreen> {
             return Scaffold(
               appBar: mainScreenTopBar(context),
               body: SafeArea(
-                child: state.notifications.isEmpty
-                    ? EmptyListPlaceholder()
-                    : NotificationsList(
-                        notifications: state.notifications,
-                        nextToken: state.nextToken,
-                        scrollController: _scrollController,
-                      ),
+                child: RefreshIndicator(
+                  onRefresh: _refreshView,
+                  child: state.notifications.isEmpty
+                      ? EmptyListPlaceholder()
+                      : NotificationsList(
+                          notifications: state.notifications,
+                          nextToken: state.nextToken,
+                          scrollController: _scrollController,
+                        ),
+                ),
               ),
             );
           }
@@ -106,8 +117,8 @@ class EmptyListPlaceholder extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var screenSize = MediaQuery.of(context).size;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
+    return ListView(
+      physics: AlwaysScrollableScrollPhysics(),
       children: [
         Padding(
           padding: EdgeInsets.only(
@@ -155,6 +166,7 @@ class NotificationsList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
+      physics: AlwaysScrollableScrollPhysics(),
       controller: scrollController,
       itemCount: notifications.length + 1,
       itemBuilder: (BuildContext context, int index) {

@@ -60,6 +60,10 @@ class MyEventsScreenState extends State<MyEventsScreen> {
     _myEventsBloc.add(FetchMyEvents());
   }
 
+  Future<void> _refreshView() async {
+    _myEventsBloc.add(FetchMyEvents());
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocListener<MyEventsBloc, MyEventsState>(
@@ -162,12 +166,20 @@ class MyEventsScreenState extends State<MyEventsScreen> {
               Expanded(
                 child: TabBarView(
                   children: [
-                    ActiveEventsList(
-                      events: myActiveEvents,
-                      eventInvitations: eventInvitations,
-                      notifyParent: answerInvitation,
+                    RefreshIndicator(
+                      onRefresh: _refreshView,
+                      child: ActiveEventsList(
+                        events: myActiveEvents,
+                        eventInvitations: eventInvitations,
+                        notifyParent: answerInvitation,
+                      ),
                     ),
-                    PastEventsList(events: myPastEvents),
+                    RefreshIndicator(
+                      onRefresh: _refreshView,
+                      child: PastEventsList(
+                        events: myPastEvents,
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -184,15 +196,17 @@ class ActiveEventsList extends StatelessWidget {
   final List<EventInvitation> eventInvitations;
   final Function notifyParent;
 
-  const ActiveEventsList(
-      {@required this.events,
-      @required this.eventInvitations,
-      @required this.notifyParent});
+  const ActiveEventsList({
+    @required this.events,
+    @required this.eventInvitations,
+    @required this.notifyParent,
+  });
 
   @override
   Widget build(BuildContext context) {
     var screenSize = MediaQuery.of(context).size;
     return SingleChildScrollView(
+      physics: AlwaysScrollableScrollPhysics(),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -262,6 +276,7 @@ class PastEventsList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
+      physics: AlwaysScrollableScrollPhysics(),
       shrinkWrap: true,
       itemCount: events.length,
       itemBuilder: (BuildContext context, int index) {
