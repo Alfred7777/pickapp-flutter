@@ -64,6 +64,25 @@ class LocationRepository {
       return [];
     }
   }
+
+  Future<List<Location>> searchLocation(String searchPhrase) async {
+    final client = AuthenticatedApiClient();
+    final url = 'locations/search?phrase=${searchPhrase}';
+
+    var response = await client.get(url);
+
+    if (response.statusCode == 200) {
+      print(json.decode(response.body));
+      return json
+          .decode(response.body)
+          .map<Location>((location) => Location.fromJson(location))
+          .toList();
+    } else {
+      throw Exception(
+        'We cannot show you search results right now. Please try again later.',
+      );
+    }
+  }
 }
 
 class Location {

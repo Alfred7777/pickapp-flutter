@@ -71,7 +71,7 @@ Future<BitmapDescriptor> getEventMarkerIcon(String disciplineID) {
           0.05 * screenSize.width,
         ),
       ),
-      'assets/images/marker/event_group_marker.png',
+      'assets/images/event_marker/event_group_marker.png',
     );
   } else {
     return BitmapDescriptor.fromAssetImage(
@@ -83,7 +83,7 @@ Future<BitmapDescriptor> getEventMarkerIcon(String disciplineID) {
           0.05 * screenSize.width,
         ),
       ),
-      'assets/images/marker/${disciplineID}.png',
+      'assets/images/event_marker/${disciplineID}.png',
     );
   }
 }
@@ -100,7 +100,7 @@ Future<BitmapDescriptor> getLocationMarkerIcon(bool isCluster) {
           0.05 * screenSize.width,
         ),
       ),
-      'assets/images/marker/location_group_marker.png',
+      'assets/images/location/location_group_marker.png',
     );
   } else {
     return BitmapDescriptor.fromAssetImage(
@@ -112,7 +112,7 @@ Future<BitmapDescriptor> getLocationMarkerIcon(bool isCluster) {
           0.05 * screenSize.width,
         ),
       ),
-      'assets/images/marker/location_marker.png',
+      'assets/images/location/location_marker.png',
     );
   }
 }
