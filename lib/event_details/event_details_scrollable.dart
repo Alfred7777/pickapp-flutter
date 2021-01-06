@@ -67,11 +67,17 @@ class EventDetailsScrollableState extends State<EventDetailsScrollable> {
           }
           if (state is EventDetailsUnjoined) {
             return _buildEventDetails(
-                false, state.eventDetails, state.participantsList);
+              false,
+              state.eventDetails,
+              state.participantsList,
+            );
           }
           if (state is EventDetailsJoined) {
             return _buildEventDetails(
-                true, state.eventDetails, state.participantsList);
+              true,
+              state.eventDetails,
+              state.participantsList,
+            );
           }
           return Center(
             child: CircularProgressIndicator(),
@@ -273,6 +279,7 @@ class EventDetailsScrollableState extends State<EventDetailsScrollable> {
     );
 
     return SingleChildScrollView(
+      physics: AlwaysScrollableScrollPhysics(),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
