@@ -381,11 +381,21 @@ class EventRepository {
   }
 
   Future<List<Event>> searchEvent(String searchPhrase) async {
-    //final client = AuthenticatedApiClient();
-    //final url = 'profile/search?phrase=${searchPhrase}';
-    // will be implemented when event search endpoint will be ready
+    final client = AuthenticatedApiClient();
+    final url = 'events/search?phrase=${searchPhrase}';
 
-    return [];
+    var response = await client.get(url);
+
+    if (response.statusCode == 200) {
+      return json
+          .decode(response.body)
+          .map<Event>((event) => Event.fromJson(event))
+          .toList();
+    } else {
+      throw Exception(
+        'We cannot show you search results right now. Please try again later.',
+      );
+    }
   }
 }
 

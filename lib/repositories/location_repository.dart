@@ -58,10 +58,14 @@ class LocationRepository {
     var response = await client.get(url);
 
     if (response.statusCode == 200) {
-      // will be changed when events in location will be fixed
-      return [];
+      return json
+          .decode(response.body)
+          .map<Event>((event) => Event.fromJson(event))
+          .toList();
     } else {
-      return [];
+      throw Exception(
+        'We can\'t show you this location events right now. Please try again later.',
+      );
     }
   }
 
