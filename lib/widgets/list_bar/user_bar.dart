@@ -60,7 +60,9 @@ class UserBar extends StatelessWidget {
                     ),
                     Expanded(
                       child: Padding(
-                        padding: EdgeInsets.only(left: 0.04 * screenSize.width),
+                        padding: EdgeInsets.only(
+                          left: 0.04 * screenSize.width,
+                        ),
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           crossAxisAlignment: CrossAxisAlignment.start,

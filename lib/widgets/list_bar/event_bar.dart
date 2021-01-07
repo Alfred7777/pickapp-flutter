@@ -1,4 +1,5 @@
 import 'package:PickApp/repositories/event_repository.dart';
+import 'package:PickApp/event_details/event_details_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -26,13 +27,12 @@ class EventBar extends StatelessWidget {
               Radius.circular(8.0),
             ),
             onTap: () {
-              // redirect to Event Details screen will be uncommented when events in location will be fixed
-              // var route = MaterialPageRoute<void>(
-              //   builder: (context) => ProfileScreen(
-              //     userID: user.userID,
-              //   ),
-              // );
-              // Navigator.push(context, route);
+              var route = MaterialPageRoute<void>(
+                builder: (context) => EventDetailsScreen(
+                  eventID: event.id,
+                ),
+              );
+              Navigator.push(context, route);
             },
             child: Padding(
               padding: EdgeInsets.symmetric(
@@ -56,7 +56,10 @@ class EventBar extends StatelessWidget {
                   ),
                   Expanded(
                     child: Padding(
-                      padding: EdgeInsets.only(left: 0.06 * screenSize.width),
+                      padding: EdgeInsets.only(
+                        left: 0.06 * screenSize.width,
+                        right: 0.01 * screenSize.width,
+                      ),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.start,

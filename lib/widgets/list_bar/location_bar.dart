@@ -55,7 +55,10 @@ class LocationBar extends StatelessWidget {
                   ),
                   Expanded(
                     child: Padding(
-                      padding: EdgeInsets.only(left: 0.06 * screenSize.width),
+                      padding: EdgeInsets.only(
+                        left: 0.06 * screenSize.width,
+                        right: 0.01 * screenSize.width,
+                      ),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.start,
