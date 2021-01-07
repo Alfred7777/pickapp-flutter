@@ -1,16 +1,15 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:PickApp/main.dart';
+import 'package:PickApp/repositories/authentication_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'repositories/user_repository.dart';
 
 class AuthenticatedApiClient {
-  final userRepository = UserRepository();
   final apiUrl = 'http://150.254.78.200/api/';
 
   Future getAuthToken() async {
-    var token = await userRepository.getAuthToken();
+    var token = await AuthenticationRepository.getAuthToken();
     return token;
   }
 

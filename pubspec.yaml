@@ -43,6 +43,11 @@ dependencies:
   # Web socket library
   phoenix_wings: ^0.2.1
 
+  # Sign up with Facebook
+  flutter_signin_button: ^1.1.0
+  flutter_facebook_login: ^3.0.0
+
+  animate_icons: ^0.0.4
 
 dev_dependencies:
   flutter_test:

@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:PickApp/login/login_bloc.dart';
 import 'package:PickApp/login/login_event.dart';
 import 'package:PickApp/login/login_state.dart';
+import 'package:flutter_signin_button/flutter_signin_button.dart';
 
 class LoginForm extends StatefulWidget {
   @override
@@ -15,6 +16,12 @@ class _LoginFormState extends State<LoginForm> {
 
   @override
   Widget build(BuildContext context) {
+    void _onSignInWithFacebookButtonPressed() {
+      BlocProvider.of<LoginBloc>(context).add(
+        SignInWithFacebookButtonPressed(),
+      );
+    }
+
     void _onLoginButtonPressed() {
       BlocProvider.of<LoginBloc>(context).add(
         LoginButtonPressed(
@@ -162,6 +169,24 @@ class _LoginFormState extends State<LoginForm> {
                       ),
                     ),
                   ),
+                ),
+                Padding(
+                  padding: EdgeInsets.only(top: 25.0),
+                  child: Text(
+                    'or',
+                    style: TextStyle(
+                      color: Colors.grey,
+                      fontSize: 14,
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsets.only(top: 25.0),
+                  child: SignInButton(Buttons.Facebook, onPressed: () {
+                    if (state is! LoginLoading) {
+                      _onSignInWithFacebookButtonPressed();
+                    }
+                  }),
                 ),
                 Expanded(
                   child: Padding(
