@@ -21,11 +21,13 @@ class EventDetailsUnjoined extends EventDetailsState {
   final String eventID;
   final Map<String, dynamic> eventDetails;
   final List<User> participantsList;
+  final bool isOrganiser;
 
   const EventDetailsUnjoined({
     @required this.eventID,
     @required this.eventDetails,
     @required this.participantsList,
+    @required this.isOrganiser,
   });
 }
 
@@ -33,11 +35,27 @@ class EventDetailsJoined extends EventDetailsState {
   final String eventID;
   final Map<String, dynamic> eventDetails;
   final List<User> participantsList;
+  final bool isOrganiser;
 
   const EventDetailsJoined({
     @required this.eventID,
     @required this.eventDetails,
     @required this.participantsList,
+    @required this.isOrganiser,
+  });
+}
+
+class EventDetailsRequested extends EventDetailsState {
+  final String eventID;
+  final Map<String, dynamic> eventDetails;
+  final List<User> participantsList;
+  final bool isOrganiser;
+
+  const EventDetailsRequested({
+    @required this.eventID,
+    @required this.eventDetails,
+    @required this.participantsList,
+    @required this.isOrganiser,
   });
 }
 
