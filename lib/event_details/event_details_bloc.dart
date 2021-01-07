@@ -23,20 +23,34 @@ class EventDetailsBloc extends Bloc<EventDetailsEvent, EventDetailsState> {
       yield EventDetailsLoading();
       try {
         var eventDetails = await eventRepository.getEventDetails(event.eventID);
+
         var participantsList = await eventRepository.getParticipants(
           event.eventID,
         );
-        if (eventDetails['is_participant']) {
+
+        var participationStatus = eventDetails['participation']['status'];
+        var isOrganiser = eventDetails['participation']['is_organiser?'];
+
+        if (participationStatus == 'joined') {
           yield EventDetailsJoined(
             eventID: event.eventID,
             eventDetails: eventDetails,
             participantsList: participantsList,
+            isOrganiser: isOrganiser,
+          );
+        } else if (participationStatus == 'requested') {
+          yield EventDetailsRequested(
+            eventID: event.eventID,
+            eventDetails: eventDetails,
+            participantsList: participantsList,
+            isOrganiser: isOrganiser,
           );
         } else {
           yield EventDetailsUnjoined(
             eventID: event.eventID,
             eventDetails: eventDetails,
             participantsList: participantsList,
+            isOrganiser: isOrganiser,
           );
         }
       } catch (error) {
@@ -50,17 +64,29 @@ class EventDetailsBloc extends Bloc<EventDetailsEvent, EventDetailsState> {
         event.eventID,
       );
 
-      if (eventDetails['is_participant']) {
+      var participationStatus = eventDetails['participation']['status'];
+      var isOrganiser = eventDetails['participation']['is_organiser?'];
+
+      if (participationStatus == 'joined') {
         yield EventDetailsJoined(
           eventID: event.eventID,
           eventDetails: eventDetails,
           participantsList: participantsList,
+          isOrganiser: isOrganiser,
+        );
+      } else if (participationStatus == 'requested') {
+        yield EventDetailsRequested(
+          eventID: event.eventID,
+          eventDetails: eventDetails,
+          participantsList: participantsList,
+          isOrganiser: isOrganiser,
         );
       } else {
         yield EventDetailsUnjoined(
           eventID: event.eventID,
           eventDetails: eventDetails,
           participantsList: participantsList,
+          isOrganiser: isOrganiser,
         );
       }
     }
@@ -71,17 +97,22 @@ class EventDetailsBloc extends Bloc<EventDetailsEvent, EventDetailsState> {
         event.eventID,
       );
 
-      if (eventDetails['is_participant']) {
+      var participationStatus = eventDetails['participation']['status'];
+      var isOrganiser = eventDetails['participation']['is_organiser?'];
+
+      if (participationStatus == 'joined') {
         yield EventDetailsJoined(
           eventID: event.eventID,
           eventDetails: eventDetails,
           participantsList: participantsList,
+          isOrganiser: isOrganiser,
         );
       } else {
         yield EventDetailsUnjoined(
           eventID: event.eventID,
           eventDetails: eventDetails,
           participantsList: participantsList,
+          isOrganiser: isOrganiser,
         );
       }
     }

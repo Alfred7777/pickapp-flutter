@@ -67,14 +67,21 @@ class EventDetailsScrollableState extends State<EventDetailsScrollable> {
           }
           if (state is EventDetailsUnjoined) {
             return _buildEventDetails(
-              false,
+              'joinable',
+              state.eventDetails,
+              state.participantsList,
+            );
+          }
+          if (state is EventDetailsRequested) {
+            return _buildEventDetails(
+              'requested',
               state.eventDetails,
               state.participantsList,
             );
           }
           if (state is EventDetailsJoined) {
             return _buildEventDetails(
-              true,
+              'joined',
               state.eventDetails,
               state.participantsList,
             );
@@ -265,8 +272,117 @@ class EventDetailsScrollableState extends State<EventDetailsScrollable> {
     );
   }
 
-  Widget _buildEventDetails(bool joinedEvent, Map<String, dynamic> eventDetails,
-      List<User> participantsList) {
+  Widget _buildActionText(String joinedEventStringState) {
+    var screenSize = MediaQuery.of(context).size;
+
+    switch (joinedEventStringState) {
+      case 'joined':
+        {
+          return Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Padding(
+                padding: EdgeInsets.only(right: 0.01 * screenSize.width),
+                child: Icon(
+                  Icons.clear,
+                  color: Colors.white,
+                  size: 20.0,
+                ),
+              ),
+              Text(
+                'LEAVE',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
+          );
+        }
+        break;
+      case 'requested':
+        {
+          return Text(
+            'REQUESTED',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+            ),
+          );
+        }
+        break;
+      case 'joinable':
+        {
+          return Text(
+            'JOIN',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+            ),
+          );
+        }
+        break;
+    }
+    // hack for handling missing return type error
+    return Container();
+  }
+
+  Widget _buildActionFlatButton(String joinedEventStringState) {
+    switch (joinedEventStringState) {
+      case 'joined':
+        {
+          return FlatButton(
+            onPressed: () {
+              _eventDetailsBloc.add(
+                LeaveEvent(eventID: eventID),
+              );
+            },
+            color: Colors.redAccent,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20.0),
+            ),
+            child: _buildActionText(joinedEventStringState),
+          );
+        }
+        break;
+      case 'requested':
+        {
+          return FlatButton(
+            onPressed: () {},
+            color: Colors.blueAccent,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20.0),
+            ),
+            child: _buildActionText(joinedEventStringState),
+          );
+        }
+        break;
+      case 'joinable':
+        {
+          return FlatButton(
+            onPressed: () {
+              _eventDetailsBloc.add(
+                JoinEvent(eventID: eventID),
+              );
+            },
+            color: Colors.green,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20.0),
+            ),
+            child: _buildActionText(joinedEventStringState),
+          );
+        }
+        break;
+    }
+    // hack for handling missing return type error
+    return Container();
+  }
+
+  Widget _buildEventDetails(String joinedEventStringState,
+      Map<String, dynamic> eventDetails, List<User> participantsList) {
     var screenSize = MediaQuery.of(context).size;
 
     bool allowInvitations = eventDetails['settings']['allow_invitations'];
@@ -277,6 +393,8 @@ class EventDetailsScrollableState extends State<EventDetailsScrollable> {
       allowInvitations,
       requireParticipationAcceptation,
     );
+
+    var isOrganiser = eventDetails['participation']['is_organiser?'];
 
     return SingleChildScrollView(
       physics: AlwaysScrollableScrollPhysics(),
@@ -405,15 +523,17 @@ class EventDetailsScrollableState extends State<EventDetailsScrollable> {
             ),
           ),
           InkWell(
-            onTap: () async {
-              var route = MaterialPageRoute<void>(
-                builder: (context) => ParticipationRequestScreen(
-                  eventID: eventID,
-                ),
-              );
-              await Navigator.push(context, route);
-              _eventDetailsBloc.add(FetchEventDetails(eventID: eventID));
-            },
+            onTap: isOrganiser
+                ? () async {
+                    var route = MaterialPageRoute<void>(
+                      builder: (context) => ParticipationRequestScreen(
+                        eventID: eventID,
+                      ),
+                    );
+                    await Navigator.push(context, route);
+                    _eventDetailsBloc.add(FetchEventDetails(eventID: eventID));
+                  }
+                : () {},
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               mainAxisSize: MainAxisSize.min,
@@ -439,25 +559,27 @@ class EventDetailsScrollableState extends State<EventDetailsScrollable> {
                       ),
                       Positioned(
                         right: 0,
-                        child: Container(
-                          padding: EdgeInsets.all(1),
-                          decoration: BoxDecoration(
-                            color: Colors.red,
-                            borderRadius: BorderRadius.circular(60),
-                          ),
-                          constraints: BoxConstraints(
-                            minWidth: 10,
-                            minHeight: 10,
-                          ),
-                          child: Text(
-                            '10',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 10,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                        ),
+                        child: isOrganiser
+                            ? Container(
+                                padding: EdgeInsets.all(1),
+                                decoration: BoxDecoration(
+                                  color: Colors.red,
+                                  borderRadius: BorderRadius.circular(60),
+                                ),
+                                constraints: BoxConstraints(
+                                  minWidth: 10,
+                                  minHeight: 10,
+                                ),
+                                child: Text(
+                                  '10',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 10,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                              )
+                            : Container(),
                       ),
                     ],
                   ),
@@ -499,66 +621,21 @@ class EventDetailsScrollableState extends State<EventDetailsScrollable> {
               ButtonTheme(
                 height: 40,
                 minWidth: 0.34 * screenSize.width,
-                child: FlatButton(
-                  onPressed: joinedEvent
-                      ? () {
-                          _eventDetailsBloc.add(
-                            LeaveEvent(eventID: eventID),
-                          );
-                        }
-                      : () {
-                          _eventDetailsBloc.add(
-                            JoinEvent(eventID: eventID),
-                          );
-                        },
-                  color: joinedEvent ? Colors.redAccent : Colors.green,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20.0),
-                  ),
-                  child: joinedEvent
-                      ? Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Padding(
-                              padding: EdgeInsets.only(
-                                  right: 0.01 * screenSize.width),
-                              child: Icon(
-                                Icons.clear,
-                                color: Colors.white,
-                                size: 20.0,
-                              ),
-                            ),
-                            Text(
-                              'LEAVE',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ],
-                        )
-                      : Text(
-                          'JOIN',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                ),
+                child: _buildActionFlatButton(joinedEventStringState),
               ),
               Column(
                 children: [
                   MaterialButton(
-                    onPressed: () {
-                      var route = MaterialPageRoute<void>(
-                        builder: (context) =>
-                            EventInvitationScreen(eventID: eventID),
-                      );
-                      Navigator.push(context, route);
-                    },
-                    color: Color(0xFF7FBCF1),
+                    onPressed: isOrganiser
+                        ? () {
+                            var route = MaterialPageRoute<void>(
+                              builder: (context) =>
+                                  EventInvitationScreen(eventID: eventID),
+                            );
+                            Navigator.push(context, route);
+                          }
+                        : () {},
+                    color: isOrganiser ? Color(0xFF7FBCF1) : Colors.grey,
                     child: Icon(
                       Icons.person_add,
                       size: 34,

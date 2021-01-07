@@ -147,7 +147,7 @@ class EventRepository {
         'discipline_id': details['discipline_id'],
         'organiser_id': details['organiser_id'],
         'event_pos': LatLng(details['lat'], details['lon']),
-        'is_participant': details['is_participating?'],
+        'participation': details['participation'],
         'settings': details['settings'],
       };
     } else {
