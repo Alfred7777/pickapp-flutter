@@ -626,7 +626,9 @@ class EventDetailsScrollableState extends State<EventDetailsScrollable> {
               Column(
                 children: [
                   MaterialButton(
-                    onPressed: isOrganiser
+                    onPressed: joinedEventStringState == 'joined' &&
+                                allowInvitations == true ||
+                            isOrganiser
                         ? () {
                             var route = MaterialPageRoute<void>(
                               builder: (context) =>
@@ -635,7 +637,11 @@ class EventDetailsScrollableState extends State<EventDetailsScrollable> {
                             Navigator.push(context, route);
                           }
                         : () {},
-                    color: isOrganiser ? Color(0xFF7FBCF1) : Colors.grey,
+                    color: joinedEventStringState == 'joined' &&
+                                allowInvitations == true ||
+                            isOrganiser
+                        ? Color(0xFF7FBCF1)
+                        : Colors.grey,
                     child: Icon(
                       Icons.person_add,
                       size: 34,
