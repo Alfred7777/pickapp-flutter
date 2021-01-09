@@ -2,6 +2,7 @@ import 'package:PickApp/profile/profile_event.dart';
 import 'package:PickApp/profile/profile_state.dart';
 import 'package:PickApp/profile/profile_bloc.dart';
 import 'package:PickApp/repositories/user_repository.dart';
+import 'package:PickApp/widgets/profile_picture_rounded.dart';
 import 'package:flutter/material.dart';
 import 'package:PickApp/widgets/top_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -62,26 +63,6 @@ class ProfileScreenState extends State<ProfileScreen> {
           image: AssetImage(
               'assets/images/event_placeholder/04aa25eb-5f6e-47fd-b6a8-92cf9ef0bee6.png'),
           fit: BoxFit.cover,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildProfileImage() {
-    return Center(
-      child: Container(
-        width: 190,
-        height: 190,
-        decoration: BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage('assets/images/profile_placeholder.png'),
-            fit: BoxFit.cover,
-          ),
-          borderRadius: BorderRadius.circular(100.0),
-          border: Border.all(
-            color: Colors.white,
-            width: 10.0,
-          ),
         ),
       ),
     );
@@ -162,7 +143,14 @@ class ProfileScreenState extends State<ProfileScreen> {
               child: Column(
                 children: <Widget>[
                   SizedBox(height: screenSize.height / 8.5),
-                  _buildProfileImage(),
+                  Center(
+                    child: ProfilePicture(
+                      width: 190,
+                      height: 190,
+                      profilePicturePath:
+                          'assets/images/profile_placeholder.png',
+                    ),
+                  ),
                   _buildFullName(data.name.toString()),
                   _buildUserName(data.uniqueUsername.toString()),
                   SizedBox(height: screenSize.height / 60.0),

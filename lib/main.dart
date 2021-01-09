@@ -1,4 +1,4 @@
-import 'package:PickApp/home/home_screen.dart';
+import 'package:PickApp/onboarding/onboarding_screen.dart';
 import 'package:PickApp/push_notifications.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -64,7 +64,7 @@ class _MyAppState extends State<MyApp> {
             if (state is AuthenticationUninitialized) {
               return LoadingScreen();
             } else if (state is AuthenticationAuthenticated) {
-              return HomeScreen();
+              return OnboardingScreen();
             } else if (state is AuthenticationUnauthenticated) {
               return LoginScreen(userRepository: userRepository);
             } else {

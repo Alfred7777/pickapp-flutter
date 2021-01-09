@@ -1,4 +1,5 @@
 import 'package:PickApp/client.dart';
+import 'package:PickApp/utils/errors_beautifier.dart';
 import 'dart:convert';
 import 'package:equatable/equatable.dart';
 
@@ -44,6 +45,48 @@ class UserRepository {
       throw Exception('Failed to load profile');
     }
   }
+
+  static Future<bool> isOnboardingCompleted() async {
+    final client = AuthenticatedApiClient();
+    var path = 'profile/onboarding/';
+
+    var response = await client.get(path);
+
+    if (response.statusCode == 200) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  static Future<ProfileDraft> getProfileDraft() async {
+    final client = AuthenticatedApiClient();
+    var path = 'profile/onboarding/draft';
+
+    var response = await client.get(path);
+
+    if (response.statusCode == 200) {
+      var decoded_draft = json.decode(response.body);
+      return ProfileDraft.fromJson(decoded_draft);
+    } else {
+      throw Exception('Something went wrong. Please try again later');
+    }
+  }
+
+  static Future<User> createProfile(Map<String, String> params) async {
+    final client = AuthenticatedApiClient();
+    var path = 'profile';
+
+    var response = await client.post(path, body: params);
+
+    if (response.statusCode == 201) {
+      var decoded_profile = json.decode(response.body);
+      return User.fromJson(decoded_profile);
+    } else {
+      var errors = ErrorsBeautifier.call(response.body);
+      throw Exception(errors);
+    }
+  }
 }
 
 class User extends Equatable {
@@ -56,6 +99,27 @@ class User extends Equatable {
 
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
+      bio: json['bio'],
+      name: json['name'],
+      uniqueUsername: json['unique_username'],
+      userID: json['user_id'],
+    );
+  }
+
+  @override
+  List<Object> get props => [name, uniqueUsername, bio];
+}
+
+class ProfileDraft extends Equatable {
+  final String bio;
+  final String name;
+  final String uniqueUsername;
+  final String userID;
+
+  ProfileDraft({this.uniqueUsername, this.name, this.bio, this.userID});
+
+  factory ProfileDraft.fromJson(Map<String, dynamic> json) {
+    return ProfileDraft(
       bio: json['bio'],
       name: json['name'],
       uniqueUsername: json['unique_username'],
