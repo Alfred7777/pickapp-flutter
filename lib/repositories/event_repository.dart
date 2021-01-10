@@ -1,3 +1,4 @@
+import 'package:PickApp/utils/errors_beautifier.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -65,23 +66,6 @@ class EventRepository {
     }
   }
 
-  // For sure this could be improved ;)
-  String beautifyErrorResponse(String responseBody) {
-    var errors = Map<String, dynamic>.from(json.decode(responseBody)['errors']);
-    var error_formatted = '';
-
-    errors.forEach((key, value) {
-      error_formatted = error_formatted +
-          key.toString() +
-          ' ' +
-          value.toString().replaceAll('[', '').replaceAll(']', '') +
-          ' ' +
-          '\n';
-    });
-
-    return error_formatted;
-  }
-
   Future<String> updateEvent({
     final String name,
     final String description,
@@ -124,7 +108,7 @@ class EventRepository {
     if (response.statusCode == 201) {
       return 'Event updated';
     } else {
-      throw Exception(beautifyErrorResponse(response.body));
+      throw Exception(ErrorsBeautifier.call(response.body));
     }
   }
 
