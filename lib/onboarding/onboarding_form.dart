@@ -150,7 +150,7 @@ class _OnboardingFormState extends State<OnboardingForm> {
       return 'Name is required!';
     }
     if (name.length > 40) {
-      return 'Name cannot be longer than 40 characters!';
+      return 'Name can\'t be longer than 40 characters!';
     }
     if (!nameSegmentRegex.hasMatch(name)) {
       return 'Each name segment has to start with capital letter followed by at least one small letter.';
@@ -168,7 +168,7 @@ class _OnboardingFormState extends State<OnboardingForm> {
       return 'Username is required!';
     }
     if (uniqueUsername.length > 32) {
-      return 'Username cannot exceed be longer than 32 characters!';
+      return 'Username can\'t be longer than 32 characters!';
     }
     if (!uniqueUsernameRegex.hasMatch(uniqueUsername)) {
       return 'Unique username can contain only letters, digits, -, . and _.';
@@ -178,7 +178,7 @@ class _OnboardingFormState extends State<OnboardingForm> {
 
   String validateBio(String bio) {
     if (bio.length > 280) {
-      return 'Bio cannot be longer than 280 characters!';
+      return 'Bio can\'t be longer than 280 characters!';
     }
     return null;
   }

@@ -26,7 +26,7 @@ class NotificationRepository {
       };
     } else {
       throw Exception(
-        'We cannot show your notifications right now. Please try again later',
+        'We can\'t show your notifications right now. Please try again later',
       );
     }
   }
