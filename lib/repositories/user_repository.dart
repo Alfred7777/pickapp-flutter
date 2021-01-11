@@ -1,5 +1,5 @@
 import 'package:PickApp/client.dart';
-import 'package:PickApp/utils/errors_beautifier.dart';
+import 'package:PickApp/utils/string_formatter.dart';
 import 'dart:convert';
 import 'package:equatable/equatable.dart';
 
@@ -42,7 +42,7 @@ class UserRepository {
         userID: userID,
       );
     } else {
-      throw Exception('Failed to load profile');
+      throw Exception('Failed to load profile!');
     }
   }
 
@@ -66,8 +66,7 @@ class UserRepository {
     var response = await client.get(path);
 
     if (response.statusCode == 200) {
-      var decoded_draft = json.decode(response.body);
-      return ProfileDraft.fromJson(decoded_draft);
+      return ProfileDraft.fromJson(json.decode(response.body));
     } else {
       throw Exception('Something went wrong. Please try again later');
     }
@@ -80,11 +79,11 @@ class UserRepository {
     var response = await client.post(path, body: params);
 
     if (response.statusCode == 201) {
-      var decoded_profile = json.decode(response.body);
-      return User.fromJson(decoded_profile);
+      return User.fromJson(json.decode(response.body));
     } else {
-      var errors = ErrorsBeautifier.call(response.body);
-      throw Exception(errors);
+      throw Exception(
+        StringFormatter.formatErrors(json.decode(response.body)),
+      );
     }
   }
 }

@@ -55,19 +55,6 @@ class ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget _buildProfileCover(Size screenSize) {
-    return Container(
-      height: screenSize.height / 3.5,
-      decoration: BoxDecoration(
-        image: DecorationImage(
-          image: AssetImage(
-              'assets/images/event_placeholder/04aa25eb-5f6e-47fd-b6a8-92cf9ef0bee6.png'),
-          fit: BoxFit.cover,
-        ),
-      ),
-    );
-  }
-
   Widget _buildFullName(String full_name) {
     var _nameStyle = TextStyle(
       color: Colors.black,
@@ -136,8 +123,7 @@ class ProfileScreenState extends State<ProfileScreen> {
     return Scaffold(
       appBar: sideScreenTopBar(context),
       body: Stack(
-        children: <Widget>[
-          _buildProfileCover(screenSize),
+        children: [
           SafeArea(
             child: SingleChildScrollView(
               child: Column(

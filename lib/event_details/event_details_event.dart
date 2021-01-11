@@ -2,43 +2,30 @@ import 'package:meta/meta.dart';
 import 'package:equatable/equatable.dart';
 
 class EventDetailsEvent extends Equatable {
-  const EventDetailsEvent();
+  final String eventID;
+
+  const EventDetailsEvent({@required this.eventID});
 
   @override
-  List<Object> get props => [];
+  List<Object> get props => [eventID];
 }
 
 class FetchEventDetails extends EventDetailsEvent {
-  final String eventID;
-
-  FetchEventDetails({@required this.eventID});
+  FetchEventDetails(String eventID) : super(eventID: eventID);
 
   @override
   List<Object> get props => [eventID];
 }
 
 class JoinEvent extends EventDetailsEvent {
-  final String eventID;
-
-  JoinEvent({@required this.eventID});
+  JoinEvent(String eventID) : super(eventID: eventID);
 
   @override
   List<Object> get props => [eventID];
 }
 
 class LeaveEvent extends EventDetailsEvent {
-  final String eventID;
-
-  LeaveEvent({@required this.eventID});
-
-  @override
-  List<Object> get props => [eventID];
-}
-
-class EventDetailsFetchFailure extends EventDetailsEvent {
-  final String eventID;
-
-  EventDetailsFetchFailure({@required this.eventID});
+  LeaveEvent(String eventID) : super(eventID: eventID);
 
   @override
   List<Object> get props => [eventID];

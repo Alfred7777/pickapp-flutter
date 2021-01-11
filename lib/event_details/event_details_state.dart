@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
 import 'package:PickApp/repositories/user_repository.dart';
+import 'package:PickApp/repositories/event_repository.dart';
 
 class EventDetailsState extends Equatable {
   const EventDetailsState();
@@ -17,45 +18,15 @@ class EventDetailsUninitialized extends EventDetailsState {
 
 class EventDetailsLoading extends EventDetailsState {}
 
-class EventDetailsUnjoined extends EventDetailsState {
+class EventDetailsReady extends EventDetailsState {
   final String eventID;
-  final Map<String, dynamic> eventDetails;
+  final EventDetails eventDetails;
   final List<User> participantsList;
-  final bool isOrganiser;
 
-  const EventDetailsUnjoined({
+  const EventDetailsReady({
     @required this.eventID,
     @required this.eventDetails,
     @required this.participantsList,
-    @required this.isOrganiser,
-  });
-}
-
-class EventDetailsJoined extends EventDetailsState {
-  final String eventID;
-  final Map<String, dynamic> eventDetails;
-  final List<User> participantsList;
-  final bool isOrganiser;
-
-  const EventDetailsJoined({
-    @required this.eventID,
-    @required this.eventDetails,
-    @required this.participantsList,
-    @required this.isOrganiser,
-  });
-}
-
-class EventDetailsRequested extends EventDetailsState {
-  final String eventID;
-  final Map<String, dynamic> eventDetails;
-  final List<User> participantsList;
-  final bool isOrganiser;
-
-  const EventDetailsRequested({
-    @required this.eventID,
-    @required this.eventDetails,
-    @required this.participantsList,
-    @required this.isOrganiser,
   });
 }
 

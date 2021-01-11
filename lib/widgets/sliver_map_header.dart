@@ -4,7 +4,7 @@ import 'package:flutter/rendering.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:meta/meta.dart';
-import 'package:PickApp/repositories/event_repository.dart';
+import 'package:PickApp/utils/static_google_map.dart';
 
 class SliverMapHeader implements SliverPersistentHeaderDelegate {
   @override
@@ -12,11 +12,13 @@ class SliverMapHeader implements SliverPersistentHeaderDelegate {
   @override
   final double maxExtent;
   final LatLng markerPos;
+  final Widget privacyBadge;
 
   SliverMapHeader({
     @required this.minExtent,
     @required this.maxExtent,
     @required this.markerPos,
+    @required this.privacyBadge,
   });
 
   void _redirectToNavigation() async {
@@ -59,22 +61,36 @@ class SliverMapHeader implements SliverPersistentHeaderDelegate {
     double shrinkOffset,
     bool overlapsContent,
   ) {
-    return InkWell(
-      onTap: _showRedirectDialog,
-      child: Container(
-        decoration: BoxDecoration(
-          image: DecorationImage(
-            image: NetworkImage(getStaticEventLocationMapString(markerPos, 16)),
-            fit: BoxFit.cover,
-          ),
-          border: Border(
-            bottom: BorderSide(
-              color: Colors.grey[300],
-              width: 0.6,
+    return Stack(
+      children: [
+        InkWell(
+          onTap: _showRedirectDialog,
+          child: Padding(
+            padding: EdgeInsets.only(bottom: 18),
+            child: Container(
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                  image: NetworkImage(
+                    StaticGoogleMap.getStaticMarkerMapString(markerPos, 16),
+                  ),
+                  fit: BoxFit.cover,
+                ),
+                border: Border(
+                  bottom: BorderSide(
+                    color: Colors.grey[300],
+                    width: 0.6,
+                  ),
+                ),
+              ),
             ),
           ),
         ),
-      ),
+        Positioned(
+          right: 24,
+          bottom: 0,
+          child: privacyBadge ?? Container(),
+        ),
+      ],
     );
   }
 

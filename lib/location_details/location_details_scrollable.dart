@@ -116,9 +116,10 @@ class LocationDetails extends StatelessWidget {
         SliverPersistentHeader(
           pinned: true,
           delegate: SliverMapHeader(
-            minExtent: 0.16 * screenSize.height,
-            maxExtent: 0.3 * screenSize.height,
+            minExtent: 0.14 * screenSize.height,
+            maxExtent: 0.28 * screenSize.height,
             markerPos: locationDetails.position,
+            privacyBadge: null,
           ),
         ),
         SliverList(
@@ -128,7 +129,7 @@ class LocationDetails extends StatelessWidget {
                 children: [
                   Padding(
                     padding: EdgeInsets.only(
-                      top: 0.02 * screenSize.height,
+                      bottom: 4,
                     ),
                     child: Text(
                       locationDetails.name,
@@ -138,12 +139,6 @@ class LocationDetails extends StatelessWidget {
                         fontWeight: FontWeight.bold,
                       ),
                       textAlign: TextAlign.center,
-                    ),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.all(0.008 * screenSize.height),
-                    child: Divider(
-                      color: Colors.grey[400],
                     ),
                   ),
                   Align(

@@ -14,12 +14,10 @@ class FetchDisciplines extends CreateEventEvent {}
 
 class LocationPicked extends CreateEventEvent {
   final List<Discipline> disciplines;
-  final List<EventPrivacyRule> eventPrivacySettings;
   final LatLng pickedPos;
 
   const LocationPicked({
     @required this.disciplines,
-    @required this.eventPrivacySettings,
     @required this.pickedPos,
   });
 
@@ -29,7 +27,6 @@ class LocationPicked extends CreateEventEvent {
 
 class CreateEventButtonPressed extends CreateEventEvent {
   final List<Discipline> disciplines;
-  final List<EventPrivacyRule> eventPrivacySettings;
 
   final String eventName;
   final String eventDescription;
@@ -42,7 +39,6 @@ class CreateEventButtonPressed extends CreateEventEvent {
 
   const CreateEventButtonPressed({
     @required this.disciplines,
-    @required this.eventPrivacySettings,
     @required this.eventName,
     @required this.eventDescription,
     @required this.eventDisciplineID,
@@ -56,7 +52,6 @@ class CreateEventButtonPressed extends CreateEventEvent {
   @override
   List<Object> get props => [
         disciplines,
-        eventPrivacySettings,
         eventName,
         eventDescription,
         eventDisciplineID,

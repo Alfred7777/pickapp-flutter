@@ -3,6 +3,7 @@ import 'package:meta/meta.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'event_repository.dart';
 import 'package:PickApp/client.dart';
+import 'package:PickApp/utils/string_formatter.dart';
 
 class LocationRepository {
   Future<String> createLocation({
@@ -26,13 +27,7 @@ class LocationRepository {
     if (response.statusCode == 201) {
       return 'Location created';
     } else {
-      var errorMessage = '';
-      EventRepository()
-          .formatErrors(json.decode(response.body)['errors'])
-          .forEach((k, v) {
-        errorMessage = errorMessage + v + '\n';
-      });
-      return errorMessage.substring(0, errorMessage.length - 1);
+      return StringFormatter.formatErrors(json.decode(response.body));
     }
   }
 

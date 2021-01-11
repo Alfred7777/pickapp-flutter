@@ -14,111 +14,32 @@ class EventDetailsBloc extends Bloc<EventDetailsEvent, EventDetailsState> {
   });
 
   @override
-  EventDetailsState get initialState =>
-      EventDetailsUninitialized(eventID: eventID);
+  EventDetailsState get initialState => EventDetailsUninitialized(
+        eventID: eventID,
+      );
 
   @override
   Stream<EventDetailsState> mapEventToState(EventDetailsEvent event) async* {
-    if (event is FetchEventDetails) {
+    try {
       yield EventDetailsLoading();
-      try {
-        var eventDetails = await eventRepository.getEventDetails(event.eventID);
-
-        var participantsList = await eventRepository.getParticipants(
-          event.eventID,
-        );
-
-        var participationStatus = eventDetails['participation']['status'];
-        var isOrganiser = eventDetails['participation']['is_organiser?'];
-
-        if (participationStatus == 'joined') {
-          yield EventDetailsJoined(
-            eventID: event.eventID,
-            eventDetails: eventDetails,
-            participantsList: participantsList,
-            isOrganiser: isOrganiser,
-          );
-        } else if (participationStatus == 'requested') {
-          yield EventDetailsRequested(
-            eventID: event.eventID,
-            eventDetails: eventDetails,
-            participantsList: participantsList,
-            isOrganiser: isOrganiser,
-          );
-        } else {
-          yield EventDetailsUnjoined(
-            eventID: event.eventID,
-            eventDetails: eventDetails,
-            participantsList: participantsList,
-            isOrganiser: isOrganiser,
-          );
-        }
-      } catch (error) {
-        yield EventDetailsFailure(error: error.message);
+      if (event is JoinEvent) {
+        await eventRepository.joinEvent(event.eventID);
       }
-    }
-    if (event is JoinEvent) {
-      await eventRepository.joinEvent(event.eventID);
+      if (event is LeaveEvent) {
+        await eventRepository.leaveEvent(event.eventID);
+      }
       var eventDetails = await eventRepository.getEventDetails(event.eventID);
-      var participantsList = await eventRepository.getParticipants(
+      var participantsList = await eventRepository.getEventParticipants(
         event.eventID,
       );
 
-      var participationStatus = eventDetails['participation']['status'];
-      var isOrganiser = eventDetails['participation']['is_organiser?'];
-
-      if (participationStatus == 'joined') {
-        yield EventDetailsJoined(
-          eventID: event.eventID,
-          eventDetails: eventDetails,
-          participantsList: participantsList,
-          isOrganiser: isOrganiser,
-        );
-      } else if (participationStatus == 'requested') {
-        yield EventDetailsRequested(
-          eventID: event.eventID,
-          eventDetails: eventDetails,
-          participantsList: participantsList,
-          isOrganiser: isOrganiser,
-        );
-      } else {
-        yield EventDetailsUnjoined(
-          eventID: event.eventID,
-          eventDetails: eventDetails,
-          participantsList: participantsList,
-          isOrganiser: isOrganiser,
-        );
-      }
-    }
-    if (event is LeaveEvent) {
-      await eventRepository.leaveEvent(event.eventID);
-      var eventDetails = await eventRepository.getEventDetails(event.eventID);
-      var participantsList = await eventRepository.getParticipants(
-        event.eventID,
+      yield EventDetailsReady(
+        eventID: event.eventID,
+        eventDetails: eventDetails,
+        participantsList: participantsList,
       );
-
-      var participationStatus = eventDetails['participation']['status'];
-      var isOrganiser = eventDetails['participation']['is_organiser?'];
-
-      if (participationStatus == 'joined') {
-        yield EventDetailsJoined(
-          eventID: event.eventID,
-          eventDetails: eventDetails,
-          participantsList: participantsList,
-          isOrganiser: isOrganiser,
-        );
-      } else {
-        yield EventDetailsUnjoined(
-          eventID: event.eventID,
-          eventDetails: eventDetails,
-          participantsList: participantsList,
-          isOrganiser: isOrganiser,
-        );
-      }
-    }
-
-    if (event is EventDetailsFetchFailure) {
-      yield EventDetailsUninitialized(eventID: event.eventID);
+    } catch (exception) {
+      yield EventDetailsFailure(error: exception.message);
     }
   }
 }

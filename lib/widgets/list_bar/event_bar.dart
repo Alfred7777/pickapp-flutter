@@ -66,6 +66,8 @@ class EventBar extends StatelessWidget {
                         children: [
                           Text(
                             '${event.name}',
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
                             style: TextStyle(
                               color: Colors.grey[800],
                               fontSize: 0.05 * screenSize.width,
