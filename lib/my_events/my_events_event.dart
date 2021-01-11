@@ -13,8 +13,8 @@ class FetchMyEvents extends MyEventsEvent {}
 
 class AnswerInvitation extends MyEventsEvent {
   final EventInvitation invitation;
-  final Map<DateTime, List<Event>> myActiveEvents;
-  final Map<DateTime, List<Event>> myPastEvents;
+  final List<Event> myActiveEvents;
+  final List<Event> myPastEvents;
   final List<EventInvitation> eventInvitations;
   final String answer;
 

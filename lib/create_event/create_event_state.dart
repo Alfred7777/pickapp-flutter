@@ -16,17 +16,16 @@ class CreateEventLoading extends CreateEventState {}
 
 class CreateEventReady extends CreateEventState {
   final List<Discipline> disciplines;
-  final List<EventPrivacyRule> eventPrivacySettings;
+
   final LatLng pickedPos;
 
   const CreateEventReady({
     @required this.disciplines,
-    @required this.eventPrivacySettings,
     @required this.pickedPos,
   });
 
   @override
-  List<Object> get props => [disciplines, eventPrivacySettings, pickedPos];
+  List<Object> get props => [disciplines, pickedPos];
 }
 
 class CreateEventCreated extends CreateEventState {
@@ -44,20 +43,17 @@ class CreateEventCreated extends CreateEventState {
 
 class CreateEventFailure extends CreateEventState {
   final List<Discipline> disciplines;
-  final List<EventPrivacyRule> eventPrivacySettings;
   final LatLng pickedPos;
   final String error;
 
   const CreateEventFailure({
     @required this.disciplines,
-    @required this.eventPrivacySettings,
     @required this.pickedPos,
     @required this.error,
   });
 
   @override
-  List<Object> get props =>
-      [disciplines, eventPrivacySettings, pickedPos, error];
+  List<Object> get props => [disciplines, pickedPos, error];
 }
 
 class FetchDisciplinesFailure extends CreateEventState {

@@ -29,7 +29,9 @@ class CreateEventScreenState extends State<CreateEventScreen> {
   String _disciplineID;
   DateTime _startDate;
   DateTime _endDate;
-  EventPrivacyRule _eventPrivacyRule;
+
+  List<EventPrivacyRule> _eventPrivacyRules;
+  EventPrivacyRule _privacyRule;
 
   CreateEventScreenState({
     @required this.initialCameraPos,
@@ -48,10 +50,8 @@ class CreateEventScreenState extends State<CreateEventScreen> {
     _startDate = DateTime.now().add(Duration(minutes: 15));
     _endDate = DateTime.now().add(Duration(hours: 2, minutes: 15));
 
-    _eventPrivacyRule = eventRepository.convertSettingsToEventPrivacyRule(
-      true,
-      false,
-    );
+    _eventPrivacyRules = EventPrivacyRule.getEventPrivacyRules();
+    _privacyRule = EventPrivacyRule.fromBooleans(true, false);
   }
 
   @override
@@ -65,8 +65,7 @@ class CreateEventScreenState extends State<CreateEventScreen> {
   void _pickLocation(LatLng pos) {
     _createEventBloc.add(
       LocationPicked(
-        disciplines: _createEventBloc.state.props[0],
-        eventPrivacySettings: _createEventBloc.state.props[1],
+        disciplines: _createEventBloc.state.props.first,
         pickedPos: pos,
       ),
     );
@@ -84,8 +83,12 @@ class CreateEventScreenState extends State<CreateEventScreen> {
     _endDate = endDate;
   }
 
+  void _setPrivacyRule(EventPrivacyRule privacyRule) {
+    _privacyRule = privacyRule;
+  }
+
   String _validateStartDate() {
-    if (_startDate.isAfter(_endDate)) {
+    if (!_endDate.isAfter(_startDate)) {
       return 'Event can\'t start after the end of it!';
     }
     if (DateTime.now().isAfter(_startDate)) {
@@ -101,24 +104,19 @@ class CreateEventScreenState extends State<CreateEventScreen> {
     return null;
   }
 
-  void _setEventPrivacy(EventPrivacyRule eventPrivacyRule) {
-    _eventPrivacyRule = eventPrivacyRule;
-  }
-
   void _createEvent() {
     _createEventBloc.add(
       CreateEventButtonPressed(
-        disciplines: _createEventBloc.state.props[0],
-        eventPrivacySettings: _createEventBloc.state.props[1],
+        disciplines: _createEventBloc.state.props.first,
         eventName: _nameController.text,
         eventDescription: _descriptionController.text,
         eventDisciplineID: _disciplineID,
-        eventPos: _createEventBloc.state.props[2],
+        eventPos: _createEventBloc.state.props.last,
         eventStartDate: _startDate,
         eventEndDate: _endDate,
-        allowInvitations: _eventPrivacyRule.allowInvitations,
+        allowInvitations: _privacyRule.allowInvitations,
         requireParticipationAcceptation:
-            _eventPrivacyRule.requireParticipationAcceptation,
+            _privacyRule.requireParticipationAcceptation,
       ),
     );
   }
@@ -130,17 +128,17 @@ class CreateEventScreenState extends State<CreateEventScreen> {
         return CreateEventPopup(
           nameController: _nameController,
           descriptionController: _descriptionController,
-          disciplines: _createEventBloc.state.props[0],
-          eventPrivacySettings: _createEventBloc.state.props[1],
+          disciplines: _createEventBloc.state.props.first,
+          eventPrivacyRules: _eventPrivacyRules,
           createEvent: _createEvent,
           setDiscipline: _setDiscipline,
           setStartDate: _setStartDate,
           setEndDate: _setEndDate,
-          setEventPrivacy: _setEventPrivacy,
+          setPrivacyRule: _setPrivacyRule,
           initDisciplineID: _disciplineID,
           initStartDate: _startDate,
           initEndDate: _endDate,
-          initEventPrivacy: _eventPrivacyRule,
+          initPrivacyRule: _privacyRule,
           validateStartDate: _validateStartDate,
           validateEndDate: _validateEndDate,
         );
@@ -316,16 +314,16 @@ class CreateEventPopup extends StatelessWidget {
   final TextEditingController nameController;
   final TextEditingController descriptionController;
   final List<Discipline> disciplines;
-  final List<EventPrivacyRule> eventPrivacySettings;
+  final List<EventPrivacyRule> eventPrivacyRules;
   final Function createEvent;
   final Function setDiscipline;
   final Function setStartDate;
   final Function setEndDate;
-  final Function setEventPrivacy;
+  final Function setPrivacyRule;
   final String initDisciplineID;
   final DateTime initStartDate;
   final DateTime initEndDate;
-  final EventPrivacyRule initEventPrivacy;
+  final EventPrivacyRule initPrivacyRule;
   final Function validateStartDate;
   final Function validateEndDate;
 
@@ -333,16 +331,16 @@ class CreateEventPopup extends StatelessWidget {
     @required this.nameController,
     @required this.descriptionController,
     @required this.disciplines,
-    @required this.eventPrivacySettings,
+    @required this.eventPrivacyRules,
     @required this.createEvent,
     @required this.setDiscipline,
     @required this.setStartDate,
     @required this.setEndDate,
-    @required this.setEventPrivacy,
+    @required this.setPrivacyRule,
     @required this.initDisciplineID,
     @required this.initStartDate,
     @required this.initEndDate,
-    @required this.initEventPrivacy,
+    @required this.initPrivacyRule,
     @required this.validateStartDate,
     @required this.validateEndDate,
   });
@@ -364,16 +362,16 @@ class CreateEventPopup extends StatelessWidget {
             nameController: nameController,
             descriptionController: descriptionController,
             disciplines: disciplines,
-            eventPrivacySettings: eventPrivacySettings,
+            eventPrivacyRules: eventPrivacyRules,
             createEvent: createEvent,
             setDiscipline: setDiscipline,
             setStartDate: setStartDate,
             setEndDate: setEndDate,
-            setEventPrivacy: setEventPrivacy,
+            setPrivacyRule: setPrivacyRule,
             initDisciplineID: initDisciplineID,
             initStartDate: initStartDate,
             initEndDate: initEndDate,
-            initEventPrivacy: initEventPrivacy,
+            initPrivacyRule: initPrivacyRule,
             validateStartDate: validateStartDate,
             validateEndDate: validateEndDate,
           ),
@@ -387,16 +385,16 @@ class CreateEventStepper extends StatefulWidget {
   final TextEditingController nameController;
   final TextEditingController descriptionController;
   final List<Discipline> disciplines;
-  final List<EventPrivacyRule> eventPrivacySettings;
+  final List<EventPrivacyRule> eventPrivacyRules;
   final Function createEvent;
   final Function setDiscipline;
   final Function setStartDate;
   final Function setEndDate;
-  final Function setEventPrivacy;
+  final Function setPrivacyRule;
   final String initDisciplineID;
   final DateTime initStartDate;
   final DateTime initEndDate;
-  final EventPrivacyRule initEventPrivacy;
+  final EventPrivacyRule initPrivacyRule;
   final Function validateStartDate;
   final Function validateEndDate;
 
@@ -404,16 +402,16 @@ class CreateEventStepper extends StatefulWidget {
     @required this.nameController,
     @required this.descriptionController,
     @required this.disciplines,
-    @required this.eventPrivacySettings,
+    @required this.eventPrivacyRules,
     @required this.createEvent,
     @required this.setDiscipline,
     @required this.setStartDate,
     @required this.setEndDate,
-    @required this.setEventPrivacy,
+    @required this.setPrivacyRule,
     @required this.initDisciplineID,
     @required this.initStartDate,
     @required this.initEndDate,
-    @required this.initEventPrivacy,
+    @required this.initPrivacyRule,
     @required this.validateStartDate,
     @required this.validateEndDate,
   });
@@ -423,16 +421,16 @@ class CreateEventStepper extends StatefulWidget {
         nameController: nameController,
         descriptionController: descriptionController,
         disciplines: disciplines,
-        eventPrivacySettings: eventPrivacySettings,
+        eventPrivacyRules: eventPrivacyRules,
         createEvent: createEvent,
         setDiscipline: setDiscipline,
         setStartDate: setStartDate,
         setEndDate: setEndDate,
-        setEventPrivacy: setEventPrivacy,
+        setPrivacyRule: setPrivacyRule,
         initDisciplineID: initDisciplineID,
         initStartDate: initStartDate,
         initEndDate: initEndDate,
-        initEventPrivacy: initEventPrivacy,
+        initPrivacyRule: initPrivacyRule,
         validateStartDate: validateStartDate,
         validateEndDate: validateEndDate,
       );
@@ -442,16 +440,16 @@ class CreateEventStepperState extends State<CreateEventStepper> {
   final TextEditingController nameController;
   final TextEditingController descriptionController;
   final List<Discipline> disciplines;
-  final List<EventPrivacyRule> eventPrivacySettings;
+  final List<EventPrivacyRule> eventPrivacyRules;
   final Function createEvent;
   final Function setDiscipline;
   final Function setStartDate;
   final Function setEndDate;
-  final Function setEventPrivacy;
+  final Function setPrivacyRule;
   final String initDisciplineID;
   final DateTime initStartDate;
   final DateTime initEndDate;
-  final EventPrivacyRule initEventPrivacy;
+  final EventPrivacyRule initPrivacyRule;
   final Function validateStartDate;
   final Function validateEndDate;
 
@@ -466,16 +464,16 @@ class CreateEventStepperState extends State<CreateEventStepper> {
     @required this.nameController,
     @required this.descriptionController,
     @required this.disciplines,
-    @required this.eventPrivacySettings,
+    @required this.eventPrivacyRules,
     @required this.createEvent,
     @required this.setDiscipline,
     @required this.setStartDate,
     @required this.setEndDate,
-    @required this.setEventPrivacy,
+    @required this.setPrivacyRule,
     @required this.initDisciplineID,
     @required this.initStartDate,
     @required this.initEndDate,
-    @required this.initEventPrivacy,
+    @required this.initPrivacyRule,
     @required this.validateStartDate,
     @required this.validateEndDate,
   });
@@ -596,9 +594,9 @@ class CreateEventStepperState extends State<CreateEventStepper> {
           state: _getStepState(2, 'Privacy Settings'),
           content: PrivacySettingsStep(
             formKey: _formKeys[2],
-            eventPrivacySettings: eventPrivacySettings,
-            setEventPrivacy: setEventPrivacy,
-            initEventPrivacy: initEventPrivacy,
+            eventPrivacyRules: eventPrivacyRules,
+            setPrivacyRule: setPrivacyRule,
+            initPrivacyRule: initPrivacyRule,
           ),
         ),
       ],
@@ -807,22 +805,50 @@ class DateStep extends StatelessWidget {
   }
 }
 
-class PrivacySettingsStep extends StatelessWidget {
+class PrivacySettingsStep extends StatefulWidget {
   final GlobalKey<FormState> formKey;
-  final List<EventPrivacyRule> eventPrivacySettings;
-  final Function setEventPrivacy;
-  final EventPrivacyRule initEventPrivacy;
+  final List<EventPrivacyRule> eventPrivacyRules;
+  final Function setPrivacyRule;
+  final EventPrivacyRule initPrivacyRule;
 
-  const PrivacySettingsStep({
+  PrivacySettingsStep({
     @required this.formKey,
-    @required this.eventPrivacySettings,
-    @required this.setEventPrivacy,
-    @required this.initEventPrivacy,
+    @required this.eventPrivacyRules,
+    @required this.setPrivacyRule,
+    @required this.initPrivacyRule,
   });
 
   @override
+  State<PrivacySettingsStep> createState() => PrivacySettingsStepState(
+        formKey: formKey,
+        eventPrivacyRules: eventPrivacyRules,
+        setPrivacyRule: setPrivacyRule,
+        initPrivacyRule: initPrivacyRule,
+      );
+}
+
+class PrivacySettingsStepState extends State<PrivacySettingsStep> {
+  final GlobalKey<FormState> formKey;
+  final List<EventPrivacyRule> eventPrivacyRules;
+  final Function setPrivacyRule;
+  final EventPrivacyRule initPrivacyRule;
+  var _privacyRule;
+
+  PrivacySettingsStepState({
+    @required this.formKey,
+    @required this.eventPrivacyRules,
+    @required this.setPrivacyRule,
+    @required this.initPrivacyRule,
+  });
+
+  @override
+  void initState() {
+    _privacyRule = initPrivacyRule;
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    var _eventPrivacy = initEventPrivacy;
     return Form(
       key: formKey,
       child: Column(
@@ -831,20 +857,22 @@ class PrivacySettingsStep extends StatelessWidget {
           DropdownButtonFormField<EventPrivacyRule>(
             autovalidateMode: AutovalidateMode.onUserInteraction,
             isExpanded: true,
-            decoration: const InputDecoration(
+            decoration: InputDecoration(
               border: OutlineInputBorder(),
               labelText: 'Privacy Settings',
             ),
-            value: _eventPrivacy,
-            items: eventPrivacySettings.map((privacyRule) {
+            value: _privacyRule,
+            items: eventPrivacyRules.map((privacyRule) {
               return DropdownMenuItem<EventPrivacyRule>(
                 value: privacyRule,
                 child: Text(privacyRule.name),
               );
             }).toList(),
             onChanged: (EventPrivacyRule newValue) {
-              _eventPrivacy = newValue;
-              setEventPrivacy(newValue);
+              setState(() {
+                _privacyRule = newValue;
+                setPrivacyRule(newValue);
+              });
             },
             validator: (value) {
               if (value == null) {
@@ -852,6 +880,14 @@ class PrivacySettingsStep extends StatelessWidget {
               }
               return null;
             },
+          ),
+          SizedBox(height: 8.0),
+          Text(
+            _privacyRule.description,
+            style: TextStyle(
+              fontSize: 14,
+              color: Colors.grey[600],
+            ),
           ),
           SizedBox(height: 8.0),
         ],

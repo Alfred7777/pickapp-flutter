@@ -1,14 +1,17 @@
+import 'package:PickApp/event_update/event_update_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'event_details_bloc.dart';
 import 'event_details_event.dart';
 import 'event_details_state.dart';
-import 'participation_request/participation_request_screen.dart';
-import 'package:PickApp/profile/profile_screen.dart';
-import 'package:PickApp/event_invitation/event_invitation_screen.dart';
 import 'package:PickApp/repositories/event_repository.dart';
 import 'package:PickApp/repositories/user_repository.dart';
+import 'participation_request/participation_request_screen.dart';
+import 'package:PickApp/event_invitation/event_invitation_screen.dart';
+import 'package:PickApp/widgets/loading_screen.dart';
+import 'package:PickApp/widgets/sliver_map_header.dart';
+import 'package:PickApp/widgets/list_bar/user_bar.dart';
 
 class EventDetailsScrollable extends StatefulWidget {
   final String eventID;
@@ -33,6 +36,66 @@ class EventDetailsScrollableState extends State<EventDetailsScrollable> {
     _eventDetailsBloc = EventDetailsBloc(
       eventRepository: eventRepository,
       eventID: eventID,
+    );
+  }
+
+  void _editEvent() async {
+    var route = MaterialPageRoute<void>(
+      builder: (context) => EventUpdateScreen(
+        eventID: eventID,
+      ),
+    );
+    await Navigator.push(context, route);
+    _eventDetailsBloc.add(FetchEventDetails(eventID));
+  }
+
+  void _inviteToEvent() async {
+    var route = MaterialPageRoute<void>(
+      builder: (context) => EventInvitationScreen(eventID: eventID),
+    );
+    await Navigator.push(context, route);
+    _eventDetailsBloc.add(FetchEventDetails(eventID));
+  }
+
+  void _manageEventAttendance(String request) {
+    print(request);
+    if (request == 'join') {
+      _eventDetailsBloc.add(JoinEvent(eventID));
+    } else if (request == 'leave') {
+      _eventDetailsBloc.add(LeaveEvent(eventID));
+    }
+  }
+
+  void _manageParticipationRequests() async {
+    var route = MaterialPageRoute<void>(
+      builder: (context) => ParticipationRequestScreen(
+        eventID: eventID,
+      ),
+    );
+    await Navigator.push(context, route);
+    _eventDetailsBloc.add(FetchEventDetails(eventID));
+  }
+
+  Widget _buildFailureAlert(BuildContext context, String errorMessage) {
+    return AlertDialog(
+      title: Text('An Error Occured!'),
+      content: Text(errorMessage),
+      actions: [
+        FlatButton(
+          child: Text('Try Again'),
+          onPressed: () {
+            Navigator.of(context).pop();
+            _eventDetailsBloc.add(FetchEventDetails(eventID));
+          },
+        ),
+        FlatButton(
+          child: Text('Go Back'),
+          onPressed: () {
+            Navigator.of(context).pop();
+            Navigator.of(context).pop();
+          },
+        ),
+      ],
     );
   }
 
@@ -63,668 +126,623 @@ class EventDetailsScrollableState extends State<EventDetailsScrollable> {
         },
         builder: (context, state) {
           if (state is EventDetailsUninitialized) {
-            _eventDetailsBloc.add(FetchEventDetails(eventID: eventID));
+            _eventDetailsBloc.add(FetchEventDetails(eventID));
           }
-          if (state is EventDetailsUnjoined) {
-            return _buildEventDetails(
-              'joinable',
-              state.eventDetails,
-              state.participantsList,
+          if (state is EventDetailsReady) {
+            return EventDetailsList(
+              eventDetails: state.eventDetails,
+              participantList: state.participantsList,
+              manageParticipationRequests: _manageParticipationRequests,
+              manageEventAttendance: _manageEventAttendance,
+              editEvent: _editEvent,
+              inviteToEvent: _inviteToEvent,
             );
           }
-          if (state is EventDetailsRequested) {
-            return _buildEventDetails(
-              'requested',
-              state.eventDetails,
-              state.participantsList,
-            );
-          }
-          if (state is EventDetailsJoined) {
-            return _buildEventDetails(
-              'joined',
-              state.eventDetails,
-              state.participantsList,
-            );
-          }
-          return Center(
-            child: CircularProgressIndicator(),
-          );
+          return LoadingScreen();
         },
       ),
     );
   }
+}
 
-  Widget _buildFailureAlert(BuildContext context, String errorMessage) {
-    return AlertDialog(
-      title: Text('An Error Occured!'),
-      content: Text(errorMessage),
-      actions: [
-        FlatButton(
-          child: Text('Try Again'),
-          onPressed: () {
-            Navigator.of(context).pop();
-            _eventDetailsBloc.add(FetchEventDetails(eventID: eventID));
-          },
+class EventDetailsList extends StatelessWidget {
+  final EventDetails eventDetails;
+  final List<User> participantList;
+  final Function manageParticipationRequests;
+  final Function manageEventAttendance;
+  final Function editEvent;
+  final Function inviteToEvent;
+
+  const EventDetailsList({
+    @required this.eventDetails,
+    @required this.participantList,
+    @required this.manageParticipationRequests,
+    @required this.manageEventAttendance,
+    @required this.editEvent,
+    @required this.inviteToEvent,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    var screenSize = MediaQuery.of(context).size;
+    return Scaffold(
+      body: SafeArea(
+        child: CustomScrollView(
+          slivers: [
+            SliverPersistentHeader(
+              pinned: true,
+              delegate: SliverMapHeader(
+                minExtent: 0.14 * screenSize.height,
+                maxExtent: 0.3 * screenSize.height,
+                markerPos: eventDetails.position,
+                privacyBadge: PrivacyBadge(
+                  eventPrivacyRule: EventPrivacyRule.fromBooleans(
+                    eventDetails.allowInvitations,
+                    eventDetails.requireParticipationAcceptation,
+                  ),
+                ),
+              ),
+            ),
+            SliverList(
+              delegate: SliverChildListDelegate(
+                [
+                  Column(
+                    children: [
+                      EventNameAndDate(
+                        name: eventDetails.name,
+                        startDate: eventDetails.startDate,
+                        endDate: eventDetails.endDate,
+                      ),
+                      Padding(
+                        padding: EdgeInsets.all(4),
+                        child: Divider(
+                          color: Colors.grey[400],
+                        ),
+                      ),
+                      EventButtons(
+                        numberOfParticipants: participantList.length,
+                        numberOfParticipationRequests: 10,
+                        participationStatus: eventDetails.participationStatus,
+                        isOrganiser: eventDetails.isOrganiser,
+                        allowInvitations: eventDetails.allowInvitations,
+                        requireParticipationAcceptation:
+                            eventDetails.requireParticipationAcceptation,
+                        manageParticipationRequests:
+                            manageParticipationRequests,
+                        manageEventAttendance: manageEventAttendance,
+                        inviteToEvent: inviteToEvent,
+                      ),
+                      EventDescription(
+                        description: eventDetails.description,
+                      ),
+                      Padding(
+                        padding: EdgeInsets.all(4),
+                        child: Divider(
+                          color: Colors.grey[400],
+                        ),
+                      ),
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: Padding(
+                          padding: EdgeInsets.only(
+                            left: 16,
+                          ),
+                          child: Text(
+                            'Participants',
+                            style: TextStyle(
+                              color: Colors.grey[800],
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ),
+                      ParticipantList(
+                        participantList: participantList,
+                      ),
+                      SizedBox(
+                        height: 8,
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
-        FlatButton(
-          child: Text('Go Back'),
-          onPressed: () {
-            Navigator.of(context).pop();
-            Navigator.of(context).pop();
-          },
+      ),
+      floatingActionButton: eventDetails.isOrganiser
+          ? FloatingActionButton(
+              elevation: 2,
+              onPressed: editEvent,
+              backgroundColor: Colors.blue[300],
+              child: Icon(
+                Icons.edit,
+                color: Colors.white,
+              ),
+            )
+          : Container(),
+    );
+  }
+}
+
+class EventNameAndDate extends StatelessWidget {
+  final String name;
+  final DateTime startDate;
+  final DateTime endDate;
+
+  const EventNameAndDate({
+    @required this.name,
+    @required this.startDate,
+    @required this.endDate,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(
+          name,
+          style: TextStyle(
+            color: Colors.grey[800],
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+          ),
+          textAlign: TextAlign.center,
+        ),
+        Padding(
+          padding: EdgeInsets.only(top: 8),
+          child: Text(
+            'Event start:',
+            style: TextStyle(
+              color: Colors.grey[800],
+              fontSize: 14,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+        EventDate(
+          date: startDate,
+          color: Colors.green,
+        ),
+        Padding(
+          padding: EdgeInsets.only(top: 4),
+          child: Text(
+            'Event end:',
+            style: TextStyle(
+              color: Colors.grey[800],
+              fontSize: 14,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+        EventDate(
+          date: endDate,
+          color: Colors.redAccent,
         ),
       ],
     );
   }
+}
 
-  Widget _buildEventParticipant(User participant) {
-    var screenSize = MediaQuery.of(context).size;
+class EventDate extends StatelessWidget {
+  final DateTime date;
+  final Color color;
+
+  const EventDate({
+    @required this.date,
+    @required this.color,
+  });
+
+  @override
+  Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.only(
-        bottom: 0.01 * screenSize.height,
-        left: 0.02 * screenSize.width,
-        right: 0.02 * screenSize.width,
+      padding: EdgeInsets.only(top: 4),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Padding(
+            padding: EdgeInsets.only(right: 4),
+            child: Icon(
+              Icons.schedule,
+              color: color,
+              size: 16,
+            ),
+          ),
+          Text(
+            DateFormat.Hm().add_EEEE().format(date) +
+                ', ' +
+                DateFormat.MMMMd().format(date) +
+                ', ' +
+                DateFormat.y().format(date),
+            style: TextStyle(
+              color: Colors.grey[800],
+              fontSize: 14,
+            ),
+          ),
+        ],
       ),
-      child: Card(
-        color: Color(0xFFDEDEDE),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(Radius.circular(20.0)),
+    );
+  }
+}
+
+class EventButtons extends StatelessWidget {
+  final int numberOfParticipants;
+  final int numberOfParticipationRequests;
+  final String participationStatus;
+  final bool isOrganiser;
+  final bool allowInvitations;
+  final bool requireParticipationAcceptation;
+  final Function manageParticipationRequests;
+  final Function manageEventAttendance;
+  final Function inviteToEvent;
+
+  const EventButtons({
+    @required this.numberOfParticipants,
+    @required this.numberOfParticipationRequests,
+    @required this.participationStatus,
+    @required this.isOrganiser,
+    @required this.allowInvitations,
+    @required this.requireParticipationAcceptation,
+    @required this.manageParticipationRequests,
+    @required this.manageEventAttendance,
+    @required this.inviteToEvent,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        EventParticipantsNumber(
+          numberOfParticipants: numberOfParticipants,
+          numberOfParticipationRequests: numberOfParticipationRequests,
+          isOrganiser: isOrganiser,
+          requireParticipationAcceptation: requireParticipationAcceptation,
+          manageParticipationRequests: manageParticipationRequests,
         ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.center,
+        ButtonBar(
+          mainAxisSize: MainAxisSize.max,
+          alignment: MainAxisAlignment.spaceEvenly,
+          buttonPadding: EdgeInsets.zero,
           children: [
-            Expanded(
-              flex: 21,
-              child: Padding(
-                padding: EdgeInsets.only(
-                  top: 0.01 * screenSize.height,
-                  bottom: 0.01 * screenSize.height,
-                  left: 0.04 * screenSize.width,
-                ),
-                child: Container(
-                  height: 0.17 * screenSize.width,
-                  decoration: BoxDecoration(
-                    border: Border.all(width: 0.2),
-                    image: DecorationImage(
-                      image:
-                          AssetImage('assets/images/profile_placeholder.png'),
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                ),
-              ),
+            EventRoundButton(
+              icon: Icons.add_alert,
+              label: 'Follow',
+              color: Colors.blue[300],
+              notifyParent: () {},
             ),
-            Expanded(
-              flex: 42,
-              child: Padding(
-                padding: EdgeInsets.only(
-                  left: 0.03 * screenSize.width,
-                ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.max,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      participant.name,
-                      style: TextStyle(
-                        color: Color(0xFF3D3A3A),
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    Text(
-                      '@${participant.uniqueUsername}',
-                      style: TextStyle(color: Color(0xAA3D3A3A), fontSize: 12),
-                    ),
-                  ],
-                ),
-              ),
+            EventMainButton(
+              text: participationStatus,
+              notifyParent: manageEventAttendance,
             ),
-            Expanded(
-              flex: 26,
-              child: Padding(
-                padding: EdgeInsets.only(
-                  left: 0.03 * screenSize.width,
-                  right: 0.03 * screenSize.width,
-                ),
-                child: ButtonTheme(
-                  height: 40,
-                  child: FlatButton(
-                    onPressed: () {
-                      var route = MaterialPageRoute<void>(
-                        builder: (context) => ProfileScreen(
-                          userID: participant.userID,
-                        ),
-                      );
-                      Navigator.push(context, route);
-                    },
-                    color: Color(0xFF7FBCF1),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20.0),
-                    ),
-                    child: Icon(
-                      Icons.person,
-                      color: Colors.black,
-                      size: 32.0,
-                    ),
-                  ),
-                ),
-              ),
-            )
+            EventRoundButton(
+              icon: Icons.person_add,
+              label: 'Invite',
+              color: isOrganiser ||
+                      allowInvitations == true &&
+                          participationStatus == 'joined'
+                  ? Colors.blue[300]
+                  : Colors.grey,
+              notifyParent: () {
+                if (isOrganiser) {
+                  inviteToEvent();
+                } else if (participationStatus == 'joined' &&
+                    allowInvitations) {
+                  inviteToEvent();
+                }
+              },
+            ),
           ],
+        ),
+      ],
+    );
+  }
+}
+
+class EventParticipantsNumber extends StatelessWidget {
+  final int numberOfParticipants;
+  final int numberOfParticipationRequests;
+  final bool isOrganiser;
+  final bool requireParticipationAcceptation;
+  final Function manageParticipationRequests;
+
+  const EventParticipantsNumber({
+    @required this.numberOfParticipants,
+    @required this.numberOfParticipationRequests,
+    @required this.isOrganiser,
+    @required this.requireParticipationAcceptation,
+    @required this.manageParticipationRequests,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      borderRadius: BorderRadius.circular(8),
+      onTap: isOrganiser && requireParticipationAcceptation
+          ? manageParticipationRequests
+          : () {},
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            numberOfParticipants.toString(),
+            style: TextStyle(
+              color: Color(0xFF3D3A3A),
+              fontSize: 32,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          Padding(
+            padding: EdgeInsets.only(left: 2),
+            child: Stack(
+              children: [
+                Icon(
+                  Icons.group,
+                  color: Colors.black,
+                  size: 40,
+                ),
+                Positioned(
+                  right: 0,
+                  child: isOrganiser && requireParticipationAcceptation
+                      ? Container(
+                          padding: EdgeInsets.all(1),
+                          decoration: BoxDecoration(
+                            color: Colors.red,
+                            borderRadius: BorderRadius.circular(60),
+                          ),
+                          constraints: BoxConstraints(
+                            minWidth: 10,
+                            minHeight: 10,
+                          ),
+                          child: Text(
+                            numberOfParticipationRequests.toString(),
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 10,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        )
+                      : Container(),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class EventMainButton extends StatelessWidget {
+  final String text;
+  final Function notifyParent;
+
+  const EventMainButton({
+    @required this.text,
+    @required this.notifyParent,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.only(bottom: 18),
+      child: MaterialButton(
+        height: 40,
+        minWidth: 128,
+        onPressed: () {
+          if (text == 'joined') {
+            notifyParent('leave');
+          }
+          if (text == 'joinable') {
+            notifyParent('join');
+          }
+        },
+        color: text == 'joined'
+            ? Colors.redAccent
+            : text == 'requested'
+                ? Colors.blue[900]
+                : Colors.green,
+        child: Text(
+          text == 'joined'
+              ? 'LEAVE'
+              : text == 'requested'
+                  ? 'REQUESTED'
+                  : 'JOIN',
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+            fontSize: 18,
+          ),
+        ),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
         ),
       ),
     );
   }
+}
 
-  Widget _wrapIconWithCircle(Icon icon) {
+class EventRoundButton extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final Color color;
+  final Function notifyParent;
+
+  const EventRoundButton({
+    @required this.icon,
+    @required this.label,
+    @required this.color,
+    @required this.notifyParent,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        MaterialButton(
+          height: 56,
+          minWidth: 56,
+          onPressed: notifyParent,
+          color: color,
+          child: Icon(
+            icon,
+            size: 32,
+            color: Colors.white,
+          ),
+          shape: CircleBorder(),
+        ),
+        Padding(
+          padding: EdgeInsets.only(top: 2, bottom: 6),
+          child: Text(
+            label,
+            style: TextStyle(
+              color: Colors.grey[800],
+              fontSize: 12,
+              fontWeight: FontWeight.w500,
+              fontFamily: 'Montserrat',
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class EventDescription extends StatelessWidget {
+  final String description;
+
+  const EventDescription({
+    @required this.description,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Align(
+          alignment: Alignment.centerLeft,
+          child: Padding(
+            padding: EdgeInsets.only(
+              top: 2,
+              left: 16,
+            ),
+            child: Text(
+              'About',
+              style: TextStyle(
+                color: Color(0xFF3D3A3A),
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ),
+        Align(
+          alignment: Alignment.centerLeft,
+          child: Padding(
+            padding: EdgeInsets.only(
+              left: 16,
+              right: 16,
+              top: 2,
+            ),
+            child: Text(
+              description ?? '',
+              style: TextStyle(color: Color(0xFF3D3A3A), fontSize: 14),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class ParticipantList extends StatelessWidget {
+  final List<User> participantList;
+
+  const ParticipantList({
+    @required this.participantList,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    var screenSize = MediaQuery.of(context).size;
+    if (participantList.isNotEmpty) {
+      return ListView.builder(
+        shrinkWrap: true,
+        physics: ClampingScrollPhysics(),
+        itemCount: participantList.length,
+        itemBuilder: (BuildContext context, int index) {
+          return UserBar(
+            user: participantList[index],
+            actionList: [],
+          );
+        },
+      );
+    } else {
+      return Container(
+        width: screenSize.width,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Padding(
+              padding: EdgeInsets.only(
+                left: 20,
+                right: 20,
+                top: 16,
+                bottom: 16,
+              ),
+              child: Text(
+                'Nobody is participating in this event yet.',
+                style: TextStyle(
+                  color: Colors.grey[400],
+                  fontSize: 18,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+  }
+}
+
+class PrivacyBadge extends StatelessWidget {
+  final EventPrivacyRule eventPrivacyRule;
+
+  const PrivacyBadge({
+    @required this.eventPrivacyRule,
+  });
+
+  @override
+  Widget build(BuildContext context) {
     return Container(
-      width: 34,
-      height: 34,
-      margin: EdgeInsets.all(4.0),
+      height: 40,
+      width: 40,
+      margin: EdgeInsets.all(4),
       decoration: BoxDecoration(
         color: Colors.white,
         shape: BoxShape.circle,
         boxShadow: [
           BoxShadow(
-            color: Colors.green.withOpacity(0.2),
+            color: Colors.blue[300].withOpacity(0.2),
             spreadRadius: 2,
             blurRadius: 4,
           ),
         ],
       ),
-      child: icon,
-    );
-  }
-
-  Widget _privacyBadge(EventPrivacyRule eventPrivacyRule) {
-    switch (eventPrivacyRule.name) {
-      case 'Private':
-        {
-          return _wrapIconWithCircle(
-            Icon(
-              Icons.lock,
-              size: 24,
-              color: Colors.grey,
-            ),
-          );
-        }
-        break;
-      case 'Invite Only':
-        {
-          return _wrapIconWithCircle(
-            Icon(
-              Icons.group_add,
-              size: 24,
-              color: Colors.grey,
-            ),
-          );
-        }
-        break;
-    }
-    return _wrapIconWithCircle(
-      Icon(
-        Icons.public,
-        size: 24,
+      child: Icon(
+        eventPrivacyRule.name == 'Private'
+            ? Icons.lock
+            : eventPrivacyRule.name == 'Invite Only'
+                ? Icons.person_add
+                : Icons.public,
+        size: 28,
         color: Colors.grey,
-      ),
-    );
-  }
-
-  Widget _buildActionText(String joinedEventStringState) {
-    var screenSize = MediaQuery.of(context).size;
-
-    switch (joinedEventStringState) {
-      case 'joined':
-        {
-          return Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Padding(
-                padding: EdgeInsets.only(right: 0.01 * screenSize.width),
-                child: Icon(
-                  Icons.clear,
-                  color: Colors.white,
-                  size: 20.0,
-                ),
-              ),
-              Text(
-                'LEAVE',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ],
-          );
-        }
-        break;
-      case 'requested':
-        {
-          return Text(
-            'REQUESTED',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-            ),
-          );
-        }
-        break;
-      case 'joinable':
-        {
-          return Text(
-            'JOIN',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-            ),
-          );
-        }
-        break;
-    }
-    // hack for handling missing return type error
-    return Container();
-  }
-
-  Widget _buildActionFlatButton(String joinedEventStringState) {
-    switch (joinedEventStringState) {
-      case 'joined':
-        {
-          return FlatButton(
-            onPressed: () {
-              _eventDetailsBloc.add(
-                LeaveEvent(eventID: eventID),
-              );
-            },
-            color: Colors.redAccent,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(20.0),
-            ),
-            child: _buildActionText(joinedEventStringState),
-          );
-        }
-        break;
-      case 'requested':
-        {
-          return FlatButton(
-            onPressed: () {},
-            color: Colors.blueAccent,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(20.0),
-            ),
-            child: _buildActionText(joinedEventStringState),
-          );
-        }
-        break;
-      case 'joinable':
-        {
-          return FlatButton(
-            onPressed: () {
-              _eventDetailsBloc.add(
-                JoinEvent(eventID: eventID),
-              );
-            },
-            color: Colors.green,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(20.0),
-            ),
-            child: _buildActionText(joinedEventStringState),
-          );
-        }
-        break;
-    }
-    // hack for handling missing return type error
-    return Container();
-  }
-
-  Widget _buildEventDetails(String joinedEventStringState,
-      Map<String, dynamic> eventDetails, List<User> participantsList) {
-    var screenSize = MediaQuery.of(context).size;
-
-    bool allowInvitations = eventDetails['settings']['allow_invitations'];
-    bool requireParticipationAcceptation =
-        eventDetails['settings']['require_participation_acceptation'];
-
-    var eventPrivacySetting = eventRepository.convertSettingsToEventPrivacyRule(
-      allowInvitations,
-      requireParticipationAcceptation,
-    );
-
-    var isOrganiser = eventDetails['participation']['is_organiser?'];
-
-    return SingleChildScrollView(
-      physics: AlwaysScrollableScrollPhysics(),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            height: 0.21 * screenSize.height,
-            width: 0.20 * 1.4 * screenSize.height,
-            child: Stack(
-              children: [
-                Padding(
-                  padding: EdgeInsets.only(
-                    top: 0.025 * screenSize.height,
-                    bottom: 0.025 * screenSize.width,
-                  ),
-                  child: Container(
-                    height: 0.19 * screenSize.height,
-                    width: 0.19 * 1.4 * screenSize.height,
-                    decoration: BoxDecoration(
-                      image: DecorationImage(
-                        image: AssetImage(
-                          'assets/images/event_placeholder/${eventDetails['discipline_id']}.png',
-                        ),
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                  ),
-                ),
-                Positioned(
-                  bottom: 0,
-                  right: 0, //give the values according to your requirement
-                  child: _privacyBadge(eventPrivacySetting),
-                ),
-              ],
-            ),
-          ),
-          Padding(
-            padding: EdgeInsets.only(top: 0.012 * screenSize.height),
-            child: Text(
-              eventDetails['name'],
-              style: TextStyle(
-                color: Color(0xFF3D3A3A),
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-              ),
-              textAlign: TextAlign.center,
-            ),
-          ),
-          Padding(
-            padding: EdgeInsets.only(top: 0.005 * screenSize.height),
-            child: Text(
-              'Event start:',
-              style: TextStyle(
-                color: Color(0xFF3D3A3A),
-                fontSize: 14,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
-          Padding(
-            padding: EdgeInsets.only(top: 0.005 * screenSize.height),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Padding(
-                  padding: EdgeInsets.only(right: 0.01 * screenSize.width),
-                  child: Icon(
-                    Icons.schedule,
-                    color: Colors.green,
-                    size: 16,
-                  ),
-                ),
-                Text(
-                  DateFormat.Hm()
-                          .add_EEEE()
-                          .format(eventDetails['start_date']) +
-                      ', ' +
-                      DateFormat.MMMMd().format(eventDetails['start_date']) +
-                      ', ' +
-                      DateFormat.y().format(eventDetails['start_date']),
-                  style: TextStyle(color: Color(0xFF3D3A3A), fontSize: 14),
-                ),
-              ],
-            ),
-          ),
-          Padding(
-            padding: EdgeInsets.only(top: 0.005 * screenSize.height),
-            child: Text(
-              'Event end:',
-              style: TextStyle(
-                color: Color(0xFF3D3A3A),
-                fontSize: 14,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
-          Padding(
-            padding: EdgeInsets.only(top: 0.005 * screenSize.height),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Padding(
-                  padding: EdgeInsets.only(right: 0.01 * screenSize.width),
-                  child: Icon(
-                    Icons.schedule,
-                    color: Colors.red,
-                    size: 16,
-                  ),
-                ),
-                Text(
-                  DateFormat.Hm().add_EEEE().format(eventDetails['end_date']) +
-                      ', ' +
-                      DateFormat.MMMMd().format(eventDetails['end_date']) +
-                      ', ' +
-                      DateFormat.y().format(eventDetails['end_date']),
-                  style: TextStyle(color: Color(0xFF3D3A3A), fontSize: 14),
-                ),
-              ],
-            ),
-          ),
-          Padding(
-            padding: EdgeInsets.all(0.006 * screenSize.height),
-            child: Divider(
-              color: Colors.black,
-            ),
-          ),
-          InkWell(
-            onTap: isOrganiser
-                ? () async {
-                    var route = MaterialPageRoute<void>(
-                      builder: (context) => ParticipationRequestScreen(
-                        eventID: eventID,
-                      ),
-                    );
-                    await Navigator.push(context, route);
-                    _eventDetailsBloc.add(FetchEventDetails(eventID: eventID));
-                  }
-                : () {},
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  participantsList.length.toString(),
-                  style: TextStyle(
-                    color: Color(0xFF3D3A3A),
-                    fontSize: 0.04 * screenSize.height,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                Padding(
-                  padding: EdgeInsets.only(
-                    left: 0.01 * screenSize.width,
-                  ),
-                  child: Stack(
-                    children: [
-                      Icon(
-                        Icons.group,
-                        color: Colors.black,
-                        size: 0.06 * screenSize.height,
-                      ),
-                      Positioned(
-                        right: 0,
-                        child: isOrganiser
-                            ? Container(
-                                padding: EdgeInsets.all(1),
-                                decoration: BoxDecoration(
-                                  color: Colors.red,
-                                  borderRadius: BorderRadius.circular(60),
-                                ),
-                                constraints: BoxConstraints(
-                                  minWidth: 10,
-                                  minHeight: 10,
-                                ),
-                                child: Text(
-                                  '10',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 10,
-                                  ),
-                                  textAlign: TextAlign.center,
-                                ),
-                              )
-                            : Container(),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Column(
-                children: [
-                  MaterialButton(
-                    onPressed: () {},
-                    color: Color(0xFF7FBCF1),
-                    child: Icon(
-                      Icons.add_alert,
-                      size: 34,
-                    ),
-                    padding: EdgeInsets.all(8),
-                    shape: CircleBorder(),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.only(top: 1.0, bottom: 6.0),
-                    child: Text(
-                      'Follow',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 12,
-                        fontWeight: FontWeight.normal,
-                        fontFamily: 'Montserrat',
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              ButtonTheme(
-                height: 40,
-                minWidth: 0.34 * screenSize.width,
-                child: _buildActionFlatButton(joinedEventStringState),
-              ),
-              Column(
-                children: [
-                  MaterialButton(
-                    onPressed: joinedEventStringState == 'joined' &&
-                                allowInvitations == true ||
-                            isOrganiser
-                        ? () {
-                            var route = MaterialPageRoute<void>(
-                              builder: (context) =>
-                                  EventInvitationScreen(eventID: eventID),
-                            );
-                            Navigator.push(context, route);
-                          }
-                        : () {},
-                    color: joinedEventStringState == 'joined' &&
-                                allowInvitations == true ||
-                            isOrganiser
-                        ? Color(0xFF7FBCF1)
-                        : Colors.grey,
-                    child: Icon(
-                      Icons.person_add,
-                      size: 34,
-                    ),
-                    padding: EdgeInsets.all(8),
-                    shape: CircleBorder(),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.only(top: 1.0, bottom: 6.0),
-                    child: Text(
-                      'Invite',
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 12,
-                        fontWeight: FontWeight.normal,
-                        fontFamily: 'Montserrat',
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-          Align(
-            alignment: Alignment.centerLeft,
-            child: Padding(
-              padding: EdgeInsets.only(left: 0.06 * screenSize.width),
-              child: Text(
-                'About',
-                style: TextStyle(
-                  color: Color(0xFF3D3A3A),
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-          ),
-          Align(
-            alignment: Alignment.centerLeft,
-            child: Padding(
-              padding: EdgeInsets.only(
-                left: 0.06 * screenSize.width,
-                right: 0.06 * screenSize.width,
-                top: 0.005 * screenSize.height,
-              ),
-              child: Text(
-                eventDetails['description'] ?? '',
-                style: TextStyle(color: Color(0xFF3D3A3A), fontSize: 14),
-              ),
-            ),
-          ),
-          Padding(
-            padding: EdgeInsets.all(0.006 * screenSize.height),
-            child: Divider(
-              color: Colors.black,
-            ),
-          ),
-          Align(
-            alignment: Alignment.centerLeft,
-            child: Padding(
-              padding: EdgeInsets.only(
-                left: 0.06 * screenSize.width,
-                bottom: 0.005 * screenSize.height,
-              ),
-              child: Text(
-                'Participants',
-                style: TextStyle(
-                  color: Color(0xFF3D3A3A),
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-          ),
-          ListView.builder(
-            shrinkWrap: true,
-            physics: NeverScrollableScrollPhysics(),
-            itemCount: participantsList.length,
-            itemBuilder: (BuildContext context, int index) {
-              return _buildEventParticipant(participantsList[index]);
-            },
-          ),
-        ],
       ),
     );
   }

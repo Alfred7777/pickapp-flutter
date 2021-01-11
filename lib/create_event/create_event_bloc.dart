@@ -19,11 +19,9 @@ class CreateEventBloc extends Bloc<CreateEventEvent, CreateEventState> {
         yield CreateEventLoading();
 
         var _disciplines = await eventRepository.getDisciplines();
-        var _eventPrivacySettings = eventRepository.getEventPrivacyRules();
 
         yield CreateEventReady(
           disciplines: _disciplines,
-          eventPrivacySettings: _eventPrivacySettings,
           pickedPos: null,
         );
       } catch (exception) {
@@ -35,7 +33,6 @@ class CreateEventBloc extends Bloc<CreateEventEvent, CreateEventState> {
 
       yield CreateEventReady(
         disciplines: event.disciplines,
-        eventPrivacySettings: event.eventPrivacySettings,
         pickedPos: event.pickedPos,
       );
     }
@@ -50,7 +47,7 @@ class CreateEventBloc extends Bloc<CreateEventEvent, CreateEventState> {
         allowInvitations: event.allowInvitations,
         requireParticipationAcceptation: event.requireParticipationAcceptation,
       );
-      if (response == 'Event created') {
+      if (response == 'Event successfully created.') {
         yield CreateEventCreated(
           pos: event.eventPos,
           message: response,
@@ -58,14 +55,12 @@ class CreateEventBloc extends Bloc<CreateEventEvent, CreateEventState> {
       } else {
         yield CreateEventFailure(
           disciplines: event.disciplines,
-          eventPrivacySettings: event.eventPrivacySettings,
           pickedPos: event.eventPos,
           error: response,
         );
       }
       yield CreateEventReady(
         disciplines: event.disciplines,
-        eventPrivacySettings: event.eventPrivacySettings,
         pickedPos: event.eventPos,
       );
     }

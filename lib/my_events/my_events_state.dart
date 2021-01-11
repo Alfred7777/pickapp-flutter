@@ -14,8 +14,8 @@ class MyEventsUninitialized extends MyEventsState {}
 class MyEventsLoading extends MyEventsState {}
 
 class MyEventsReady extends MyEventsState {
-  final Map<DateTime, List<Event>> myActiveEvents;
-  final Map<DateTime, List<Event>> myPastEvents;
+  final List<Event> myActiveEvents;
+  final List<Event> myPastEvents;
   final List<EventInvitation> eventInvitations;
 
   const MyEventsReady({
