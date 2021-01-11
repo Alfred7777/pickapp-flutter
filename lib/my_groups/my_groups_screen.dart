@@ -1,73 +1,71 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'my_events_bloc.dart';
-import 'my_events_state.dart';
-import 'my_events_event.dart';
+import 'my_groups_bloc.dart';
+import 'my_groups_state.dart';
+import 'my_groups_event.dart';
 import 'package:PickApp/widgets/loading_screen.dart';
 import 'package:PickApp/widgets/top_bar.dart';
-import 'package:PickApp/widgets/list_bar/event_bar.dart';
-import 'package:PickApp/widgets/list_bar/event_invitation_bar.dart';
-import 'package:PickApp/repositories/event_repository.dart';
+import 'package:PickApp/widgets/list_bar/group_bar.dart';
+import 'package:PickApp/widgets/list_bar/group_invitation_bar.dart';
+import 'package:PickApp/repositories/group_repository.dart';
 
-class MyEventsScreen extends StatefulWidget {
-  MyEventsScreen();
+class MyGroupsScreen extends StatefulWidget {
+  MyGroupsScreen();
 
   @override
-  State<MyEventsScreen> createState() => MyEventsScreenState();
+  State<MyGroupsScreen> createState() => MyGroupsScreenState();
 }
 
-class MyEventsScreenState extends State<MyEventsScreen> {
-  final eventRepository = EventRepository();
-  MyEventsBloc _myEventsBloc;
+class MyGroupsScreenState extends State<MyGroupsScreen> {
+  final groupRepository = GroupRepository();
+  MyGroupsBloc _myGroupsBloc;
 
   @override
   void initState() {
     super.initState();
-    _myEventsBloc = MyEventsBloc(eventRepository: eventRepository);
+    _myGroupsBloc = MyGroupsBloc(groupRepository: groupRepository);
   }
 
   @override
   void dispose() {
-    _myEventsBloc.close();
+    _myGroupsBloc.close();
     super.dispose();
   }
 
-  void _answerInvitation(EventInvitation eventInvitation, String answer) {
+  void _answerInvitation(GroupInvitation groupInvitation, String answer) {
     if (answer == 'Accept') {
-      _myEventsBloc.add(
+      _myGroupsBloc.add(
         AnswerInvitation(
-          invitation: eventInvitation,
-          myActiveEvents: _myEventsBloc.state.props[0],
-          myPastEvents: _myEventsBloc.state.props[1],
-          eventInvitations: _myEventsBloc.state.props[2],
+          invitation: groupInvitation,
+          myGroups: _myGroupsBloc.state.props.first,
+          groupInvitations: _myGroupsBloc.state.props.last,
           answer: 'accept',
         ),
       );
     } else {
-      _myEventsBloc.add(
+      _myGroupsBloc.add(
         AnswerInvitation(
-          invitation: eventInvitation,
-          myActiveEvents: _myEventsBloc.state.props[0],
-          myPastEvents: _myEventsBloc.state.props[1],
-          eventInvitations: _myEventsBloc.state.props[2],
+          invitation: groupInvitation,
+          myGroups: _myGroupsBloc.state.props.first,
+          groupInvitations: _myGroupsBloc.state.props.last,
           answer: 'reject',
         ),
       );
     }
     Navigator.pop(context);
-    _myEventsBloc.add(FetchMyEvents());
+    _myGroupsBloc.add(FetchMyGroups());
   }
 
   Future<void> _refreshView() async {
-    _myEventsBloc.add(FetchMyEvents());
+    _myGroupsBloc.add(FetchMyGroups());
   }
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<MyEventsBloc, MyEventsState>(
-      bloc: _myEventsBloc,
+    return BlocListener<MyGroupsBloc, MyGroupsState>(
+      bloc: _myGroupsBloc,
       listener: (context, state) {
-        if (state is FetchEventsFailure) {
+        if (state is FetchGroupsFailure) {
           Scaffold.of(context).showSnackBar(
             SnackBar(
               content: Text('${state.error}'),
@@ -84,26 +82,25 @@ class MyEventsScreenState extends State<MyEventsScreen> {
           );
         }
       },
-      child: BlocBuilder<MyEventsBloc, MyEventsState>(
-        bloc: _myEventsBloc,
+      child: BlocBuilder<MyGroupsBloc, MyGroupsState>(
+        bloc: _myGroupsBloc,
         condition: (prevState, currState) {
           if (currState is AnswerInvitationFailure) {
             return false;
           }
-          if (prevState is MyEventsReady || currState is MyEventsLoading) {
+          if (prevState is MyGroupsReady || currState is MyGroupsLoading) {
             return false;
           }
           return true;
         },
         builder: (context, state) {
-          if (state is MyEventsUninitialized) {
-            _myEventsBloc.add(FetchMyEvents());
+          if (state is MyGroupsUninitialized) {
+            _myGroupsBloc.add(FetchMyGroups());
           }
-          if (state is MyEventsReady) {
-            return MyEvents(
-              activeEvents: state.myActiveEvents,
-              pastEvents: state.myPastEvents,
-              eventInvitations: state.eventInvitations,
+          if (state is MyGroupsReady) {
+            return MyGroups(
+              groups: state.myGroups,
+              groupInvitations: state.groupInvitations,
               refreshView: _refreshView,
               answerInvitation: _answerInvitation,
             );
@@ -115,17 +112,15 @@ class MyEventsScreenState extends State<MyEventsScreen> {
   }
 }
 
-class MyEvents extends StatelessWidget {
-  final List<Event> activeEvents;
-  final List<Event> pastEvents;
-  final List<EventInvitation> eventInvitations;
+class MyGroups extends StatelessWidget {
+  final List<Group> groups;
+  final List<GroupInvitation> groupInvitations;
   final Function refreshView;
   final Function answerInvitation;
 
-  const MyEvents({
-    @required this.activeEvents,
-    @required this.pastEvents,
-    @required this.eventInvitations,
+  const MyGroups({
+    @required this.groups,
+    @required this.groupInvitations,
     @required this.refreshView,
     @required this.answerInvitation,
   });
@@ -134,10 +129,21 @@ class MyEvents extends StatelessWidget {
   Widget build(BuildContext context) {
     var screenSize = MediaQuery.of(context).size;
     return DefaultTabController(
-      length: 3,
+      length: 2,
       initialIndex: 1,
       child: Scaffold(
         appBar: mainScreenTopBar(context),
+        floatingActionButton: FloatingActionButton(
+          elevation: 2,
+          onPressed: () {
+            // create group will be added when available
+          },
+          backgroundColor: Colors.green,
+          child: Icon(
+            Icons.add,
+            color: Colors.white,
+          ),
+        ),
         body: SafeArea(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -169,16 +175,9 @@ class MyEvents extends StatelessWidget {
                       iconMargin: EdgeInsets.zero,
                     ),
                     Tab(
-                      text: 'Active Events',
+                      text: 'Groups',
                       icon: Icon(
-                        Icons.event_note,
-                      ),
-                      iconMargin: EdgeInsets.zero,
-                    ),
-                    Tab(
-                      text: 'Past Events',
-                      icon: Icon(
-                        Icons.history,
+                        Icons.group,
                       ),
                       iconMargin: EdgeInsets.zero,
                     ),
@@ -190,21 +189,15 @@ class MyEvents extends StatelessWidget {
                   children: [
                     RefreshIndicator(
                       onRefresh: refreshView,
-                      child: EventInvitationList(
-                        eventInvitations: eventInvitations,
+                      child: GroupInvitationList(
+                        groupInvitations: groupInvitations,
                         answerInvitation: answerInvitation,
                       ),
                     ),
                     RefreshIndicator(
                       onRefresh: refreshView,
-                      child: EventList(
-                        events: activeEvents,
-                      ),
-                    ),
-                    RefreshIndicator(
-                      onRefresh: refreshView,
-                      child: EventList(
-                        events: pastEvents,
+                      child: GroupList(
+                        groups: groups,
                       ),
                     ),
                   ],
@@ -218,12 +211,12 @@ class MyEvents extends StatelessWidget {
   }
 }
 
-class EventInvitationList extends StatelessWidget {
-  final List<EventInvitation> eventInvitations;
+class GroupInvitationList extends StatelessWidget {
+  final List<GroupInvitation> groupInvitations;
   final Function answerInvitation;
 
-  const EventInvitationList({
-    @required this.eventInvitations,
+  const GroupInvitationList({
+    @required this.groupInvitations,
     @required this.answerInvitation,
   });
 
@@ -232,10 +225,10 @@ class EventInvitationList extends StatelessWidget {
     return ListView.builder(
       shrinkWrap: true,
       physics: AlwaysScrollableScrollPhysics(),
-      itemCount: eventInvitations.length,
+      itemCount: groupInvitations.length,
       itemBuilder: (BuildContext context, int index) {
-        return EventInvitationBar(
-          eventInvitation: eventInvitations[index],
+        return GroupInvitationBar(
+          groupInvitation: groupInvitations[index],
           answerInvitation: answerInvitation,
         );
       },
@@ -243,11 +236,11 @@ class EventInvitationList extends StatelessWidget {
   }
 }
 
-class EventList extends StatelessWidget {
-  final List<Event> events;
+class GroupList extends StatelessWidget {
+  final List<Group> groups;
 
-  const EventList({
-    @required this.events,
+  const GroupList({
+    @required this.groups,
   });
 
   @override
@@ -255,10 +248,10 @@ class EventList extends StatelessWidget {
     return ListView.builder(
       shrinkWrap: true,
       physics: AlwaysScrollableScrollPhysics(),
-      itemCount: events.length,
+      itemCount: groups.length,
       itemBuilder: (BuildContext context, int index) {
-        return EventBar(
-          event: events[index],
+        return GroupBar(
+          group: groups[index],
         );
       },
     );

@@ -114,7 +114,7 @@ class EventRepository {
       return EventDetails.fromJson(json.decode(response.body));
     } else {
       throw Exception(
-        'We cannot show you this event right now. Please try again later.',
+        'We can\'t show you this event right now. Please try again later.',
       );
     }
   }
@@ -191,7 +191,7 @@ class EventRepository {
           .toList();
     } else {
       throw Exception(
-        'We cannot show your event list right now. Please try again later.',
+        'We can\'t show your event list right now. Please try again later.',
       );
     }
   }
@@ -291,7 +291,7 @@ class EventRepository {
           .toList();
     } else {
       throw Exception(
-        'We cannot show you search results right now. Please try again later.',
+        'We can\'t show you search results right now. Please try again later.',
       );
     }
   }
