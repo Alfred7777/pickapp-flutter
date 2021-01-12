@@ -1,9 +1,32 @@
 import 'dart:convert';
+import 'package:PickApp/utils/string_formatter.dart';
 import 'package:meta/meta.dart';
 import 'package:PickApp/client.dart';
 import 'user_repository.dart';
 
 class GroupRepository {
+  Future<String> createGroup({
+    @required String name,
+    @required String description,
+    @required String disciplineID,
+  }) async {
+    var client = AuthenticatedApiClient();
+    var url = 'groups';
+
+    var body = {
+      'name': '$name',
+      'description': '$description',
+    };
+
+    var response = await client.post(url, body: body);
+
+    if (response.statusCode == 201) {
+      return 'Group successfully created.';
+    } else {
+      return StringFormatter.formatErrors(json.decode(response.body));
+    }
+  }
+
   Future<List<Group>> getMyGroups() async {
     var client = AuthenticatedApiClient();
     var url = 'groups/my_groups';

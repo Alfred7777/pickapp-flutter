@@ -357,6 +357,7 @@ class FloatingMenuButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FloatingActionButton(
+      elevation: 2,
       heroTag: null,
       backgroundColor: Colors.green,
       child: AnimatedBuilder(
