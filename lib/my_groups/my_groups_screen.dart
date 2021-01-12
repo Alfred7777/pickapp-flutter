@@ -1,3 +1,4 @@
+import 'package:PickApp/create_group/create_group_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'my_groups_bloc.dart';
@@ -56,6 +57,23 @@ class MyGroupsScreenState extends State<MyGroupsScreen> {
     _myGroupsBloc.add(FetchMyGroups());
   }
 
+  void _navigateToCreateGroup() async {
+    final result = await Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => CreateGroupScreen(),
+      ),
+    );
+    if (result != null) {
+      _myGroupsBloc.add(FetchMyGroups());
+      Scaffold.of(context).showSnackBar(
+        SnackBar(
+          content: Text('${result[0]}'),
+          backgroundColor: Colors.green,
+        ),
+      );
+    }
+  }
+
   Future<void> _refreshView() async {
     _myGroupsBloc.add(FetchMyGroups());
   }
@@ -102,6 +120,7 @@ class MyGroupsScreenState extends State<MyGroupsScreen> {
               groups: state.myGroups,
               groupInvitations: state.groupInvitations,
               refreshView: _refreshView,
+              createGroup: _navigateToCreateGroup,
               answerInvitation: _answerInvitation,
             );
           }
@@ -116,12 +135,14 @@ class MyGroups extends StatelessWidget {
   final List<Group> groups;
   final List<GroupInvitation> groupInvitations;
   final Function refreshView;
+  final Function createGroup;
   final Function answerInvitation;
 
   const MyGroups({
     @required this.groups,
     @required this.groupInvitations,
     @required this.refreshView,
+    @required this.createGroup,
     @required this.answerInvitation,
   });
 
@@ -135,9 +156,7 @@ class MyGroups extends StatelessWidget {
         appBar: mainScreenTopBar(context),
         floatingActionButton: FloatingActionButton(
           elevation: 2,
-          onPressed: () {
-            // create group will be added when available
-          },
+          onPressed: createGroup,
           backgroundColor: Colors.green,
           child: Icon(
             Icons.add,

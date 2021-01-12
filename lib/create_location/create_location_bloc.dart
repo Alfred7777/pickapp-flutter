@@ -50,7 +50,7 @@ class CreateLocationBloc
         disciplineIDs: event.locationDisciplineIDs,
         pos: event.locationPos,
       );
-      if (response == 'Location created') {
+      if (response == 'Location successfully created.') {
         yield CreateLocationCreated(
           pos: event.locationPos,
           message: response,

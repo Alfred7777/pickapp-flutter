@@ -25,7 +25,7 @@ class LocationRepository {
     var response = await client.post(url, body: body);
 
     if (response.statusCode == 201) {
-      return 'Location created';
+      return 'Location successfully created.';
     } else {
       return StringFormatter.formatErrors(json.decode(response.body));
     }
