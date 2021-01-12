@@ -39,6 +39,7 @@ class UserRepository {
         name: data['name'],
         uniqueUsername: data['unique_username'],
         bio: data['bio'],
+        profilePictureUrl: data['profile_picture_url'],
         userID: userID,
       );
     } else {
@@ -92,40 +93,76 @@ class User extends Equatable {
   final String bio;
   final String name;
   final String uniqueUsername;
+  final String profilePicturePath;
+  final String profilePictureUrl;
   final String userID;
 
-  User({this.uniqueUsername, this.name, this.bio, this.userID});
+  User({
+    this.uniqueUsername,
+    this.name,
+    this.bio,
+    this.userID,
+    this.profilePicturePath,
+    this.profilePictureUrl,
+  });
 
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
       bio: json['bio'],
       name: json['name'],
       uniqueUsername: json['unique_username'],
+      profilePicturePath: json['profile_picture_path'],
+      profilePictureUrl: json['profile_picture_url'],
       userID: json['user_id'],
     );
   }
 
   @override
-  List<Object> get props => [name, uniqueUsername, bio];
+  List<Object> get props => [
+        name,
+        uniqueUsername,
+        bio,
+        userID,
+        profilePicturePath,
+        profilePictureUrl
+      ];
 }
 
 class ProfileDraft extends Equatable {
   final String bio;
   final String name;
   final String uniqueUsername;
+  final String profilePicturePath;
+  final String profilePictureUrl;
   final String userID;
 
-  ProfileDraft({this.uniqueUsername, this.name, this.bio, this.userID});
+  ProfileDraft({
+    this.uniqueUsername,
+    this.name,
+    this.bio,
+    this.userID,
+    this.profilePicturePath,
+    this.profilePictureUrl,
+  });
 
   factory ProfileDraft.fromJson(Map<String, dynamic> json) {
     return ProfileDraft(
       bio: json['bio'],
       name: json['name'],
       uniqueUsername: json['unique_username'],
+      profilePicturePath: json['profile_picture_path'],
+      profilePictureUrl: json['profile_picture_url'],
       userID: json['user_id'],
     );
   }
 
   @override
-  List<Object> get props => [name, uniqueUsername, bio];
+  List<Object> get props => [
+        name,
+        uniqueUsername,
+        bio,
+        userID,
+        profilePicturePath,
+        profilePictureUrl
+      ];
 }

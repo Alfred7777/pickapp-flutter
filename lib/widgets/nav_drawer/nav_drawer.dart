@@ -1,4 +1,5 @@
 import 'package:PickApp/map/map_screen.dart';
+import 'package:PickApp/widgets/profile_picture_rounded.dart';
 import 'package:flutter/material.dart';
 import 'package:PickApp/widgets/nav_drawer/nav_drawer_item.dart';
 import 'package:PickApp/profile/profile_screen.dart';
@@ -34,17 +35,12 @@ class NavDrawer extends StatelessWidget {
                           left: 14.0,
                           bottom: 14.0,
                         ),
-                        child: Container(
+                        child: ProfilePicture(
                           height: 64,
                           width: 64,
-                          decoration: BoxDecoration(
-                            image: DecorationImage(
-                              image: AssetImage(
-                                'assets/images/profile_placeholder.png',
-                              ),
-                              fit: BoxFit.cover,
-                            ),
-                          ),
+                          profilePictureUrl: user.profilePictureUrl,
+                          fit: BoxFit.cover,
+                          shape: BoxShape.rectangle,
                         ),
                       ),
                     ],

@@ -120,6 +120,7 @@ class ProfileScreenState extends State<ProfileScreen> {
 
   Scaffold _buildProfileScreen(BuildContext context, User data) {
     var screenSize = MediaQuery.of(context).size;
+
     return Scaffold(
       appBar: sideScreenTopBar(context),
       body: Stack(
@@ -133,8 +134,13 @@ class ProfileScreenState extends State<ProfileScreen> {
                     child: ProfilePicture(
                       width: 190,
                       height: 190,
-                      profilePicturePath:
-                          'assets/images/profile_placeholder.png',
+                      profilePictureUrl: data.profilePictureUrl,
+                      border: Border.all(
+                        color: Colors.white,
+                        width: 10.0,
+                      ),
+                      fit: BoxFit.cover,
+                      shape: BoxShape.circle,
                     ),
                   ),
                   _buildFullName(data.name.toString()),

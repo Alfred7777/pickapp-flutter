@@ -2,6 +2,8 @@ import 'package:PickApp/profile/profile_screen.dart';
 import 'package:PickApp/repositories/user_repository.dart';
 import 'package:flutter/material.dart';
 
+import '../profile_picture_rounded.dart';
+
 class UserBar extends StatelessWidget {
   final User user;
   final List<MaterialButton> actionList;
@@ -45,18 +47,12 @@ class UserBar extends StatelessWidget {
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Container(
+                    ProfilePicture(
                       height: 0.084 * screenSize.height,
                       width: 0.084 * screenSize.height,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        image: DecorationImage(
-                          fit: BoxFit.fill,
-                          image: AssetImage(
-                            'assets/images/profile_placeholder.png',
-                          ),
-                        ),
-                      ),
+                      shape: BoxShape.circle,
+                      fit: BoxFit.fill,
+                      profilePictureUrl: user.profilePictureUrl,
                     ),
                     Expanded(
                       child: Padding(
