@@ -300,7 +300,7 @@ class InvitationDetails extends StatelessWidget {
               right: 0.03 * screenSize.width,
             ),
             child: Text(
-              eventInvitation.eventDetails.description,
+              eventInvitation.eventDetails.description ?? '',
               style: TextStyle(
                 color: Color(0xFF3D3A3A),
                 fontSize: 15,
