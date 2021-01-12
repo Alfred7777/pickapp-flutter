@@ -35,7 +35,8 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
       var params = {
         'name': event.name,
         'unique_username': event.uniqueUsername,
-        'bio': event.bio
+        'bio': event.bio,
+        'profile_picture_path': event.profilePicturePath
       };
       try {
         await UserRepository.createProfile(params);

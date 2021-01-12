@@ -11,7 +11,7 @@ description: PickApp
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 0.2.0+3
+version: 0.3.0+4
 
 environment:
   sdk: ">=2.2.0 <3.0.0"
@@ -46,6 +46,8 @@ dependencies:
   # Sign up with Facebook
   flutter_signin_button: ^1.1.0
   flutter_facebook_login: ^3.0.0
+
+  cached_network_image: ^2.5.0
 
   animate_icons: ^0.0.4
 

@@ -20,6 +20,8 @@ class _OnboardingFormState extends State<OnboardingForm> {
   final _formKey = GlobalKey<FormState>();
   final ProfileDraft profileDraft;
 
+  String profilePicturePath;
+
   TextEditingController nameController;
   TextEditingController uniqueUsernameController;
   TextEditingController bioController;
@@ -32,6 +34,7 @@ class _OnboardingFormState extends State<OnboardingForm> {
       text: profileDraft.uniqueUsername,
     );
     bioController = TextEditingController(text: profileDraft.bio);
+    profilePicturePath = profileDraft.profilePicturePath;
   }
 
   @override
@@ -67,7 +70,14 @@ class _OnboardingFormState extends State<OnboardingForm> {
             child: ProfilePicture(
               width: 160,
               height: 160,
-              profilePicturePath: 'assets/images/profile_placeholder.png',
+              profilePictureUrl: profileDraft.profilePictureUrl,
+              // borderRadius: BorderRadius.circular(100.0),
+              border: Border.all(
+                color: Colors.white,
+                width: 10.0,
+              ),
+              fit: BoxFit.cover,
+              shape: BoxShape.circle,
             ),
           ),
           SizedBox(height: 0.03 * screenSize.height),
@@ -131,6 +141,7 @@ class _OnboardingFormState extends State<OnboardingForm> {
           name: nameController.text,
           uniqueUsername: uniqueUsernameController.text,
           bio: bioController.text,
+          profilePicturePath: profilePicturePath,
           draft: ProfileDraft(
             bio: bioController.text,
             name: nameController.text,

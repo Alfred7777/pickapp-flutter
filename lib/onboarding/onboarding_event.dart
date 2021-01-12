@@ -17,6 +17,7 @@ class SubmitForm extends OnboardingEvent {
   final String name;
   final String uniqueUsername;
   final String bio;
+  final String profilePicturePath;
   final ProfileDraft draft;
 
   const SubmitForm({
@@ -24,10 +25,17 @@ class SubmitForm extends OnboardingEvent {
     @required this.uniqueUsername,
     @required this.bio,
     @required this.draft,
+    @required this.profilePicturePath,
   });
 
   @override
-  List<Object> get props => [name, uniqueUsername, bio, draft];
+  List<Object> get props => [
+        name,
+        uniqueUsername,
+        bio,
+        profilePicturePath,
+        draft,
+      ];
 }
 
 class CompleteOnboarding extends OnboardingEvent {}

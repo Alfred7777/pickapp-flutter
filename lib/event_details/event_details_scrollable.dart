@@ -58,7 +58,6 @@ class EventDetailsScrollableState extends State<EventDetailsScrollable> {
   }
 
   void _manageEventAttendance(String request) {
-    print(request);
     if (request == 'join') {
       _eventDetailsBloc.add(JoinEvent(eventID));
     } else if (request == 'leave') {
