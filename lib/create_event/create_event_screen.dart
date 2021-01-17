@@ -171,7 +171,7 @@ class CreateEventScreenState extends State<CreateEventScreen> {
           }
           if (state is CreateEventCreated) {
             Navigator.pop(context);
-            Navigator.pop(context, [state.props.last, state.props.first]);
+            Navigator.pop(context, [state.message, state.pos]);
           }
         },
         child: BlocBuilder<CreateEventBloc, CreateEventState>(

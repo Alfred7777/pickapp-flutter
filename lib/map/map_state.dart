@@ -15,24 +15,18 @@ class MapUninitialized extends MapState {}
 class MapLoading extends MapState {}
 
 class MapReady extends MapState {
-  final List<EventMarker> eventMarkers;
-  final Fluster<EventMarker> eventFluster;
-  final List<LocationMarker> locationMarkers;
-  final Fluster<LocationMarker> locationFluster;
+  final List<MapMarker> markers;
+  final Fluster<MapMarker> fluster;
 
   const MapReady({
-    @required this.eventMarkers,
-    @required this.eventFluster,
-    @required this.locationMarkers,
-    @required this.locationFluster,
+    @required this.markers,
+    @required this.fluster,
   });
 
   @override
   List<Object> get props => [
-        eventMarkers,
-        eventFluster,
-        locationMarkers,
-        locationFluster,
+        markers,
+        fluster,
       ];
 }
 

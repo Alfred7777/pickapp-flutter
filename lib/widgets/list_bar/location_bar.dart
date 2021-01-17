@@ -48,7 +48,7 @@ class LocationBar extends StatelessWidget {
                       image: DecorationImage(
                         fit: BoxFit.fill,
                         image: AssetImage(
-                          'assets/images/location/location_icon.png',
+                          'assets/images/icons/location/location_icon.png',
                         ),
                       ),
                     ),

@@ -54,7 +54,7 @@ class EventInvitationBar extends StatelessWidget {
                       image: DecorationImage(
                         fit: BoxFit.fill,
                         image: AssetImage(
-                          'assets/images/event_icon/${eventInvitation.eventDetails.disciplineID}.png',
+                          'assets/images/icons/event/${eventInvitation.eventDetails.disciplineID}.png',
                         ),
                       ),
                     ),

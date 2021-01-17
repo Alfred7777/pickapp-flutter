@@ -12,18 +12,19 @@ void main() async {
   TestWidgetsFlutterBinding.ensureInitialized();
   var _mapRepositoryMock = MockMapRepository();
 
-  var _locationMarker = LocationMarker(
+  var _locationMarker = MapMarker(
     id: 'id1',
     position: LatLng(52.50, 61.50),
+    disciplineID: null,
   );
 
-  var _eventMarker = EventMarker(
+  var _eventMarker = MapMarker(
     id: 'id2',
     position: LatLng(30.50, 60.50),
     disciplineID: 'disciplineId',
   );
 
-  var _anotherEventMarker = EventMarker(
+  var _anotherEventMarker = MapMarker(
     id: 'id3',
     position: LatLng(40.50, 75.50),
     disciplineID: 'anotherDisciplineId',
