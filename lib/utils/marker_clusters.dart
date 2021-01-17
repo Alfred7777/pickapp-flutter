@@ -12,6 +12,7 @@ class MarkerClusters {
     Fluster<MapMarker> fluster,
     LatLngBounds mapBounds,
     double zoom,
+    bool showDetails,
   ) async {
     var markerSet = <Marker>{};
 
@@ -27,7 +28,11 @@ class MarkerClusters {
         mapController,
         fluster,
         _zoomCluster,
-        cluster.disciplineID == null ? _showLocationDetails : _showEventDetails,
+        !showDetails
+            ? _showLocationInfo
+            : cluster.disciplineID == null
+                ? _showLocationDetails
+                : _showEventDetails,
       ));
     }
     return markerSet;
@@ -104,7 +109,37 @@ class MarkerClusters {
             borderRadius: BorderRadius.circular(32.0),
             child: Material(
               color: Colors.grey[100],
-              child: LocationDetailsScrollable(locationID: locationID),
+              child: LocationDetailsScrollable(
+                locationID: locationID,
+                showEvents: true,
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  static void _showLocationInfo(String locationID) async {
+    await showDialog(
+      context: navigatorKey.currentContext,
+      builder: (BuildContext context) {
+        var screenSize = MediaQuery.of(context).size;
+        return Padding(
+          padding: EdgeInsets.only(
+            top: 0.12 * screenSize.height,
+            bottom: 0.02 * screenSize.height,
+            left: 0.02 * screenSize.width,
+            right: 0.02 * screenSize.width,
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(32.0),
+            child: Material(
+              color: Colors.grey[100],
+              child: LocationDetailsScrollable(
+                locationID: locationID,
+                showEvents: false,
+              ),
             ),
           ),
         );

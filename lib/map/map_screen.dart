@@ -10,7 +10,7 @@ import 'package:PickApp/map/map_event.dart';
 import 'package:PickApp/map/map_state.dart';
 import 'package:PickApp/repositories/map_repository.dart';
 import 'package:PickApp/repositories/event_repository.dart';
-import 'package:PickApp/create_event/create_event_screen.dart';
+import 'package:PickApp/create_event/map/create_event_map_screen.dart';
 import 'package:PickApp/create_location/create_location_screen.dart';
 
 class MapScreen extends StatefulWidget {
@@ -30,7 +30,7 @@ class MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
 
   static final CameraPosition _kPoznan = CameraPosition(
     target: LatLng(52.4064, 16.9252),
-    zoom: 12,
+    zoom: 14,
   );
 
   Set<Marker> _markers;
@@ -72,7 +72,7 @@ class MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
     var initialCameraZoom = await _mapController.getZoomLevel();
     final result = await Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (context) => CreateEventScreen(
+        builder: (context) => CreateEventMapScreen(
           initialCameraPos: CameraPosition(
             target: LatLng(
               (mapBounds.northeast.latitude + mapBounds.southwest.latitude) / 2,
@@ -130,7 +130,7 @@ class MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
   }
 
   void _updateMarkers() async {
-    if (_mapBloc.state is MapReady) {
+    if (_mapBloc.state is MapReady && _mapController != null) {
       var _mapBounds = await _mapController.getVisibleRegion();
       var _currentZoom = await _mapController.getZoomLevel();
       var _extendedBounds = MarkerClusters.extendBounds(_mapBounds);
@@ -140,6 +140,7 @@ class MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
         _mapBloc.state.props.last,
         _extendedBounds,
         _currentZoom,
+        true,
       );
 
       setState(() {

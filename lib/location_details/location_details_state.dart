@@ -14,6 +14,9 @@ class LocationDetailsUninitialized extends LocationDetailsState {
   final String locationID;
 
   const LocationDetailsUninitialized({@required this.locationID});
+
+  @override
+  List<Object> get props => [locationID];
 }
 
 class LocationDetailsReady extends LocationDetailsState {
@@ -26,10 +29,16 @@ class LocationDetailsReady extends LocationDetailsState {
     @required this.locationDetails,
     @required this.eventList,
   });
+
+  @override
+  List<Object> get props => [locationID, locationDetails, eventList];
 }
 
 class LocationDetailsFailure extends LocationDetailsState {
   final String error;
 
   const LocationDetailsFailure({@required this.error});
+
+  @override
+  List<Object> get props => [error];
 }

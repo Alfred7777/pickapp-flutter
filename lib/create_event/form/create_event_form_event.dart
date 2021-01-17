@@ -3,35 +3,23 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:meta/meta.dart';
 import 'package:equatable/equatable.dart';
 
-class CreateEventEvent extends Equatable {
-  const CreateEventEvent();
+class CreateEventFormEvent extends Equatable {
+  const CreateEventFormEvent();
 
   @override
   List<Object> get props => [];
 }
 
-class FetchDisciplines extends CreateEventEvent {}
+class FetchDisciplines extends CreateEventFormEvent {}
 
-class LocationPicked extends CreateEventEvent {
-  final List<Discipline> disciplines;
-  final LatLng pickedPos;
-
-  const LocationPicked({
-    @required this.disciplines,
-    @required this.pickedPos,
-  });
-
-  @override
-  List<Object> get props => [disciplines, pickedPos];
-}
-
-class CreateEventButtonPressed extends CreateEventEvent {
+class CreateEventButtonPressed extends CreateEventFormEvent {
   final List<Discipline> disciplines;
 
   final String eventName;
   final String eventDescription;
   final String eventDisciplineID;
   final LatLng eventPos;
+  final String locationID;
   final DateTime eventStartDate;
   final DateTime eventEndDate;
   final bool allowInvitations;
@@ -43,6 +31,7 @@ class CreateEventButtonPressed extends CreateEventEvent {
     @required this.eventDescription,
     @required this.eventDisciplineID,
     @required this.eventPos,
+    @required this.locationID,
     @required this.eventStartDate,
     @required this.eventEndDate,
     @required this.allowInvitations,
@@ -56,6 +45,7 @@ class CreateEventButtonPressed extends CreateEventEvent {
         eventDescription,
         eventDisciplineID,
         eventPos,
+        locationID,
         eventStartDate,
         eventEndDate,
         allowInvitations,

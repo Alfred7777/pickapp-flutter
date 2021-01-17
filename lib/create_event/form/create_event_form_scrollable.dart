@@ -1,28 +1,36 @@
-import 'package:PickApp/main.dart';
 import 'package:PickApp/widgets/date_picker.dart';
 import 'package:PickApp/widgets/loading_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'create_event_bloc.dart';
-import 'create_event_state.dart';
-import 'create_event_event.dart';
+import 'create_event_form_bloc.dart';
+import 'create_event_form_state.dart';
+import 'create_event_form_event.dart';
 import 'package:PickApp/repositories/event_repository.dart';
+import 'package:PickApp/repositories/location_repository.dart';
 
-class CreateEventScreen extends StatefulWidget {
-  final CameraPosition initialCameraPos;
+class CreateEventFormScrollable extends StatefulWidget {
+  final Location location;
+  final LatLng pickedPos;
 
-  CreateEventScreen({@required this.initialCameraPos});
+  CreateEventFormScrollable({
+    @required this.location,
+    @required this.pickedPos,
+  });
 
   @override
-  State<CreateEventScreen> createState() =>
-      CreateEventScreenState(initialCameraPos: initialCameraPos);
+  State<CreateEventFormScrollable> createState() =>
+      CreateEventFormScrollableState(
+        location: location,
+        pickedPos: pickedPos,
+      );
 }
 
-class CreateEventScreenState extends State<CreateEventScreen> {
-  final CameraPosition initialCameraPos;
+class CreateEventFormScrollableState extends State<CreateEventFormScrollable> {
+  final Location location;
+  final LatLng pickedPos;
   final eventRepository = EventRepository();
-  CreateEventBloc _createEventBloc;
+  CreateEventFormBloc _createEventFormBloc;
 
   TextEditingController _nameController;
   TextEditingController _descriptionController;
@@ -33,14 +41,15 @@ class CreateEventScreenState extends State<CreateEventScreen> {
   List<EventPrivacyRule> _eventPrivacyRules;
   EventPrivacyRule _privacyRule;
 
-  CreateEventScreenState({
-    @required this.initialCameraPos,
+  CreateEventFormScrollableState({
+    @required this.location,
+    @required this.pickedPos,
   });
 
   @override
   void initState() {
     super.initState();
-    _createEventBloc = CreateEventBloc(
+    _createEventFormBloc = CreateEventFormBloc(
       eventRepository: eventRepository,
     );
 
@@ -58,17 +67,8 @@ class CreateEventScreenState extends State<CreateEventScreen> {
   void dispose() {
     _nameController.dispose();
     _descriptionController.dispose();
-    _createEventBloc.close();
+    _createEventFormBloc.close();
     super.dispose();
-  }
-
-  void _pickLocation(LatLng pos) {
-    _createEventBloc.add(
-      LocationPicked(
-        disciplines: _createEventBloc.state.props.first,
-        pickedPos: pos,
-      ),
-    );
   }
 
   void _setDiscipline(String disciplineID) {
@@ -105,13 +105,14 @@ class CreateEventScreenState extends State<CreateEventScreen> {
   }
 
   void _createEvent() {
-    _createEventBloc.add(
+    _createEventFormBloc.add(
       CreateEventButtonPressed(
-        disciplines: _createEventBloc.state.props.first,
+        disciplines: _createEventFormBloc.state.props.first,
         eventName: _nameController.text,
         eventDescription: _descriptionController.text,
         eventDisciplineID: _disciplineID,
-        eventPos: _createEventBloc.state.props.last,
+        eventPos: pickedPos,
+        locationID: location == null ? null : location.id,
         eventStartDate: _startDate,
         eventEndDate: _endDate,
         allowInvitations: _privacyRule.allowInvitations,
@@ -121,261 +122,71 @@ class CreateEventScreenState extends State<CreateEventScreen> {
     );
   }
 
-  void _showCreateEventPopup() {
-    showDialog(
-      context: navigatorKey.currentContext,
-      builder: (BuildContext context) {
-        return CreateEventPopup(
-          nameController: _nameController,
-          descriptionController: _descriptionController,
-          disciplines: _createEventBloc.state.props.first,
-          eventPrivacyRules: _eventPrivacyRules,
-          createEvent: _createEvent,
-          setDiscipline: _setDiscipline,
-          setStartDate: _setStartDate,
-          setEndDate: _setEndDate,
-          setPrivacyRule: _setPrivacyRule,
-          initDisciplineID: _disciplineID,
-          initStartDate: _startDate,
-          initEndDate: _endDate,
-          initPrivacyRule: _privacyRule,
-          validateStartDate: _validateStartDate,
-          validateEndDate: _validateEndDate,
-        );
-      },
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: BlocListener<CreateEventBloc, CreateEventState>(
-        bloc: _createEventBloc,
-        listener: (context, state) {
-          if (state is FetchDisciplinesFailure) {
-            Scaffold.of(context).showSnackBar(
-              SnackBar(
-                content: Text('${state.error}'),
-                backgroundColor: Colors.red,
-              ),
-            );
-          }
-          if (state is CreateEventFailure) {
-            Navigator.pop(context);
-            Scaffold.of(context).showSnackBar(
-              SnackBar(
-                content: Text('${state.error}'),
-                backgroundColor: Colors.red,
-              ),
-            );
-          }
-          if (state is CreateEventCreated) {
-            Navigator.pop(context);
+    return BlocListener<CreateEventFormBloc, CreateEventFormState>(
+      bloc: _createEventFormBloc,
+      listener: (context, state) {
+        if (state is FetchDisciplinesFailure) {
+          Scaffold.of(context).showSnackBar(
+            SnackBar(
+              content: Text('${state.error}'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+        if (state is CreateEventFormFailure) {
+          Scaffold.of(context).showSnackBar(
+            SnackBar(
+              content: Text('${state.error}'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+        if (state is CreateEventFormCreated) {
+          if (state.pos != null) {
             Navigator.pop(context, [state.message, state.pos]);
+          } else {
+            Navigator.pop(context, [state.message, location.position]);
           }
+        }
+      },
+      child: BlocBuilder<CreateEventFormBloc, CreateEventFormState>(
+        bloc: _createEventFormBloc,
+        condition: (prevState, currState) {
+          if (currState is CreateEventFormLoading) {
+            return false;
+          }
+          if (currState is CreateEventFormFailure) {
+            return false;
+          }
+          return true;
         },
-        child: BlocBuilder<CreateEventBloc, CreateEventState>(
-          bloc: _createEventBloc,
-          condition: (prevState, currState) {
-            if (currState is CreateEventLoading) {
-              return false;
-            }
-            if (currState is CreateEventFailure) {
-              return false;
-            }
-            return true;
-          },
-          builder: (context, state) {
-            if (state is CreateEventInitial) {
-              _createEventBloc.add(FetchDisciplines());
-            }
-            if (state is CreateEventReady) {
-              return CreateEventMap(
-                initialCameraPos: initialCameraPos,
-                pickedPos: state.pickedPos,
-                pickLocation: _pickLocation,
-                showCreateEventPopup: _showCreateEventPopup,
-              );
-            }
-            return LoadingScreen();
-          },
-        ),
-      ),
-    );
-  }
-}
-
-class CreateEventMap extends StatelessWidget {
-  final CameraPosition initialCameraPos;
-  final LatLng pickedPos;
-  final Function pickLocation;
-  final Function showCreateEventPopup;
-
-  const CreateEventMap({
-    @required this.initialCameraPos,
-    @required this.pickedPos,
-    @required this.pickLocation,
-    @required this.showCreateEventPopup,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    var screenSize = MediaQuery.of(context).size;
-    return Stack(
-      alignment: Alignment.center,
-      overflow: Overflow.visible,
-      children: [
-        GoogleMap(
-          initialCameraPosition: initialCameraPos,
-          mapToolbarEnabled: false,
-          zoomControlsEnabled: false,
-          myLocationButtonEnabled: false,
-          markers: pickedPos == null
-              ? {}
-              : {
-                  Marker(
-                    markerId: MarkerId('pickedPos'),
-                    position: pickedPos,
-                  )
-                },
-          onTap: (LatLng point) {
-            pickLocation(point);
-          },
-        ),
-        Positioned(
-          bottom: 0.064 * screenSize.height,
-          child: MaterialButton(
-            onPressed: () {
-              if (pickedPos == null) {
-                Scaffold.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text('Pick event location!'),
-                    backgroundColor: Colors.red,
-                  ),
-                );
-              } else {
-                showCreateEventPopup();
-              }
-            },
-            height: 0.06 * screenSize.height,
-            minWidth: 0.32 * screenSize.width,
-            color: Colors.green,
-            child: Text(
-              'CREATE EVENT',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 0.026 * screenSize.height,
-              ),
-            ),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(
-                0.02 * screenSize.width,
-              ),
-            ),
-          ),
-        ),
-        Positioned.fill(
-          child: Align(
-            alignment: Alignment.topCenter,
-            child: Container(
-              height: 0.15 * screenSize.height,
-              width: screenSize.width,
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    Colors.green,
-                    Colors.green,
-                    Colors.green.withAlpha(0),
-                  ],
-                ),
-              ),
-              child: Align(
-                alignment: Alignment.center,
-                child: Text(
-                  'Tap on map to choose location',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 0.026 * screenSize.height,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class CreateEventPopup extends StatelessWidget {
-  final TextEditingController nameController;
-  final TextEditingController descriptionController;
-  final List<Discipline> disciplines;
-  final List<EventPrivacyRule> eventPrivacyRules;
-  final Function createEvent;
-  final Function setDiscipline;
-  final Function setStartDate;
-  final Function setEndDate;
-  final Function setPrivacyRule;
-  final String initDisciplineID;
-  final DateTime initStartDate;
-  final DateTime initEndDate;
-  final EventPrivacyRule initPrivacyRule;
-  final Function validateStartDate;
-  final Function validateEndDate;
-
-  CreateEventPopup({
-    @required this.nameController,
-    @required this.descriptionController,
-    @required this.disciplines,
-    @required this.eventPrivacyRules,
-    @required this.createEvent,
-    @required this.setDiscipline,
-    @required this.setStartDate,
-    @required this.setEndDate,
-    @required this.setPrivacyRule,
-    @required this.initDisciplineID,
-    @required this.initStartDate,
-    @required this.initEndDate,
-    @required this.initPrivacyRule,
-    @required this.validateStartDate,
-    @required this.validateEndDate,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    var screenSize = MediaQuery.of(context).size;
-    return Padding(
-      padding: EdgeInsets.only(
-        top: 0.16 * screenSize.height,
-        bottom: 0.03 * screenSize.height,
-        left: 0.04 * screenSize.width,
-        right: 0.04 * screenSize.width,
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(0.02 * screenSize.width),
-        child: Material(
-          child: CreateEventStepper(
-            nameController: nameController,
-            descriptionController: descriptionController,
-            disciplines: disciplines,
-            eventPrivacyRules: eventPrivacyRules,
-            createEvent: createEvent,
-            setDiscipline: setDiscipline,
-            setStartDate: setStartDate,
-            setEndDate: setEndDate,
-            setPrivacyRule: setPrivacyRule,
-            initDisciplineID: initDisciplineID,
-            initStartDate: initStartDate,
-            initEndDate: initEndDate,
-            initPrivacyRule: initPrivacyRule,
-            validateStartDate: validateStartDate,
-            validateEndDate: validateEndDate,
-          ),
-        ),
+        builder: (context, state) {
+          if (state is CreateEventFormInitial) {
+            _createEventFormBloc.add(FetchDisciplines());
+          }
+          if (state is CreateEventFormReady) {
+            return CreateEventStepper(
+              nameController: _nameController,
+              descriptionController: _descriptionController,
+              disciplines: state.disciplines,
+              eventPrivacyRules: _eventPrivacyRules,
+              createEvent: _createEvent,
+              setDiscipline: _setDiscipline,
+              setStartDate: _setStartDate,
+              setEndDate: _setEndDate,
+              setPrivacyRule: _setPrivacyRule,
+              initDisciplineID: _disciplineID,
+              initStartDate: _startDate,
+              initEndDate: _endDate,
+              initPrivacyRule: _privacyRule,
+              validateStartDate: _validateStartDate,
+              validateEndDate: _validateEndDate,
+            );
+          }
+          return LoadingScreen();
+        },
       ),
     );
   }
