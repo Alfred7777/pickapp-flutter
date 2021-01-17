@@ -1,11 +1,8 @@
 import 'dart:math' as math;
+import 'package:PickApp/utils/marker_clusters.dart';
 import 'package:flutter/material.dart';
-import 'package:fluster/fluster.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:PickApp/main.dart';
-import 'package:PickApp/event_details/event_details_scrollable.dart';
-import 'package:PickApp/location_details/location_details_scrollable.dart';
 import 'package:PickApp/widgets/loading_screen.dart';
 import 'package:PickApp/widgets/top_bar.dart';
 import 'package:PickApp/map/map_bloc.dart';
@@ -132,127 +129,23 @@ class MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
     }
   }
 
-  void _showEventDetails(String eventID) async {
-    await showDialog(
-      context: navigatorKey.currentContext,
-      builder: (BuildContext context) {
-        var screenSize = MediaQuery.of(context).size;
-        return Padding(
-          padding: EdgeInsets.only(
-            top: 0.12 * screenSize.height,
-            bottom: 0.02 * screenSize.height,
-            left: 0.02 * screenSize.width,
-            right: 0.02 * screenSize.width,
-          ),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(32.0),
-            child: Material(
-              color: Color(0xFFF3F3F3),
-              child: EventDetailsScrollable(eventID: eventID),
-            ),
-          ),
-        );
-      },
-    );
-  }
+  void _updateMarkers() async {
+    if (_mapBloc.state is MapReady) {
+      var _mapBounds = await _mapController.getVisibleRegion();
+      var _currentZoom = await _mapController.getZoomLevel();
+      var _extendedBounds = MarkerClusters.extendBounds(_mapBounds);
 
-  void _showLocationDetails(String locationID) async {
-    await showDialog(
-      context: navigatorKey.currentContext,
-      builder: (BuildContext context) {
-        var screenSize = MediaQuery.of(context).size;
-        return Padding(
-          padding: EdgeInsets.only(
-            top: 0.12 * screenSize.height,
-            bottom: 0.02 * screenSize.height,
-            left: 0.02 * screenSize.width,
-            right: 0.02 * screenSize.width,
-          ),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(32.0),
-            child: Material(
-              color: Color(0xFFF3F3F3),
-              child: LocationDetailsScrollable(locationID: locationID),
-            ),
-          ),
-        );
-      },
-    );
-  }
-
-  void _zoomCluster(int clusterID, String clusterType) async {
-    var _fluster;
-    if (clusterType == 'Location') {
-      _fluster = _mapBloc.state.props[3];
-    } else {
-      _fluster = _mapBloc.state.props[1];
-    }
-    var _clusterLocations = _fluster.points(clusterID);
-    double x0, x1, y0, y1;
-
-    for (var location in _clusterLocations) {
-      var latLng = location.position;
-      if (x0 == null) {
-        x0 = x1 = latLng.latitude;
-        y0 = y1 = latLng.longitude;
-      } else {
-        if (latLng.latitude > x1) x1 = latLng.latitude;
-        if (latLng.latitude < x0) x0 = latLng.latitude;
-        if (latLng.longitude > y1) y1 = latLng.longitude;
-        if (latLng.longitude < y0) y0 = latLng.longitude;
-      }
-    }
-
-    var clusterBounds = LatLngBounds(
-      northeast: LatLng(x1, y1),
-      southwest: LatLng(x0, y0),
-    );
-    await _mapController.animateCamera(
-      CameraUpdate.newLatLngBounds(clusterBounds, 60.0),
-    );
-  }
-
-  Future<Set<Marker>> getMapMarkers() async {
-    var _mapBounds = await _mapController.getVisibleRegion();
-    var _currentZoom = await _mapController.getZoomLevel();
-    Fluster<EventMarker> _eventFluster = _mapBloc.state.props[1];
-    Fluster<LocationMarker> _locationFluster = _mapBloc.state.props[3];
-    var markerSet = <Marker>{};
-
-    if (_mapBounds.southwest == LatLng(0.0, 0.0) &&
-        _mapBounds.northeast == LatLng(0.0, 0.0)) {
-      _mapBounds = LatLngBounds(
-        northeast: LatLng(-180.0, -90.0),
-        southwest: LatLng(-180.0, -90.0),
+      var _clusters = await MarkerClusters.getMarkers(
+        _mapController,
+        _mapBloc.state.props.last,
+        _extendedBounds,
+        _currentZoom,
       );
-    }
 
-    var _eventMarkerClusters = _eventFluster.clusters([
-      _mapBounds.southwest.longitude,
-      _mapBounds.southwest.latitude,
-      _mapBounds.northeast.longitude,
-      _mapBounds.northeast.latitude,
-    ], _currentZoom.round());
-    var _locationMarkerClusters = _locationFluster.clusters([
-      _mapBounds.southwest.longitude,
-      _mapBounds.southwest.latitude,
-      _mapBounds.northeast.longitude,
-      _mapBounds.northeast.latitude,
-    ], _currentZoom.round());
-
-    for (var _cluster in _eventMarkerClusters) {
-      markerSet.add(await _cluster.toMarker(
-        _zoomCluster,
-        _showEventDetails,
-      ));
+      setState(() {
+        _markers = _clusters;
+      });
     }
-    for (var _cluster in _locationMarkerClusters) {
-      markerSet.add(await _cluster.toMarker(
-        _zoomCluster,
-        _showLocationDetails,
-      ));
-    }
-    return markerSet;
   }
 
   @override
@@ -272,13 +165,7 @@ class MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
             );
           }
           if (state is MapReady) {
-            if (_mapController != null) {
-              getMapMarkers().then((markers) {
-                setState(() {
-                  _markers = markers;
-                });
-              });
-            }
+            _updateMarkers();
           }
         },
         child: BlocBuilder<MapBloc, MapState>(
@@ -303,19 +190,9 @@ class MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
                 markers: _markers,
                 onMapCreated: (GoogleMapController controller) {
                   _mapController = controller;
-                  getMapMarkers().then((markers) {
-                    setState(() {
-                      _markers = markers;
-                    });
-                  });
+                  _updateMarkers();
                 },
-                onCameraMove: (position) {
-                  getMapMarkers().then((markers) {
-                    setState(() {
-                      _markers = markers;
-                    });
-                  });
-                },
+                onCameraIdle: _updateMarkers,
               );
             }
             return LoadingScreen();

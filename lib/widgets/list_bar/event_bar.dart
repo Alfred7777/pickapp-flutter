@@ -49,7 +49,7 @@ class EventBar extends StatelessWidget {
                       image: DecorationImage(
                         fit: BoxFit.fill,
                         image: AssetImage(
-                          'assets/images/event_icon/${event.disciplineID}.png',
+                          'assets/images/icons/event/${event.disciplineID}.png',
                         ),
                       ),
                     ),
