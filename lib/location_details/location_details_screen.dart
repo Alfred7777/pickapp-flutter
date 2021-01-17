@@ -24,6 +24,7 @@ class LocationDetailsScreenState extends State<LocationDetailsScreen> {
       body: SafeArea(
         child: LocationDetailsScrollable(
           locationID: locationID,
+          showEvents: true,
         ),
       ),
     );

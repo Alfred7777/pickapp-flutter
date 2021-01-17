@@ -28,6 +28,7 @@ class EventRepository {
     @required String description,
     @required String disciplineID,
     @required LatLng pos,
+    @required String locationID,
     @required DateTime startDate,
     @required DateTime endDate,
     @required bool allowInvitations,
@@ -40,14 +41,22 @@ class EventRepository {
       'description': '$description',
       'start_datetime_ms': startDate.toUtc().millisecondsSinceEpoch,
       'end_datetime_ms': endDate.toUtc().millisecondsSinceEpoch,
-      'lat': pos.latitude,
-      'lon': pos.longitude,
+      'lat': pos == null ? null : pos.latitude,
+      'lon': pos == null ? null : pos.longitude,
+      'location_id': '$locationID',
       'discipline_id': '$disciplineID',
       'settings': {
         'allow_invitations': allowInvitations,
         'require_participation_acceptation': requireParticipationAcceptation,
       },
     };
+
+    body.removeWhere((key, value) {
+      if (key == null || value == null || value == 'null') {
+        return true;
+      }
+      return false;
+    });
 
     var response = await client.post('events', body: body);
     if (response.statusCode == 201) {

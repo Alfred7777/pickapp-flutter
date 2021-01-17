@@ -1,40 +1,33 @@
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
-import 'create_event_event.dart';
-import 'create_event_state.dart';
+import 'create_event_form_event.dart';
+import 'create_event_form_state.dart';
 import 'package:PickApp/repositories/event_repository.dart';
 
-class CreateEventBloc extends Bloc<CreateEventEvent, CreateEventState> {
+class CreateEventFormBloc
+    extends Bloc<CreateEventFormEvent, CreateEventFormState> {
   final EventRepository eventRepository;
 
-  CreateEventBloc({@required this.eventRepository});
+  CreateEventFormBloc({@required this.eventRepository});
 
   @override
-  CreateEventState get initialState => CreateEventInitial();
+  CreateEventFormState get initialState => CreateEventFormInitial();
 
   @override
-  Stream<CreateEventState> mapEventToState(CreateEventEvent event) async* {
+  Stream<CreateEventFormState> mapEventToState(
+      CreateEventFormEvent event) async* {
     if (event is FetchDisciplines) {
       try {
-        yield CreateEventLoading();
+        yield CreateEventFormLoading();
 
         var _disciplines = await eventRepository.getDisciplines();
 
-        yield CreateEventReady(
+        yield CreateEventFormReady(
           disciplines: _disciplines,
-          pickedPos: null,
         );
       } catch (exception) {
         yield FetchDisciplinesFailure(error: exception.message);
       }
-    }
-    if (event is LocationPicked) {
-      yield CreateEventLoading();
-
-      yield CreateEventReady(
-        disciplines: event.disciplines,
-        pickedPos: event.pickedPos,
-      );
     }
     if (event is CreateEventButtonPressed) {
       var response = await eventRepository.createEvent(
@@ -42,26 +35,24 @@ class CreateEventBloc extends Bloc<CreateEventEvent, CreateEventState> {
         description: event.eventDescription,
         disciplineID: event.eventDisciplineID,
         pos: event.eventPos,
+        locationID: event.locationID,
         startDate: event.eventStartDate,
         endDate: event.eventEndDate,
         allowInvitations: event.allowInvitations,
         requireParticipationAcceptation: event.requireParticipationAcceptation,
       );
       if (response == 'Event successfully created.') {
-        yield CreateEventCreated(
+        yield CreateEventFormCreated(
           pos: event.eventPos,
           message: response,
         );
       } else {
-        yield CreateEventFailure(
-          disciplines: event.disciplines,
-          pickedPos: event.eventPos,
+        yield CreateEventFormFailure(
           error: response,
         );
       }
-      yield CreateEventReady(
+      yield CreateEventFormReady(
         disciplines: event.disciplines,
-        pickedPos: event.eventPos,
       );
     }
   }

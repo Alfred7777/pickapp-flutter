@@ -8,23 +8,35 @@ import 'package:PickApp/widgets/list_bar/event_bar.dart';
 import 'location_details_event.dart';
 import 'location_details_state.dart';
 import 'location_details_bloc.dart';
+import 'package:PickApp/create_event/form/create_event_form_screen.dart';
 
 class LocationDetailsScrollable extends StatefulWidget {
   final String locationID;
+  final bool showEvents;
 
-  LocationDetailsScrollable({@required this.locationID});
+  LocationDetailsScrollable({
+    @required this.locationID,
+    @required this.showEvents,
+  });
 
   @override
   State<LocationDetailsScrollable> createState() =>
-      LocationDetailsScrollableState(locationID: locationID);
+      LocationDetailsScrollableState(
+        locationID: locationID,
+        showEvents: showEvents,
+      );
 }
 
 class LocationDetailsScrollableState extends State<LocationDetailsScrollable> {
   final String locationID;
+  final bool showEvents;
   final locationRepository = LocationRepository();
   LocationDetailsBloc _locationDetailsBloc;
 
-  LocationDetailsScrollableState({@required this.locationID});
+  LocationDetailsScrollableState({
+    @required this.locationID,
+    @required this.showEvents,
+  });
 
   @override
   void initState() {
@@ -33,6 +45,24 @@ class LocationDetailsScrollableState extends State<LocationDetailsScrollable> {
       locationRepository: locationRepository,
       locationID: locationID,
     );
+  }
+
+  void _createEvent() async {
+    if (_locationDetailsBloc.state is LocationDetailsReady) {
+      var route = MaterialPageRoute(
+        builder: (context) => CreateEventFormScreen(
+          pickedPos: null,
+          location: _locationDetailsBloc.state.props[1],
+        ),
+      );
+      var _result = await Navigator.push(context, route);
+      if (showEvents) {
+        _locationDetailsBloc.add(FetchLocationDetails(locationID: locationID));
+      } else {
+        Navigator.pop(context);
+        Navigator.pop(context, [_result[0], _result[1]]);
+      }
+    }
   }
 
   Widget _buildFailureAlert(BuildContext context, String errorMessage) {
@@ -90,6 +120,8 @@ class LocationDetailsScrollableState extends State<LocationDetailsScrollable> {
             return LocationDetails(
               locationDetails: state.locationDetails,
               eventList: state.eventList,
+              showEvents: showEvents,
+              createEvent: _createEvent,
             );
           }
           return LoadingScreen();
@@ -102,10 +134,14 @@ class LocationDetailsScrollableState extends State<LocationDetailsScrollable> {
 class LocationDetails extends StatelessWidget {
   final Location locationDetails;
   final List<Event> eventList;
+  final bool showEvents;
+  final Function createEvent;
 
   const LocationDetails({
     @required this.locationDetails,
     @required this.eventList,
+    @required this.showEvents,
+    @required this.createEvent,
   });
 
   @override
@@ -172,34 +208,52 @@ class LocationDetails extends StatelessWidget {
                       ),
                     ),
                   ),
-                  Padding(
-                    padding: EdgeInsets.all(0.008 * screenSize.height),
-                    child: Divider(
-                      color: Colors.grey[400],
-                    ),
-                  ),
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: Padding(
-                      padding: EdgeInsets.only(
-                        left: 0.06 * screenSize.width,
-                        bottom: 0.01 * screenSize.height,
-                      ),
-                      child: Text(
-                        'Events',
-                        style: TextStyle(
-                          color: Colors.grey[800],
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
+                  showEvents
+                      ? Padding(
+                          padding: EdgeInsets.all(0.008 * screenSize.height),
+                          child: Divider(
+                            color: Colors.grey[400],
+                          ),
+                        )
+                      : Container(),
+                  Row(
+                    mainAxisAlignment: showEvents
+                        ? MainAxisAlignment.spaceBetween
+                        : MainAxisAlignment.center,
+                    children: [
+                      showEvents
+                          ? Padding(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 0.06 * screenSize.width,
+                              ),
+                              child: Text(
+                                'Events',
+                                style: TextStyle(
+                                  color: Colors.grey[800],
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            )
+                          : Container(),
+                      Padding(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 0.06 * screenSize.width,
+                        ),
+                        child: CreateEventButton(
+                          createEvent: createEvent,
+                          buttonDesign: showEvents,
                         ),
                       ),
-                    ),
+                    ],
                   ),
-                  EventList(
-                    eventList: eventList,
-                  ),
+                  showEvents
+                      ? EventList(
+                          eventList: eventList,
+                        )
+                      : Container(),
                   SizedBox(
-                    height: 0.01 * screenSize.height,
+                    height: 0.02 * screenSize.height,
                   ),
                 ],
               ),
@@ -255,6 +309,69 @@ class EventList extends StatelessWidget {
               ),
             ),
           ],
+        ),
+      );
+    }
+  }
+}
+
+class CreateEventButton extends StatelessWidget {
+  final Function createEvent;
+  final bool buttonDesign;
+
+  const CreateEventButton({
+    @required this.createEvent,
+    @required this.buttonDesign,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    if (buttonDesign) {
+      return MaterialButton(
+        padding: EdgeInsets.only(right: 4),
+        onPressed: createEvent,
+        height: 26,
+        color: Colors.green,
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              Icons.add,
+              color: Colors.white,
+            ),
+            Text(
+              'Create',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 18,
+              ),
+            ),
+          ],
+        ),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8),
+        ),
+      );
+    } else {
+      return Padding(
+        padding: EdgeInsets.symmetric(
+          vertical: 12,
+        ),
+        child: MaterialButton(
+          onPressed: createEvent,
+          height: 40,
+          minWidth: 160,
+          color: Colors.green,
+          child: Text(
+            'CREATE EVENT',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 18,
+            ),
+          ),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8),
+          ),
         ),
       );
     }
