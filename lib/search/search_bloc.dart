@@ -5,16 +5,19 @@ import 'package:bloc/bloc.dart';
 import 'package:PickApp/repositories/event_repository.dart';
 import 'package:PickApp/repositories/user_repository.dart';
 import 'package:PickApp/repositories/location_repository.dart';
+import 'package:PickApp/repositories/group_repository.dart';
 
 class SearchBloc extends Bloc<SearchEvent, SearchState> {
   final UserRepository userRepository;
   final EventRepository eventRepository;
   final LocationRepository locationRepository;
+  final GroupRepository groupRepository;
 
   SearchBloc({
     @required this.userRepository,
     @required this.eventRepository,
     @required this.locationRepository,
+    @required this.groupRepository,
   });
 
   @override
@@ -37,6 +40,9 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
         }
         if (event.searchType == 'locations') {
           searchResult = await locationRepository.searchLocation(event.query);
+        }
+        if (event.searchType == 'groups') {
+          searchResult = await groupRepository.searchGroup(event.query);
         }
         yield SearchCompleted(
           query: event.query,
@@ -68,6 +74,9 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
           }
           if (event.searchType == 'locations') {
             searchResult = await locationRepository.searchLocation(event.query);
+          }
+          if (event.searchType == 'groups') {
+            searchResult = await groupRepository.searchGroup(event.query);
           }
           yield SearchCompleted(
             query: event.query,
