@@ -9,10 +9,12 @@ import 'package:PickApp/widgets/search/search_placeholder.dart';
 import 'package:PickApp/widgets/list_bar/user_bar.dart';
 import 'package:PickApp/widgets/list_bar/event_bar.dart';
 import 'package:PickApp/widgets/list_bar/location_bar.dart';
+import 'package:PickApp/widgets/list_bar/group_bar.dart';
 import 'package:PickApp/widgets/top_bar.dart';
 import 'package:PickApp/repositories/event_repository.dart';
 import 'package:PickApp/repositories/user_repository.dart';
 import 'package:PickApp/repositories/location_repository.dart';
+import 'package:PickApp/repositories/group_repository.dart';
 
 class SearchScreen extends StatefulWidget {
   SearchScreen();
@@ -26,6 +28,7 @@ class SearchScreenState extends State<SearchScreen>
   final userRepository = UserRepository();
   final eventRepository = EventRepository();
   final locationRepository = LocationRepository();
+  final groupRepository = GroupRepository();
   SearchBloc _searchBloc;
 
   TabController _tabController;
@@ -42,6 +45,7 @@ class SearchScreenState extends State<SearchScreen>
       userRepository: userRepository,
       eventRepository: eventRepository,
       locationRepository: locationRepository,
+      groupRepository: groupRepository,
     );
 
     _queryTextController = TextEditingController();
@@ -81,9 +85,8 @@ class SearchScreenState extends State<SearchScreen>
         });
       }
       if (_tabController.index == 3) {
-        // will be changed to groups when available
         setState(() {
-          _searchType = 'users';
+          _searchType = 'groups';
         });
       }
       _searchBloc.add(
@@ -261,6 +264,11 @@ class SearchResults extends StatelessWidget {
           if (searchType == 'locations') {
             return LocationBar(
               location: searchResult[index],
+            );
+          }
+          if (searchType == 'groups') {
+            return GroupBar(
+              group: searchResult[index],
             );
           }
         },

@@ -97,6 +97,24 @@ class GroupRepository {
       throw Exception('Answering invitation failed! Please try again later.');
     }
   }
+
+  Future<List<Group>> searchGroup(String searchPhrase) async {
+    final client = AuthenticatedApiClient();
+    final url = 'groups/search?phrase=${searchPhrase}';
+
+    var response = await client.get(url);
+
+    if (response.statusCode == 200) {
+      return json
+          .decode(response.body)
+          .map<Group>((group) => Group.fromJson(group))
+          .toList();
+    } else {
+      throw Exception(
+        'We can\'t show you search results right now. Please try again later.',
+      );
+    }
+  }
 }
 
 class Group {
