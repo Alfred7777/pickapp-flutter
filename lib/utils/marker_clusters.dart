@@ -85,7 +85,10 @@ class MarkerClusters {
             borderRadius: BorderRadius.circular(32.0),
             child: Material(
               color: Colors.grey[100],
-              child: EventDetailsScrollable(eventID: eventID),
+              child: EventDetailsScrollable(
+                eventID: eventID,
+                showButtons: true,
+              ),
             ),
           ),
         );

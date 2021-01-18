@@ -69,7 +69,7 @@ class LocationBar extends StatelessWidget {
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(
                               color: Colors.grey[800],
-                              fontSize: 0.05 * screenSize.width,
+                              fontSize: 18,
                               fontWeight: FontWeight.bold,
                             ),
                           ),

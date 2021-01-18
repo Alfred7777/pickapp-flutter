@@ -5,46 +5,49 @@ import 'package:intl/intl.dart';
 
 class EventBar extends StatelessWidget {
   final Event event;
+  final Function refreshView;
 
   const EventBar({
     @required this.event,
+    @required this.refreshView,
   });
 
   @override
   Widget build(BuildContext context) {
-    var screenSize = MediaQuery.of(context).size;
     return Padding(
       padding: EdgeInsets.symmetric(
-        horizontal: 0.03 * screenSize.width,
-        vertical: 0.006 * screenSize.height,
+        horizontal: 8,
+        vertical: 2,
       ),
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(8.0),
+        borderRadius: BorderRadius.circular(8),
         child: Material(
           color: Colors.transparent,
           child: InkWell(
             borderRadius: BorderRadius.all(
-              Radius.circular(8.0),
+              Radius.circular(8),
             ),
-            onTap: () {
+            onTap: () async {
               var route = MaterialPageRoute<void>(
                 builder: (context) => EventDetailsScreen(
                   eventID: event.id,
+                  showButtons: event.endDate.isAfter(DateTime.now()),
                 ),
               );
-              Navigator.push(context, route);
+              await Navigator.push(context, route);
+              refreshView();
             },
             child: Padding(
               padding: EdgeInsets.symmetric(
-                vertical: 0.01 * screenSize.height,
-                horizontal: 0.02 * screenSize.width,
+                vertical: 8,
+                horizontal: 6,
               ),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Container(
-                    height: 0.12 * screenSize.width,
-                    width: 0.12 * screenSize.width,
+                    height: 42,
+                    width: 42,
                     decoration: BoxDecoration(
                       image: DecorationImage(
                         fit: BoxFit.fill,
@@ -57,8 +60,8 @@ class EventBar extends StatelessWidget {
                   Expanded(
                     child: Padding(
                       padding: EdgeInsets.only(
-                        left: 0.06 * screenSize.width,
-                        right: 0.01 * screenSize.width,
+                        left: 14,
+                        right: 4,
                       ),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -70,7 +73,7 @@ class EventBar extends StatelessWidget {
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(
                               color: Colors.grey[800],
-                              fontSize: 0.05 * screenSize.width,
+                              fontSize: 18,
                               fontWeight: FontWeight.bold,
                             ),
                           ),

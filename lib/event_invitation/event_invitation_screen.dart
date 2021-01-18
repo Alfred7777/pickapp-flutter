@@ -111,7 +111,6 @@ class EventInvitationScreenState extends State<EventInvitationScreen> {
                 SnackBar(
                   content: Text('${state.message}'),
                   backgroundColor: Colors.green,
-                  duration: Duration(milliseconds: 500),
                 ),
               );
               _invitedUsers.add(state.inviteeID);
@@ -121,7 +120,6 @@ class EventInvitationScreenState extends State<EventInvitationScreen> {
                 SnackBar(
                   content: Text('${state.error}'),
                   backgroundColor: Colors.red,
-                  duration: Duration(milliseconds: 500),
                 ),
               );
             }
@@ -182,15 +180,15 @@ class SearchResults extends StatelessWidget {
                 onPressed: () =>
                     isInvited ? {} : notifyParent(userList[index].userID),
                 elevation: 0,
-                height: 0.13 * screenSize.width,
-                minWidth: 0.13 * screenSize.width,
+                height: 46,
+                minWidth: 46,
                 materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                 color: Colors.transparent,
                 shape: CircleBorder(),
                 child: Icon(
                   isInvited ? Icons.check : Icons.person_add,
-                  size: 0.08 * screenSize.width,
-                  color: Color(0xFF7FBCF1),
+                  size: 30,
+                  color: Colors.lightBlue[300],
                 ),
               ),
             ],
@@ -214,7 +212,7 @@ class SearchResults extends StatelessWidget {
                 'No results found for: \"$query\"',
                 style: TextStyle(
                   color: Colors.grey[400],
-                  fontSize: 0.05 * screenSize.width,
+                  fontSize: 18,
                 ),
                 textAlign: TextAlign.center,
               ),

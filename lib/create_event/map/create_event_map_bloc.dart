@@ -39,11 +39,4 @@ class CreateEventMapBloc
       );
     }
   }
-
-  @override
-  void onTransition(
-      Transition<CreateEventMapEvent, CreateEventMapState> transition) {
-    print(transition);
-    super.onTransition(transition);
-  }
 }
