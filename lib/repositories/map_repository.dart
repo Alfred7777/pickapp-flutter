@@ -7,59 +7,48 @@ import 'package:fluster/fluster.dart';
 import 'package:PickApp/client.dart';
 
 class MapRepository {
-  Future<List<MapMarker>> getEventMap([String disciplineId]) async {
+  Future<List<MapMarker>> getMap([String disciplineId]) async {
     final client = AuthenticatedApiClient();
-    var url;
+    var url = 'map';
+    var queryParams;
     if (disciplineId != null) {
-      url = 'map?discipline_id=${disciplineId}';
-    } else {
-      url = 'map';
+      queryParams = {
+        'discipline_ids[]': [
+          '$disciplineId',
+        ],
+      };
     }
 
-    var response = await client.get(url);
+    var response = await client.get(url, queryParams: queryParams);
 
     if (response.statusCode == 200) {
-      var eventList =
-          json.decode(response.body).map<MapMarker>((eventMarkerJson) {
+      var eventList = json.decode(response.body)['events'];
+      var locationList = json.decode(response.body)['locations'];
+      var mappedEvents = eventList.map<MapMarker>((eventJson) {
         return MapMarker(
-          id: eventMarkerJson['id'],
+          id: eventJson['id'],
           position: LatLng(
-            eventMarkerJson['lat'],
-            eventMarkerJson['lon'],
+            eventJson['lat'],
+            eventJson['lon'],
           ),
-          disciplineID: eventMarkerJson['discipline_id'],
+          disciplineID: eventJson['discipline_id'],
         );
       }).toList();
-      return eventList;
-    } else {
-      throw Exception(
-        'We can\'t show you events map right now. Please try again later.',
-      );
-    }
-  }
-
-  Future<List<MapMarker>> getLocationMap() async {
-    final client = AuthenticatedApiClient();
-    var url = 'locations/get';
-
-    var response = await client.get(url);
-
-    if (response.statusCode == 200) {
-      var locationList =
-          json.decode(response.body).map<MapMarker>((locationMarkerJson) {
+      var mappedLocations = locationList.map<MapMarker>((locationJson) {
         return MapMarker(
-          id: locationMarkerJson['id'],
+          id: locationJson['id'],
           position: LatLng(
-            locationMarkerJson['lat'],
-            locationMarkerJson['lon'],
+            locationJson['lat'],
+            locationJson['lon'],
           ),
           disciplineID: null,
         );
       }).toList();
-      return locationList;
+
+      return mappedEvents + mappedLocations;
     } else {
       throw Exception(
-        'We can\'t show you locations map right now. Please try again later.',
+        'We can\'t show you map right now. Please try again later.',
       );
     }
   }

@@ -6,9 +6,12 @@ import 'package:equatable/equatable.dart';
 class UserRepository {
   Future<List<User>> searchUser(String searchPhrase) async {
     final client = AuthenticatedApiClient();
-    final url = 'profile/search?phrase=${searchPhrase}';
+    final url = 'profile/search';
+    var queryParams = {
+      'phrase': searchPhrase,
+    };
 
-    var response = await client.get(url);
+    var response = await client.get(url, queryParams: queryParams);
 
     if (response.statusCode == 200) {
       return json

@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 class AuthenticatedApiClient {
-  final apiUrl = 'http://150.254.78.200/api/';
+  final apiUrl = '150.254.78.200';
 
   Future getAuthToken() async {
     var token = await AuthenticationRepository.getAuthToken();
@@ -29,11 +29,16 @@ class AuthenticatedApiClient {
       {Map<String, String> headers, dynamic body}) async {
     var response;
     var token = await getAuthToken();
+    var uri = Uri(
+      scheme: 'http',
+      host: apiUrl,
+      path: '/api/' + url,
+    );
 
     while (response == null) {
       try {
         response = await http.post(
-          apiUrl + url,
+          uri,
           headers: getHeaders(token, headers),
           body: json.encode(body),
         );
@@ -45,14 +50,21 @@ class AuthenticatedApiClient {
     return response;
   }
 
-  Future<http.Response> get(url, {Map<String, String> headers}) async {
+  Future<http.Response> get(url,
+      {Map<String, String> headers, Map<String, dynamic> queryParams}) async {
     var response;
     var token = await getAuthToken();
+    var uri = Uri(
+      scheme: 'http',
+      host: apiUrl,
+      path: '/api/' + url,
+      queryParameters: queryParams,
+    );
 
     while (response == null) {
       try {
         response = await http.get(
-          apiUrl + url,
+          uri,
           headers: getHeaders(token, headers),
         );
       } on SocketException {
@@ -66,11 +78,16 @@ class AuthenticatedApiClient {
   Future<http.Response> delete(url, {Map<String, String> headers}) async {
     var response;
     var token = await getAuthToken();
+    var uri = Uri(
+      scheme: 'http',
+      host: apiUrl,
+      path: '/api/' + url,
+    );
 
     while (response == null) {
       try {
         response = await http.delete(
-          apiUrl + url,
+          uri,
           headers: getHeaders(token, headers),
         );
       } on SocketException {
@@ -85,11 +102,16 @@ class AuthenticatedApiClient {
       {Map<String, String> headers, dynamic body}) async {
     var response;
     var token = await getAuthToken();
+    var uri = Uri(
+      scheme: 'http',
+      host: apiUrl,
+      path: '/api/' + url,
+    );
 
     while (response == null) {
       try {
         response = await http.put(
-          apiUrl + url,
+          uri,
           headers: getHeaders(token, headers),
           body: json.encode(body),
         );
@@ -97,7 +119,6 @@ class AuthenticatedApiClient {
         await showConnectionDialog();
       }
     }
-
     return response;
   }
 

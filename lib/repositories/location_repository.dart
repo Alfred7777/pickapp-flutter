@@ -66,9 +66,12 @@ class LocationRepository {
 
   Future<List<Location>> searchLocation(String searchPhrase) async {
     final client = AuthenticatedApiClient();
-    final url = 'locations/search?phrase=${searchPhrase}';
+    final url = 'locations/search';
+    var queryParams = {
+      'phrase': searchPhrase,
+    };
 
-    var response = await client.get(url);
+    var response = await client.get(url, queryParams: queryParams);
 
     if (response.statusCode == 200) {
       return json
