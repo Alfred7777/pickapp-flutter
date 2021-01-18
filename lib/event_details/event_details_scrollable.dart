@@ -15,20 +15,30 @@ import 'package:PickApp/widgets/list_bar/user_bar.dart';
 
 class EventDetailsScrollable extends StatefulWidget {
   final String eventID;
+  final bool showButtons;
 
-  EventDetailsScrollable({@required this.eventID});
+  EventDetailsScrollable({
+    @required this.eventID,
+    @required this.showButtons,
+  });
 
   @override
-  State<EventDetailsScrollable> createState() =>
-      EventDetailsScrollableState(eventID: eventID);
+  State<EventDetailsScrollable> createState() => EventDetailsScrollableState(
+        eventID: eventID,
+        showButtons: showButtons,
+      );
 }
 
 class EventDetailsScrollableState extends State<EventDetailsScrollable> {
   final String eventID;
+  final bool showButtons;
   final eventRepository = EventRepository();
   EventDetailsBloc _eventDetailsBloc;
 
-  EventDetailsScrollableState({@required this.eventID});
+  EventDetailsScrollableState({
+    @required this.eventID,
+    @required this.showButtons,
+  });
 
   @override
   void initState() {
@@ -135,6 +145,7 @@ class EventDetailsScrollableState extends State<EventDetailsScrollable> {
               manageEventAttendance: _manageEventAttendance,
               editEvent: _editEvent,
               inviteToEvent: _inviteToEvent,
+              showButtons: showButtons,
             );
           }
           return LoadingScreen();
@@ -151,6 +162,7 @@ class EventDetailsList extends StatelessWidget {
   final Function manageEventAttendance;
   final Function editEvent;
   final Function inviteToEvent;
+  final bool showButtons;
 
   const EventDetailsList({
     @required this.eventDetails,
@@ -159,6 +171,7 @@ class EventDetailsList extends StatelessWidget {
     @required this.manageEventAttendance,
     @required this.editEvent,
     @required this.inviteToEvent,
+    @required this.showButtons,
   });
 
   @override
@@ -210,6 +223,7 @@ class EventDetailsList extends StatelessWidget {
                             manageParticipationRequests,
                         manageEventAttendance: manageEventAttendance,
                         inviteToEvent: inviteToEvent,
+                        showButtons: showButtons,
                       ),
                       EventDescription(
                         description: eventDetails.description,
@@ -376,6 +390,7 @@ class EventButtons extends StatelessWidget {
   final Function manageParticipationRequests;
   final Function manageEventAttendance;
   final Function inviteToEvent;
+  final bool showButtons;
 
   const EventButtons({
     @required this.numberOfParticipants,
@@ -387,6 +402,7 @@ class EventButtons extends StatelessWidget {
     @required this.manageParticipationRequests,
     @required this.manageEventAttendance,
     @required this.inviteToEvent,
+    @required this.showButtons,
   });
 
   @override
@@ -401,40 +417,42 @@ class EventButtons extends StatelessWidget {
           requireParticipationAcceptation: requireParticipationAcceptation,
           manageParticipationRequests: manageParticipationRequests,
         ),
-        ButtonBar(
-          mainAxisSize: MainAxisSize.max,
-          alignment: MainAxisAlignment.spaceEvenly,
-          buttonPadding: EdgeInsets.zero,
-          children: [
-            EventRoundButton(
-              icon: Icons.add_alert,
-              label: 'Follow',
-              color: Colors.blue[300],
-              notifyParent: () {},
-            ),
-            EventMainButton(
-              text: participationStatus,
-              notifyParent: manageEventAttendance,
-            ),
-            EventRoundButton(
-              icon: Icons.person_add,
-              label: 'Invite',
-              color: isOrganiser ||
-                      allowInvitations == true &&
-                          participationStatus == 'joined'
-                  ? Colors.blue[300]
-                  : Colors.grey,
-              notifyParent: () {
-                if (isOrganiser) {
-                  inviteToEvent();
-                } else if (participationStatus == 'joined' &&
-                    allowInvitations) {
-                  inviteToEvent();
-                }
-              },
-            ),
-          ],
-        ),
+        showButtons
+            ? ButtonBar(
+                mainAxisSize: MainAxisSize.max,
+                alignment: MainAxisAlignment.spaceEvenly,
+                buttonPadding: EdgeInsets.zero,
+                children: [
+                  EventRoundButton(
+                    icon: Icons.add_alert,
+                    label: 'Follow',
+                    color: Colors.blue[300],
+                    notifyParent: () {},
+                  ),
+                  EventMainButton(
+                    text: participationStatus,
+                    notifyParent: manageEventAttendance,
+                  ),
+                  EventRoundButton(
+                    icon: Icons.person_add,
+                    label: 'Invite',
+                    color: isOrganiser ||
+                            allowInvitations == true &&
+                                participationStatus == 'joined'
+                        ? Colors.blue[300]
+                        : Colors.grey,
+                    notifyParent: () {
+                      if (isOrganiser) {
+                        inviteToEvent();
+                      } else if (participationStatus == 'joined' &&
+                          allowInvitations) {
+                        inviteToEvent();
+                      }
+                    },
+                  ),
+                ],
+              )
+            : Container(),
       ],
     );
   }

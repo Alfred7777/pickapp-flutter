@@ -259,6 +259,7 @@ class SearchResults extends StatelessWidget {
           if (searchType == 'events') {
             return EventBar(
               event: searchResult[index],
+              refreshView: () {},
             );
           }
           if (searchType == 'locations') {
@@ -290,7 +291,7 @@ class SearchResults extends StatelessWidget {
                 'No results found for: \"$query\"',
                 style: TextStyle(
                   color: Colors.grey[400],
-                  fontSize: 0.05 * screenSize.width,
+                  fontSize: 18,
                 ),
                 textAlign: TextAlign.center,
               ),

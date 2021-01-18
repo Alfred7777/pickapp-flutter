@@ -283,6 +283,7 @@ class EventList extends StatelessWidget {
         itemBuilder: (BuildContext context, int index) {
           return EventBar(
             event: eventList[index],
+            refreshView: () {},
           );
         },
       );

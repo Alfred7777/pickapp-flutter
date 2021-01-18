@@ -15,19 +15,18 @@ class UserBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var screenSize = MediaQuery.of(context).size;
     return Padding(
       padding: EdgeInsets.symmetric(
-        horizontal: 0.03 * screenSize.width,
-        vertical: 0.006 * screenSize.height,
+        horizontal: 8,
+        vertical: 2,
       ),
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(8.0),
+        borderRadius: BorderRadius.circular(8),
         child: Material(
           color: Colors.transparent,
           child: InkWell(
             borderRadius: BorderRadius.all(
-              Radius.circular(8.0),
+              Radius.circular(8),
             ),
             onTap: () {
               var route = MaterialPageRoute<void>(
@@ -39,60 +38,55 @@ class UserBar extends StatelessWidget {
             },
             child: Padding(
               padding: EdgeInsets.symmetric(
-                vertical: 0.01 * screenSize.height,
-                horizontal: 0.02 * screenSize.width,
+                vertical: 8,
+                horizontal: 6,
               ),
-              child: Container(
-                width: 0.96 * screenSize.width,
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    ProfilePicture(
-                      height: 0.084 * screenSize.height,
-                      width: 0.084 * screenSize.height,
-                      shape: BoxShape.circle,
-                      fit: BoxFit.fill,
-                      profilePictureUrl: user.profilePictureUrl,
-                    ),
-                    Expanded(
-                      child: Padding(
-                        padding: EdgeInsets.only(
-                          left: 0.04 * screenSize.width,
-                        ),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              '${user.name}',
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
-                                color: Color(0xFF3D3A3A),
-                                fontSize: 0.05 * screenSize.width,
-                                fontWeight: FontWeight.bold,
-                              ),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  ProfilePicture(
+                    height: 52,
+                    width: 52,
+                    shape: BoxShape.circle,
+                    fit: BoxFit.fill,
+                    profilePictureUrl: user.profilePictureUrl,
+                  ),
+                  Expanded(
+                    child: Padding(
+                      padding: EdgeInsets.only(left: 16, right: 4),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            '${user.name}',
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              color: Color(0xFF3D3A3A),
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
                             ),
-                            Text(
-                              '@${user.uniqueUsername}',
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
-                                color: Color(0xFFA7A7A7),
-                                fontSize: 0.034 * screenSize.width,
-                              ),
+                          ),
+                          Text(
+                            '@${user.uniqueUsername}',
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              color: Color(0xFFA7A7A7),
+                              fontSize: 12,
                             ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
                     ),
-                    ButtonBar(
-                      mainAxisSize: MainAxisSize.min,
-                      buttonPadding: EdgeInsets.zero,
-                      children: actionList,
-                    ),
-                  ],
-                ),
+                  ),
+                  ButtonBar(
+                    mainAxisSize: MainAxisSize.min,
+                    buttonPadding: EdgeInsets.zero,
+                    children: actionList,
+                  ),
+                ],
               ),
             ),
           ),

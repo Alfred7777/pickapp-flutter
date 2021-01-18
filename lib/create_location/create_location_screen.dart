@@ -206,20 +206,18 @@ class CreateLocationMap extends StatelessWidget {
                 showCreateLocationPopup();
               }
             },
-            height: 0.06 * screenSize.height,
-            minWidth: 0.4 * screenSize.width,
+            height: 40,
+            minWidth: 160,
             color: Colors.green,
             child: Text(
               'CREATE LOCATION',
               style: TextStyle(
                 color: Colors.white,
-                fontSize: 0.026 * screenSize.height,
+                fontSize: 18,
               ),
             ),
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(
-                0.02 * screenSize.width,
-              ),
+              borderRadius: BorderRadius.circular(8),
             ),
           ),
         ),
@@ -227,7 +225,7 @@ class CreateLocationMap extends StatelessWidget {
           child: Align(
             alignment: Alignment.topCenter,
             child: Container(
-              height: 0.15 * screenSize.height,
+              height: 100,
               width: screenSize.width,
               decoration: BoxDecoration(
                 gradient: LinearGradient(
@@ -246,7 +244,7 @@ class CreateLocationMap extends StatelessWidget {
                   'Tap on map to choose place for location',
                   style: TextStyle(
                     color: Colors.white,
-                    fontSize: 0.026 * screenSize.height,
+                    fontSize: 18,
                     fontWeight: FontWeight.bold,
                   ),
                 ),

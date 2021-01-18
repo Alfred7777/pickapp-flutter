@@ -54,7 +54,6 @@ class MyEventsScreenState extends State<MyEventsScreen> {
         ),
       );
     }
-    Navigator.pop(context);
     _myEventsBloc.add(FetchMyEvents());
   }
 
@@ -199,12 +198,16 @@ class MyEvents extends StatelessWidget {
                       onRefresh: refreshView,
                       child: EventList(
                         events: activeEvents,
+                        refreshView: refreshView,
+                        isPast: false,
                       ),
                     ),
                     RefreshIndicator(
                       onRefresh: refreshView,
                       child: EventList(
                         events: pastEvents,
+                        refreshView: refreshView,
+                        isPast: true,
                       ),
                     ),
                   ],
@@ -229,38 +232,144 @@ class EventInvitationList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
-      shrinkWrap: true,
-      physics: AlwaysScrollableScrollPhysics(),
-      itemCount: eventInvitations.length,
-      itemBuilder: (BuildContext context, int index) {
-        return EventInvitationBar(
-          eventInvitation: eventInvitations[index],
-          answerInvitation: answerInvitation,
-        );
-      },
-    );
+    var screenSize = MediaQuery.of(context).size;
+    if (eventInvitations.isNotEmpty) {
+      return ListView.builder(
+        shrinkWrap: true,
+        physics: AlwaysScrollableScrollPhysics(),
+        itemCount: eventInvitations.length,
+        itemBuilder: (BuildContext context, int index) {
+          return EventInvitationBar(
+            eventInvitation: eventInvitations[index],
+            actionList: [
+              MaterialButton(
+                onPressed: () => answerInvitation(
+                  eventInvitations[index],
+                  'Accept',
+                ),
+                elevation: 0,
+                height: 42,
+                minWidth: 42,
+                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                color: Colors.transparent,
+                shape: CircleBorder(),
+                child: Icon(
+                  Icons.check,
+                  size: 30,
+                  color: Colors.green,
+                ),
+              ),
+              MaterialButton(
+                onPressed: () => answerInvitation(
+                  eventInvitations[index],
+                  'Reject',
+                ),
+                elevation: 0,
+                height: 42,
+                minWidth: 42,
+                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                color: Colors.transparent,
+                shape: CircleBorder(),
+                child: Icon(
+                  Icons.clear,
+                  size: 30,
+                  color: Colors.red,
+                ),
+              ),
+            ],
+          );
+        },
+      );
+    } else {
+      return ListView(
+        children: [
+          Container(
+            width: screenSize.width,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Padding(
+                  padding: EdgeInsets.only(
+                    left: 20,
+                    right: 20,
+                    top: 16,
+                    bottom: 16,
+                  ),
+                  child: Text(
+                    'You don\'t have any pending invitations.',
+                    style: TextStyle(
+                      color: Colors.grey[400],
+                      fontSize: 18,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      );
+    }
   }
 }
 
 class EventList extends StatelessWidget {
   final List<Event> events;
+  final Function refreshView;
+  final bool isPast;
 
   const EventList({
     @required this.events,
+    @required this.refreshView,
+    @required this.isPast,
   });
 
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
-      shrinkWrap: true,
-      physics: AlwaysScrollableScrollPhysics(),
-      itemCount: events.length,
-      itemBuilder: (BuildContext context, int index) {
-        return EventBar(
-          event: events[index],
-        );
-      },
-    );
+    var screenSize = MediaQuery.of(context).size;
+    if (events.isNotEmpty) {
+      return ListView.builder(
+        shrinkWrap: true,
+        physics: AlwaysScrollableScrollPhysics(),
+        itemCount: events.length,
+        itemBuilder: (BuildContext context, int index) {
+          return EventBar(
+            event: events[index],
+            refreshView: refreshView,
+          );
+        },
+      );
+    } else {
+      return ListView(
+        children: [
+          Container(
+            width: screenSize.width,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Padding(
+                  padding: EdgeInsets.only(
+                    left: 20,
+                    right: 20,
+                    top: 16,
+                    bottom: 16,
+                  ),
+                  child: Text(
+                    isPast
+                        ? 'You don\'t have any events that you participated in.'
+                        : 'You don\'t have any upcoming events.',
+                    style: TextStyle(
+                      color: Colors.grey[400],
+                      fontSize: 18,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      );
+    }
   }
 }
