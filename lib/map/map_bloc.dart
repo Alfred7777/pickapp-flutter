@@ -19,9 +19,7 @@ class MapBloc extends Bloc<MapEvent, MapState> {
     if (event is FetchMap) {
       yield MapLoading();
       try {
-        var _eventMarkers = await mapRepository.getEventMap();
-        var _locationMarkers = await mapRepository.getLocationMap();
-        var _markers = _eventMarkers + _locationMarkers;
+        var _markers = await mapRepository.getMap();
         var _fluster = MarkerClusters.initFluster(_markers);
 
         yield MapReady(
@@ -35,15 +33,13 @@ class MapBloc extends Bloc<MapEvent, MapState> {
     if (event is FilterMapByDiscipline) {
       yield MapLoading();
       try {
-        var _filteredEventMarkers = await mapRepository.getEventMap(
+        var _filteredMarkers = await mapRepository.getMap(
           event.disciplineId,
         );
-        var _locationMarkers = await mapRepository.getLocationMap();
-        var _markers = _filteredEventMarkers + _locationMarkers;
-        var _fluster = MarkerClusters.initFluster(_markers);
+        var _fluster = MarkerClusters.initFluster(_filteredMarkers);
 
         yield MapReady(
-          markers: _markers,
+          markers: _filteredMarkers,
           fluster: _fluster,
         );
       } catch (exception) {

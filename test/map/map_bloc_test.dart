@@ -30,11 +30,8 @@ void main() async {
     disciplineID: 'anotherDisciplineId',
   );
 
-  var fetchEventMapError =
-      'We can\'t show you events map right now. Please try again later.';
-
-  var fetchLocationMapError =
-      'We can\'t show you locations map right now. Please try again later.';
+  var fetchMapError =
+      'We can\'t show you map right now. Please try again later.';
 
   group('MapBloc', () {
     blocTest(
@@ -58,10 +55,8 @@ void main() async {
     blocTest(
       'emits [Map Loading, MapReady] when FetchMap is succesful',
       build: () async {
-        when(_mapRepositoryMock.getEventMap())
-            .thenAnswer((_) async => [_eventMarker]);
-        when(_mapRepositoryMock.getLocationMap())
-            .thenAnswer((_) async => [_locationMarker]);
+        when(_mapRepositoryMock.getMap())
+            .thenAnswer((_) async => [_eventMarker, _locationMarker]);
         return MapBloc(mapRepository: _mapRepositoryMock);
       },
       act: (bloc) => bloc.add(FetchMap()),
@@ -71,10 +66,7 @@ void main() async {
       ],
       verify: (bloc) async {
         verify(
-          _mapRepositoryMock.getEventMap(),
-        ).called(1);
-        verify(
-          _mapRepositoryMock.getLocationMap(),
+          _mapRepositoryMock.getMap(),
         ).called(1);
         // expect(
         //   bloc.state,
@@ -91,8 +83,8 @@ void main() async {
     blocTest(
       'emits [Map Loading, FetchMapFailure] when getEventMap is unsuccesful',
       build: () async {
-        when(_mapRepositoryMock.getEventMap()).thenThrow(
-          Exception(fetchEventMapError),
+        when(_mapRepositoryMock.getMap()).thenThrow(
+          Exception(fetchMapError),
         );
         return MapBloc(mapRepository: _mapRepositoryMock);
       },
@@ -103,49 +95,13 @@ void main() async {
       ],
       verify: (bloc) async {
         verify(
-          _mapRepositoryMock.getEventMap(),
-        ).called(1);
-        verifyNever(
-          _mapRepositoryMock.getLocationMap(),
-        );
-        expect(
-          bloc.state,
-          equals(
-            FetchMapFailure(
-              error: fetchEventMapError,
-            ),
-          ),
-        );
-      },
-    );
-
-    blocTest(
-      'emits [Map Loading, FetchMapFailure] when getLocationMap is unsuccesful',
-      build: () async {
-        when(_mapRepositoryMock.getEventMap())
-            .thenAnswer((_) async => [_eventMarker]);
-        when(_mapRepositoryMock.getLocationMap()).thenThrow(
-          Exception(fetchLocationMapError),
-        );
-        return MapBloc(mapRepository: _mapRepositoryMock);
-      },
-      act: (bloc) => bloc.add(FetchMap()),
-      expect: [
-        isA<MapLoading>(),
-        isA<FetchMapFailure>(),
-      ],
-      verify: (bloc) async {
-        verify(
-          _mapRepositoryMock.getEventMap(),
-        ).called(1);
-        verify(
-          _mapRepositoryMock.getLocationMap(),
+          _mapRepositoryMock.getMap(),
         ).called(1);
         expect(
           bloc.state,
           equals(
             FetchMapFailure(
-              error: fetchLocationMapError,
+              error: fetchMapError,
             ),
           ),
         );
@@ -155,10 +111,8 @@ void main() async {
     blocTest(
       'emits [Map Loading, MapReady] when FilterMapByDiscipline is added with correctly filtered locations',
       build: () async {
-        when(_mapRepositoryMock.getEventMap('anotherDisciplineId'))
-            .thenAnswer((_) async => [_anotherEventMarker]);
-        when(_mapRepositoryMock.getLocationMap())
-            .thenAnswer((_) async => [_locationMarker]);
+        when(_mapRepositoryMock.getMap('anotherDisciplineId'))
+            .thenAnswer((_) async => [_anotherEventMarker, _locationMarker]);
         return MapBloc(mapRepository: _mapRepositoryMock);
       },
       act: (bloc) => bloc.add(
@@ -170,10 +124,7 @@ void main() async {
       ],
       verify: (bloc) async {
         verify(
-          _mapRepositoryMock.getEventMap('anotherDisciplineId'),
-        ).called(1);
-        verify(
-          _mapRepositoryMock.getLocationMap(),
+          _mapRepositoryMock.getMap('anotherDisciplineId'),
         ).called(1);
         // expect(
         //   bloc.state,

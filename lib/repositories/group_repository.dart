@@ -100,9 +100,12 @@ class GroupRepository {
 
   Future<List<Group>> searchGroup(String searchPhrase) async {
     final client = AuthenticatedApiClient();
-    final url = 'groups/search?phrase=${searchPhrase}';
+    final url = 'groups/search';
+    var queryParams = {
+      'phrase': searchPhrase,
+    };
 
-    var response = await client.get(url);
+    var response = await client.get(url, queryParams: queryParams);
 
     if (response.statusCode == 200) {
       return json
