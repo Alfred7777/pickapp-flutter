@@ -60,7 +60,9 @@ class CreateGroupScreenState extends State<CreateGroupScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: sideScreenTopBar(context),
+      appBar: SideScreenTopBar(
+        title: 'Create Group',
+      ),
       body: BlocListener<CreateGroupBloc, CreateGroupState>(
         bloc: _createGroupBloc,
         listener: (context, state) {

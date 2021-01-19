@@ -153,7 +153,9 @@ class MyGroups extends StatelessWidget {
       length: 2,
       initialIndex: 1,
       child: Scaffold(
-        appBar: mainScreenTopBar(context),
+        appBar: MainScreenTopBar(
+          title: 'My Groups',
+        ),
         floatingActionButton: FloatingActionButton(
           elevation: 2,
           onPressed: createGroup,

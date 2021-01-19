@@ -9,17 +9,30 @@ class ProfileState extends Equatable {
   List<Object> get props => [];
 }
 
-class InitialProfileState extends ProfileState {}
+class ProfileUninitialized extends ProfileState {}
 
 class ProfileLoading extends ProfileState {}
 
-class ProfileLoaded extends ProfileState {
+class ProfileReady extends ProfileState {
   final User details;
+  final Map<String, dynamic> stats;
+  final String pictureUploadUrl;
 
-  const ProfileLoaded({@required this.details});
+  const ProfileReady({
+    @required this.details,
+    @required this.stats,
+    @required this.pictureUploadUrl,
+  });
 
   @override
-  List<Object> get props => [details];
+  List<Object> get props => [details, stats, pictureUploadUrl];
 }
 
-class ProfileError extends ProfileState {}
+class ProfileFailure extends ProfileState {
+  final String error;
+
+  const ProfileFailure({@required this.error});
+
+  @override
+  List<Object> get props => [error];
+}

@@ -20,7 +20,9 @@ class LocationDetailsScreenState extends State<LocationDetailsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: sideScreenTopBar(context),
+      appBar: SideScreenTopBar(
+        title: 'Location Details',
+      ),
       body: SafeArea(
         child: LocationDetailsScrollable(
           locationID: locationID,

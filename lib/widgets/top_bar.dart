@@ -3,124 +3,126 @@ import 'package:PickApp/search/search_screen.dart';
 import 'package:PickApp/map/map_bloc.dart';
 import 'package:flutter/material.dart';
 
-AppBar mapScreenTopBar(BuildContext context, MapBloc mapBloc) {
-  return AppBar(
-    backgroundColor: Colors.transparent,
-    elevation: 0,
-    leading: IconButton(
-      icon: Icon(Icons.menu),
-      iconSize: 34.0,
-      color: Color(0xFF000000),
-      onPressed: () {
-        Scaffold.of(context).openDrawer();
-      },
-    ),
-    centerTitle: true,
-    title: Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: <Widget>[
-        Icon(Icons.search, color: Color(0xFF000000), size: 32.0),
-        ButtonTheme(
-          minWidth: 170,
-          height: 28,
-          child: FlatButton(
-            onPressed: () {
-              var route = MaterialPageRoute<void>(
-                builder: (context) => SearchScreen(),
-              );
-              Navigator.push(context, route);
-            },
-            color: Color(0x55C4C4C4),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(20.0),
+class MapScreenTopBar extends StatelessWidget implements PreferredSizeWidget {
+  final MapBloc mapBloc;
+
+  const MapScreenTopBar({
+    @required this.mapBloc,
+  });
+
+  @override
+  Size get preferredSize => Size.fromHeight(56.0);
+
+  @override
+  Widget build(BuildContext context) {
+    return AppBar(
+      backgroundColor: Colors.transparent,
+      elevation: 0,
+      centerTitle: true,
+      title: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          Icon(Icons.search, color: Color(0xFF000000), size: 32.0),
+          ButtonTheme(
+            minWidth: 170,
+            height: 28,
+            child: FlatButton(
+              onPressed: () {
+                var route = MaterialPageRoute<void>(
+                  builder: (context) => SearchScreen(),
+                );
+                Navigator.push(context, route);
+              },
+              color: Color(0x55C4C4C4),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20.0),
+              ),
+              child: null,
             ),
-            child: null,
           ),
-        ),
+        ],
+      ),
+      actions: <Widget>[
+        IconButton(
+          icon: Icon(Icons.filter_list),
+          iconSize: 34.0,
+          color: Color(0xFF000000),
+          onPressed: () {
+            showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return FilterMapScreen(mapBloc: mapBloc);
+              },
+            );
+          },
+        )
       ],
-    ),
-    actions: <Widget>[
-      IconButton(
-        icon: Icon(Icons.filter_list),
+    );
+  }
+}
+
+class MainScreenTopBar extends StatelessWidget implements PreferredSizeWidget {
+  final String title;
+
+  const MainScreenTopBar({
+    @required this.title,
+  });
+
+  @override
+  Size get preferredSize => Size.fromHeight(56.0);
+
+  @override
+  Widget build(BuildContext context) {
+    return AppBar(
+      backgroundColor: Colors.green,
+      elevation: 0,
+      centerTitle: true,
+      title: Text(
+        title,
+        style: TextStyle(
+          fontFamily: 'Montserrat',
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+    );
+  }
+}
+
+class SideScreenTopBar extends StatelessWidget implements PreferredSizeWidget {
+  final String title;
+
+  const SideScreenTopBar({
+    @required this.title,
+  });
+
+  @override
+  Size get preferredSize => Size.fromHeight(56.0);
+
+  @override
+  Widget build(BuildContext context) {
+    return AppBar(
+      backgroundColor: Colors.green,
+      elevation: 0,
+      leading: IconButton(
         iconSize: 34.0,
-        color: Color(0xFF000000),
+        icon: Icon(
+          Icons.arrow_back,
+          color: Colors.white,
+        ),
         onPressed: () {
-          showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              return FilterMapScreen(mapBloc: mapBloc);
-            },
-          );
+          Navigator.pop(context);
         },
-      )
-    ],
-  );
-}
-
-AppBar mainScreenTopBar(BuildContext context) {
-  return AppBar(
-    backgroundColor: Colors.green,
-    elevation: 0,
-    leading: IconButton(
-      icon: Icon(Icons.menu),
-      iconSize: 34.0,
-      color: Colors.white,
-      onPressed: () {
-        Scaffold.of(context).openDrawer();
-      },
-    ),
-    centerTitle: true,
-    title: Text(
-      'PickApp',
-      style: TextStyle(
-        fontFamily: 'Montserrat',
-        fontWeight: FontWeight.w600,
       ),
-    ),
-  );
-}
-
-AppBar sideScreenTopBar(BuildContext context) {
-  return AppBar(
-    backgroundColor: Colors.green,
-    elevation: 0,
-    leading: IconButton(
-      iconSize: 34.0,
-      icon: Icon(
-        Icons.arrow_back,
-        color: Colors.white,
+      centerTitle: true,
+      title: Text(
+        title,
+        style: TextStyle(
+          fontFamily: 'Montserrat',
+          fontWeight: FontWeight.w600,
+        ),
       ),
-      onPressed: () {
-        Navigator.pop(context);
-      },
-    ),
-    centerTitle: true,
-    title: Text(
-      'PickApp',
-      style: TextStyle(
-        fontFamily: 'Montserrat',
-        fontWeight: FontWeight.w600,
-      ),
-    ),
-  );
-}
-
-AppBar editEventScreenTopBar(BuildContext context) {
-  return AppBar(
-    backgroundColor: Colors.transparent,
-    elevation: 0,
-    brightness: Brightness.light,
-    leading: IconButton(
-      iconSize: 34.0,
-      icon: Icon(
-        Icons.arrow_back,
-        color: Colors.black,
-      ),
-      onPressed: () {
-        Navigator.pop(context);
-      },
-    ),
-  );
+    );
+  }
 }
 
 class SearchTopBar extends StatelessWidget implements PreferredSizeWidget {

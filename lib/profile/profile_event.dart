@@ -1,3 +1,4 @@
+import 'package:image_picker/image_picker.dart';
 import 'package:meta/meta.dart';
 import 'package:equatable/equatable.dart';
 
@@ -15,4 +16,17 @@ class FetchProfile extends ProfileEvent {
 
   @override
   List<Object> get props => [userID];
+}
+
+class UpdateProfilePicture extends ProfileEvent {
+  final String pictureUploadUrl;
+  final PickedFile pickedProfilePicture;
+
+  const UpdateProfilePicture({
+    @required this.pictureUploadUrl,
+    @required this.pickedProfilePicture,
+  });
+
+  @override
+  List<Object> get props => [pictureUploadUrl, pickedProfilePicture];
 }

@@ -23,14 +23,19 @@ class BottomNavbar extends StatelessWidget {
       selectedItemColor: Colors.blueAccent,
       unselectedItemColor: Colors.black,
       showUnselectedLabels: true,
+      selectedFontSize: 13,
       unselectedLabelStyle: TextStyle(
+        fontSize: 13,
         color: Colors.black,
         decorationColor: Colors.black,
       ),
       onTap: (index) {
-        bloc.add(IndexChanged(
+        bloc.add(
+          IndexChanged(
             index: index,
-            currentUnreadNotificationsCount: currentNotificationsCount));
+            currentUnreadNotificationsCount: currentNotificationsCount,
+          ),
+        );
       },
       items: [
         BottomNavigationBarItem(
@@ -46,9 +51,14 @@ class BottomNavbar extends StatelessWidget {
           label: 'Groups',
         ),
         BottomNavigationBarItem(
-          icon:
-              NotificationsIcon(notificationsCount: currentNotificationsCount),
+          icon: NotificationsIcon(
+            notificationsCount: currentNotificationsCount,
+          ),
           label: 'Alerts',
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.person),
+          label: 'Profile',
         ),
       ],
     );

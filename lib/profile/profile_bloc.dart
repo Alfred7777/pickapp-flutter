@@ -2,23 +2,46 @@ import 'package:PickApp/profile/profile_event.dart';
 import 'package:PickApp/profile/profile_state.dart';
 import 'package:PickApp/repositories/user_repository.dart';
 import 'package:bloc/bloc.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:meta/meta.dart';
 
 class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
   final UserRepository userRepository;
+  final String userID;
 
-  ProfileBloc({@required this.userRepository}) : assert(userRepository != null);
+  ProfileBloc({
+    @required this.userRepository,
+    @required this.userID,
+  }) : assert(userRepository != null);
 
   @override
-  ProfileState get initialState => InitialProfileState();
+  ProfileState get initialState => ProfileUninitialized();
 
   @override
   Stream<ProfileState> mapEventToState(ProfileEvent event) async* {
-    if (event is FetchProfile) {
+    try {
       yield ProfileLoading();
-      var details = await userRepository.getProfileDetails(event.userID);
-      yield ProfileLoaded(details: details);
-      return;
+
+      if (event is UpdateProfilePicture) {
+        await userRepository.uploadNewProfilePicture(
+          event.pictureUploadUrl,
+          event.pickedProfilePicture,
+        );
+      }
+
+      var _details = await userRepository.getProfileDetails(userID);
+      var _stats = await userRepository.getUserStats(userID);
+      var _uploadUrl = await userRepository.getProfilePictureUploadUrl();
+
+      yield ProfileReady(
+        details: _details,
+        stats: _stats,
+        pictureUploadUrl: _uploadUrl,
+      );
+    } catch (exception) {
+      yield ProfileFailure(
+        error: exception.message,
+      );
     }
   }
 }

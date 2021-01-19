@@ -71,7 +71,6 @@ class _OnboardingFormState extends State<OnboardingForm> {
               width: 160,
               height: 160,
               profilePictureUrl: profileDraft.profilePictureUrl,
-              // borderRadius: BorderRadius.circular(100.0),
               border: Border.all(
                 color: Colors.white,
                 width: 10.0,

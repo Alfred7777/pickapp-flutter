@@ -6,15 +6,23 @@ class NotificationRepository {
   Future<Map<String, dynamic>> getNotifications(
       String nextToken, int limit) async {
     var client = AuthenticatedApiClient();
-    var url;
+    var queryParams;
 
     if (nextToken == null) {
-      url = 'my_notifications?limit=${limit}';
+      queryParams = {
+        'limit': '$limit',
+      };
     } else {
-      url = 'my_notifications?limit=${limit}&next_token=${nextToken}';
+      queryParams = {
+        'limit': '$limit',
+        'next_token': '$nextToken',
+      };
     }
 
-    var response = await client.get(url);
+    var response = await client.get(
+      'my_notifications',
+      queryParams: queryParams,
+    );
 
     if (response.statusCode == 200) {
       var notifications = json.decode(response.body);

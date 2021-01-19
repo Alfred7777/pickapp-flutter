@@ -30,7 +30,9 @@ class EventDetailsScreenState extends State<EventDetailsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: sideScreenTopBar(context),
+      appBar: SideScreenTopBar(
+        title: 'Event Details',
+      ),
       body: SafeArea(
         child: EventDetailsScrollable(
           eventID: eventID,
