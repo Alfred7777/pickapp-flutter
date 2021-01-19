@@ -204,6 +204,8 @@ class EventDetailsList extends StatelessWidget {
                         name: eventDetails.name,
                         startDate: eventDetails.startDate,
                         endDate: eventDetails.endDate,
+                        recurrenceIntervalInSeconds:
+                            eventDetails.recurrenceIntervalInSeconds,
                       ),
                       Padding(
                         padding: EdgeInsets.all(4),
@@ -279,15 +281,45 @@ class EventDetailsList extends StatelessWidget {
   }
 }
 
+class RecurringBodyTag extends StatelessWidget {
+  final int recurrenceIntervalInSeconds;
+
+  const RecurringBodyTag({
+    @required this.recurrenceIntervalInSeconds,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    var eventRecurringRuleName =
+        EventRecurringRule.getRuleName(recurrenceIntervalInSeconds);
+
+    return eventRecurringRuleName == 'None'
+        ? Container()
+        : Padding(
+            padding: EdgeInsets.only(top: 4),
+            child: Text(
+              'Repeats ${eventRecurringRuleName}',
+              style: TextStyle(
+                color: Colors.green,
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          );
+  }
+}
+
 class EventNameAndDate extends StatelessWidget {
   final String name;
   final DateTime startDate;
   final DateTime endDate;
+  final int recurrenceIntervalInSeconds;
 
   const EventNameAndDate({
     @required this.name,
     @required this.startDate,
     @required this.endDate,
+    @required this.recurrenceIntervalInSeconds,
   });
 
   @override
@@ -304,6 +336,8 @@ class EventNameAndDate extends StatelessWidget {
           ),
           textAlign: TextAlign.center,
         ),
+        RecurringBodyTag(
+            recurrenceIntervalInSeconds: recurrenceIntervalInSeconds),
         Padding(
           padding: EdgeInsets.only(top: 8),
           child: Text(
@@ -631,7 +665,6 @@ class EventRoundButton extends StatelessWidget {
 
 class EventDescription extends StatelessWidget {
   final String description;
-
   const EventDescription({
     @required this.description,
   });

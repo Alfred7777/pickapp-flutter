@@ -41,6 +41,9 @@ class CreateEventFormScrollableState extends State<CreateEventFormScrollable> {
   List<EventPrivacyRule> _eventPrivacyRules;
   EventPrivacyRule _privacyRule;
 
+  List<EventRecurringRule> _eventRecurringRules;
+  EventRecurringRule _recurringRule;
+
   CreateEventFormScrollableState({
     @required this.location,
     @required this.pickedPos,
@@ -61,6 +64,9 @@ class CreateEventFormScrollableState extends State<CreateEventFormScrollable> {
 
     _eventPrivacyRules = EventPrivacyRule.getEventPrivacyRules();
     _privacyRule = EventPrivacyRule.fromBooleans(true, false);
+
+    _eventRecurringRules = EventRecurringRule.getEventRecurringRules();
+    _recurringRule = _eventRecurringRules[0];
   }
 
   @override
@@ -85,6 +91,10 @@ class CreateEventFormScrollableState extends State<CreateEventFormScrollable> {
 
   void _setPrivacyRule(EventPrivacyRule privacyRule) {
     _privacyRule = privacyRule;
+  }
+
+  void _setRecurringRule(EventRecurringRule recurringRule) {
+    _recurringRule = recurringRule;
   }
 
   String _validateStartDate() {
@@ -118,6 +128,7 @@ class CreateEventFormScrollableState extends State<CreateEventFormScrollable> {
         allowInvitations: _privacyRule.allowInvitations,
         requireParticipationAcceptation:
             _privacyRule.requireParticipationAcceptation,
+        recurrenceIntervalInSeconds: _recurringRule.recurrenceIntervalInSeconds,
       ),
     );
   }
@@ -172,15 +183,18 @@ class CreateEventFormScrollableState extends State<CreateEventFormScrollable> {
               descriptionController: _descriptionController,
               disciplines: state.disciplines,
               eventPrivacyRules: _eventPrivacyRules,
+              eventRecurringRules: _eventRecurringRules,
               createEvent: _createEvent,
               setDiscipline: _setDiscipline,
               setStartDate: _setStartDate,
               setEndDate: _setEndDate,
               setPrivacyRule: _setPrivacyRule,
+              setRecurringRule: _setRecurringRule,
               initDisciplineID: _disciplineID,
               initStartDate: _startDate,
               initEndDate: _endDate,
               initPrivacyRule: _privacyRule,
+              initRecurringRule: _recurringRule,
               validateStartDate: _validateStartDate,
               validateEndDate: _validateEndDate,
             );
@@ -197,15 +211,18 @@ class CreateEventStepper extends StatefulWidget {
   final TextEditingController descriptionController;
   final List<Discipline> disciplines;
   final List<EventPrivacyRule> eventPrivacyRules;
+  final List<EventRecurringRule> eventRecurringRules;
   final Function createEvent;
   final Function setDiscipline;
   final Function setStartDate;
   final Function setEndDate;
   final Function setPrivacyRule;
+  final Function setRecurringRule;
   final String initDisciplineID;
   final DateTime initStartDate;
   final DateTime initEndDate;
   final EventPrivacyRule initPrivacyRule;
+  final EventRecurringRule initRecurringRule;
   final Function validateStartDate;
   final Function validateEndDate;
 
@@ -214,15 +231,18 @@ class CreateEventStepper extends StatefulWidget {
     @required this.descriptionController,
     @required this.disciplines,
     @required this.eventPrivacyRules,
+    @required this.eventRecurringRules,
     @required this.createEvent,
     @required this.setDiscipline,
     @required this.setStartDate,
     @required this.setEndDate,
     @required this.setPrivacyRule,
+    @required this.setRecurringRule,
     @required this.initDisciplineID,
     @required this.initStartDate,
     @required this.initEndDate,
     @required this.initPrivacyRule,
+    @required this.initRecurringRule,
     @required this.validateStartDate,
     @required this.validateEndDate,
   });
@@ -233,15 +253,18 @@ class CreateEventStepper extends StatefulWidget {
         descriptionController: descriptionController,
         disciplines: disciplines,
         eventPrivacyRules: eventPrivacyRules,
+        eventRecurringRules: eventRecurringRules,
         createEvent: createEvent,
         setDiscipline: setDiscipline,
         setStartDate: setStartDate,
         setEndDate: setEndDate,
         setPrivacyRule: setPrivacyRule,
+        setRecurringRule: setRecurringRule,
         initDisciplineID: initDisciplineID,
         initStartDate: initStartDate,
         initEndDate: initEndDate,
         initPrivacyRule: initPrivacyRule,
+        initRecurringRule: initRecurringRule,
         validateStartDate: validateStartDate,
         validateEndDate: validateEndDate,
       );
@@ -252,15 +275,18 @@ class CreateEventStepperState extends State<CreateEventStepper> {
   final TextEditingController descriptionController;
   final List<Discipline> disciplines;
   final List<EventPrivacyRule> eventPrivacyRules;
+  final List<EventRecurringRule> eventRecurringRules;
   final Function createEvent;
   final Function setDiscipline;
   final Function setStartDate;
   final Function setEndDate;
   final Function setPrivacyRule;
+  final Function setRecurringRule;
   final String initDisciplineID;
   final DateTime initStartDate;
   final DateTime initEndDate;
   final EventPrivacyRule initPrivacyRule;
+  final EventRecurringRule initRecurringRule;
   final Function validateStartDate;
   final Function validateEndDate;
 
@@ -276,15 +302,18 @@ class CreateEventStepperState extends State<CreateEventStepper> {
     @required this.descriptionController,
     @required this.disciplines,
     @required this.eventPrivacyRules,
+    @required this.eventRecurringRules,
     @required this.createEvent,
     @required this.setDiscipline,
     @required this.setStartDate,
     @required this.setEndDate,
     @required this.setPrivacyRule,
+    @required this.setRecurringRule,
     @required this.initDisciplineID,
     @required this.initStartDate,
     @required this.initEndDate,
     @required this.initPrivacyRule,
+    @required this.initRecurringRule,
     @required this.validateStartDate,
     @required this.validateEndDate,
   });
@@ -400,14 +429,17 @@ class CreateEventStepperState extends State<CreateEventStepper> {
           ),
         ),
         Step(
-          title: const Text('Privacy Settings'),
+          title: const Text('Additional Settings'),
           isActive: true,
-          state: _getStepState(2, 'Privacy Settings'),
+          state: _getStepState(2, 'Additional Settings'),
           content: PrivacySettingsStep(
             formKey: _formKeys[2],
             eventPrivacyRules: eventPrivacyRules,
             setPrivacyRule: setPrivacyRule,
             initPrivacyRule: initPrivacyRule,
+            eventRecurringRules: eventRecurringRules,
+            setRecurringRule: setRecurringRule,
+            initRecurringRule: initRecurringRule,
           ),
         ),
       ],
@@ -618,15 +650,23 @@ class DateStep extends StatelessWidget {
 
 class PrivacySettingsStep extends StatefulWidget {
   final GlobalKey<FormState> formKey;
+
   final List<EventPrivacyRule> eventPrivacyRules;
   final Function setPrivacyRule;
   final EventPrivacyRule initPrivacyRule;
+
+  final List<EventRecurringRule> eventRecurringRules;
+  final Function setRecurringRule;
+  final EventRecurringRule initRecurringRule;
 
   PrivacySettingsStep({
     @required this.formKey,
     @required this.eventPrivacyRules,
     @required this.setPrivacyRule,
     @required this.initPrivacyRule,
+    @required this.eventRecurringRules,
+    @required this.setRecurringRule,
+    @required this.initRecurringRule,
   });
 
   @override
@@ -635,26 +675,40 @@ class PrivacySettingsStep extends StatefulWidget {
         eventPrivacyRules: eventPrivacyRules,
         setPrivacyRule: setPrivacyRule,
         initPrivacyRule: initPrivacyRule,
+        eventRecurringRules: eventRecurringRules,
+        setRecurringRule: setRecurringRule,
+        initRecurringRule: initRecurringRule,
       );
 }
 
 class PrivacySettingsStepState extends State<PrivacySettingsStep> {
   final GlobalKey<FormState> formKey;
+
   final List<EventPrivacyRule> eventPrivacyRules;
   final Function setPrivacyRule;
   final EventPrivacyRule initPrivacyRule;
+
+  final List<EventRecurringRule> eventRecurringRules;
+  final Function setRecurringRule;
+  final EventRecurringRule initRecurringRule;
+
   var _privacyRule;
+  var _recurringRule;
 
   PrivacySettingsStepState({
     @required this.formKey,
     @required this.eventPrivacyRules,
     @required this.setPrivacyRule,
     @required this.initPrivacyRule,
+    @required this.eventRecurringRules,
+    @required this.setRecurringRule,
+    @required this.initRecurringRule,
   });
 
   @override
   void initState() {
     _privacyRule = initPrivacyRule;
+    _recurringRule = initRecurringRule;
     super.initState();
   }
 
@@ -665,6 +719,36 @@ class PrivacySettingsStepState extends State<PrivacySettingsStep> {
       child: Column(
         children: [
           SizedBox(height: 2.0),
+          DropdownButtonFormField<EventRecurringRule>(
+            autovalidateMode: AutovalidateMode.onUserInteraction,
+            isExpanded: true,
+            decoration: InputDecoration(
+              border: OutlineInputBorder(),
+              labelText: 'Recurring Settings',
+            ),
+            value: _recurringRule,
+            items: eventRecurringRules.map((recurringRule) {
+              return DropdownMenuItem<EventRecurringRule>(
+                value: recurringRule,
+                child: Text(recurringRule.name),
+              );
+            }).toList(),
+            onChanged: (EventRecurringRule newValue) {
+              setState(() {
+                _recurringRule = newValue;
+                setRecurringRule(newValue);
+              });
+            },
+          ),
+          SizedBox(height: 8.0),
+          Text(
+            _recurringRule.description,
+            style: TextStyle(
+              fontSize: 14,
+              color: Colors.grey[600],
+            ),
+          ),
+          SizedBox(height: 16.0),
           DropdownButtonFormField<EventPrivacyRule>(
             autovalidateMode: AutovalidateMode.onUserInteraction,
             isExpanded: true,
