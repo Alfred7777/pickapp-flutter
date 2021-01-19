@@ -152,7 +152,9 @@ class MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: mapScreenTopBar(context, _mapBloc),
+      appBar: MapScreenTopBar(
+        mapBloc: _mapBloc,
+      ),
       extendBodyBehindAppBar: true,
       body: BlocListener<MapBloc, MapState>(
         bloc: _mapBloc,

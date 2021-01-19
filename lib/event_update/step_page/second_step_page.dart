@@ -78,7 +78,9 @@ class SecondStepPageState extends State<SecondStepPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: sideScreenTopBar(context),
+      appBar: SideScreenTopBar(
+        title: 'Edit Event',
+      ),
       body: SafeArea(
         child: SecondStepForm(
           eventPos: eventPos,

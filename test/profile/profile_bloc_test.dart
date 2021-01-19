@@ -14,22 +14,44 @@ void main() {
   group('ProfileBloc', () {
     blocTest(
       'emits nothing when nothing is added',
-      build: () async => ProfileBloc(userRepository: UserRepository()),
+      build: () async => ProfileBloc(
+        userRepository: UserRepository(),
+        userID: null,
+      ),
       expect: [],
     );
 
-    blocTest('starts with InitialProfileState',
-        build: () async => ProfileBloc(userRepository: _userRepositoryMock),
-        expect: [],
-        verify: (bloc) async {
-          expect(bloc.state, equals(InitialProfileState()));
-        });
+    blocTest(
+      'starts with InitialProfileState',
+      build: () async => ProfileBloc(
+        userRepository: _userRepositoryMock,
+        userID: null,
+      ),
+      expect: [],
+      verify: (bloc) async {
+        expect(bloc.state, equals(ProfileUninitialized()));
+      },
+    );
 
-    blocTest('emits ProfileLoaded after FetchProfile is called',
-        build: () async => ProfileBloc(userRepository: _userRepositoryMock),
-        act: (bloc) => bloc.add(FetchProfile(userID: _userId)),
-        verify: (bloc) async {
-          expect(bloc.state, equals(ProfileLoaded(details: null)));
-        });
+    blocTest(
+      'emits ProfileLoaded after FetchProfile is called',
+      build: () async => ProfileBloc(
+        userRepository: _userRepositoryMock,
+        userID: null,
+      ),
+      act: (bloc) => bloc.add(FetchProfile(userID: _userId)),
+      verify: (bloc) async {
+        expect(
+          bloc.state,
+          equals(
+            ProfileReady(
+              details: null,
+              stats: null,
+              pictureUploadUrl: null,
+            ),
+          ),
+        );
+      },
+    );
   });
 }

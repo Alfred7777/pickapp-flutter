@@ -32,7 +32,9 @@ class CreateEventFormScreenState extends State<CreateEventFormScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: sideScreenTopBar(context),
+      appBar: SideScreenTopBar(
+        title: 'Create Event',
+      ),
       body: SafeArea(
         child: CreateEventFormScrollable(
           location: location,

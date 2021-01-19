@@ -136,7 +136,9 @@ class MyEvents extends StatelessWidget {
       length: 3,
       initialIndex: 1,
       child: Scaffold(
-        appBar: mainScreenTopBar(context),
+        appBar: MainScreenTopBar(
+          title: 'My Events',
+        ),
         body: SafeArea(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,

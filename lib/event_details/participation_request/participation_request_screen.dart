@@ -91,7 +91,9 @@ class ParticipationRequestScreenState
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: sideScreenTopBar(context),
+      appBar: SideScreenTopBar(
+        title: 'Participation Requests',
+      ),
       body: SafeArea(
         child:
             BlocListener<ParticipationRequestBloc, ParticipationRequestState>(

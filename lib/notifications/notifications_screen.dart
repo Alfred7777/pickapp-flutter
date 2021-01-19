@@ -89,7 +89,9 @@ class NotificationsScreenState extends State<NotificationsScreen> {
           }
           if (state is NotificationsReady) {
             return Scaffold(
-              appBar: mainScreenTopBar(context),
+              appBar: MainScreenTopBar(
+                title: 'Notifications',
+              ),
               body: SafeArea(
                 child: RefreshIndicator(
                   onRefresh: _refreshView,

@@ -51,7 +51,9 @@ class FirstStepPageState extends State<FirstStepPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: sideScreenTopBar(context),
+      appBar: SideScreenTopBar(
+        title: 'Edit Event',
+      ),
       body: SafeArea(
         child: FirstStepForm(
           initialDetails: initialDetails,

@@ -11,12 +11,18 @@ class UnreadNotificationsCountSocket {
   final String topic = 'unread_notifications_count';
   final String incomingEventName = 'new_count';
 
-  UnreadNotificationsCountSocket(
-      {@required this.authToken, @required this.bottomNavbarBloc});
+  UnreadNotificationsCountSocket({
+    @required this.authToken,
+    @required this.bottomNavbarBloc,
+  });
 
   Future<void> connect() async {
-    final socket = PhoenixSocket(socketUrl,
-        socketOptions: PhoenixSocketOptions(params: {'auth_token': authToken}));
+    final socket = PhoenixSocket(
+      socketUrl,
+      socketOptions: PhoenixSocketOptions(
+        params: {'auth_token': authToken},
+      ),
+    );
     await socket.connect();
 
     final channel = socket.channel(topic, {});
@@ -28,7 +34,8 @@ class UnreadNotificationsCountSocket {
   PhoenixMessageCallback handleNewNotificationsCount(
       Map payload, String _ref, String _joinRef) {
     var newCount = payload['count'];
-    bottomNavbarBloc
-        .add(NotificationsCountUpdated(newUnreadNotificationsCount: newCount));
+    bottomNavbarBloc.add(
+      NotificationsCountUpdated(newUnreadNotificationsCount: newCount),
+    );
   }
 }
