@@ -40,6 +40,7 @@ class CreateEventFormBloc
         endDate: event.eventEndDate,
         allowInvitations: event.allowInvitations,
         requireParticipationAcceptation: event.requireParticipationAcceptation,
+        recurrenceIntervalInSeconds: event.recurrenceIntervalInSeconds,
       );
       if (response == 'Event successfully created.') {
         yield CreateEventFormCreated(

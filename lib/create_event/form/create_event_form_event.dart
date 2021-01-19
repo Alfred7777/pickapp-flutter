@@ -24,6 +24,7 @@ class CreateEventButtonPressed extends CreateEventFormEvent {
   final DateTime eventEndDate;
   final bool allowInvitations;
   final bool requireParticipationAcceptation;
+  final int recurrenceIntervalInSeconds;
 
   const CreateEventButtonPressed({
     @required this.disciplines,
@@ -36,6 +37,7 @@ class CreateEventButtonPressed extends CreateEventFormEvent {
     @required this.eventEndDate,
     @required this.allowInvitations,
     @required this.requireParticipationAcceptation,
+    @required this.recurrenceIntervalInSeconds,
   });
 
   @override
@@ -50,5 +52,6 @@ class CreateEventButtonPressed extends CreateEventFormEvent {
         eventEndDate,
         allowInvitations,
         requireParticipationAcceptation,
+        recurrenceIntervalInSeconds,
       ];
 }

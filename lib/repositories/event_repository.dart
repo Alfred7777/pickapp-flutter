@@ -33,6 +33,7 @@ class EventRepository {
     @required DateTime endDate,
     @required bool allowInvitations,
     @required bool requireParticipationAcceptation,
+    @required int recurrenceIntervalInSeconds,
   }) async {
     var client = AuthenticatedApiClient();
 
@@ -49,6 +50,7 @@ class EventRepository {
         'allow_invitations': allowInvitations,
         'require_participation_acceptation': requireParticipationAcceptation,
       },
+      'recurrence_interval_in_seconds': recurrenceIntervalInSeconds,
     };
 
     body.removeWhere((key, value) {
@@ -367,6 +369,7 @@ class EventDetails {
   final bool isOrganiser;
   final bool allowInvitations;
   final bool requireParticipationAcceptation;
+  final int recurrenceIntervalInSeconds;
 
   EventDetails(
     this.id,
@@ -380,6 +383,7 @@ class EventDetails {
     this.isOrganiser,
     this.allowInvitations,
     this.requireParticipationAcceptation,
+    this.recurrenceIntervalInSeconds,
   );
 
   factory EventDetails.fromJson(Map<String, dynamic> json) {
@@ -395,6 +399,7 @@ class EventDetails {
       json['participation']['is_organiser?'],
       json['settings']['allow_invitations'],
       json['settings']['require_participation_acceptation'],
+      json['recurrence_interval_in_seconds'],
     );
   }
 }
@@ -487,5 +492,56 @@ class EventPrivacyRule {
     } else {
       return _eventPrivacyRules[1];
     }
+  }
+}
+
+class EventRecurringRule {
+  final String id;
+  final String name;
+  final String description;
+  final int recurrenceIntervalInSeconds;
+
+  static final secondsInDay = 24 * 60 * 60;
+
+  EventRecurringRule(
+    this.id,
+    this.name,
+    this.description,
+    this.recurrenceIntervalInSeconds,
+  );
+
+  @override
+  bool operator ==(dynamic other) =>
+      other is EventRecurringRule && id == other.id;
+
+  @override
+  int get hashCode => super.hashCode;
+
+  static String getRuleName(int recurrenceIntervalInSeconds) {
+    var availableRules = getEventRecurringRules();
+
+    for (var i = 0; i < availableRules.length; i++) {
+      if (availableRules[i].recurrenceIntervalInSeconds ==
+          recurrenceIntervalInSeconds) {
+        return availableRules[i].name;
+      }
+    }
+    return availableRules[0].name;
+  }
+
+  static List<EventRecurringRule> getEventRecurringRules() {
+    var none = EventRecurringRule('1', 'None', 'Event would not repeat', null);
+    var daily = EventRecurringRule(
+        '2', 'Daily', 'Event will repeat every day', secondsInDay);
+    var weekly = EventRecurringRule(
+        '3', 'Weekly', 'Event will repeat every week', 7 * secondsInDay);
+
+    var monthly = EventRecurringRule(
+        '4', 'Monthly', 'Event will repeat every month', 30 * secondsInDay);
+
+    var yearly = EventRecurringRule(
+        '5', 'Yearly', 'Event will repeat every year', 365 * secondsInDay);
+
+    return [none, daily, weekly, monthly, yearly];
   }
 }
