@@ -30,3 +30,10 @@ class LeaveEvent extends EventDetailsEvent {
   @override
   List<Object> get props => [eventID];
 }
+
+class CancelParticipationRequestInEvent extends EventDetailsEvent {
+  CancelParticipationRequestInEvent(String eventID) : super(eventID: eventID);
+
+  @override
+  List<Object> get props => [eventID];
+}

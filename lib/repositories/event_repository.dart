@@ -172,6 +172,19 @@ class EventRepository {
     }
   }
 
+  Future<String> cancelParticipationRequest(String eventID) async {
+    final client = AuthenticatedApiClient();
+    final url = 'events/$eventID/participation_request/cancel';
+
+    var response = await client.delete(url);
+
+    if (response.statusCode == 201) {
+      return 'Successfully canceled participation request in event.';
+    } else {
+      return json.decode(response.body)['message'];
+    }
+  }
+
   Future<String> inviteToEvent(String eventID, String inviteeID) async {
     final client = AuthenticatedApiClient();
     final url = 'events/$eventID/invite';
