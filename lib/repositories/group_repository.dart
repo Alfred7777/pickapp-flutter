@@ -250,7 +250,7 @@ class GroupRepository {
 
   void answerInvitation(GroupInvitation groupInvitation, String answer) async {
     final client = AuthenticatedApiClient();
-    final url = 'my_invitations/${groupInvitation.id}/${answer}';
+    final url = 'groups/my_invitations/${groupInvitation.id}/${answer}';
 
     var response = await client.post(url);
 
