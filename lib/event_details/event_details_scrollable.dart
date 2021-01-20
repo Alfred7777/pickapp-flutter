@@ -72,6 +72,8 @@ class EventDetailsScrollableState extends State<EventDetailsScrollable> {
       _eventDetailsBloc.add(JoinEvent(eventID));
     } else if (request == 'leave') {
       _eventDetailsBloc.add(LeaveEvent(eventID));
+    } else if (request == 'cancel') {
+      _eventDetailsBloc.add(CancelParticipationRequestInEvent(eventID));
     }
   }
 
@@ -591,6 +593,9 @@ class EventMainButton extends StatelessWidget {
           if (text == 'joinable') {
             notifyParent('join');
           }
+          if (text == 'requested') {
+            notifyParent('cancel');
+          }
         },
         color: text == 'joined'
             ? Colors.redAccent
@@ -601,7 +606,7 @@ class EventMainButton extends StatelessWidget {
           text == 'joined'
               ? 'LEAVE'
               : text == 'requested'
-                  ? 'REQUESTED'
+                  ? 'CANCEL'
                   : 'JOIN',
           style: TextStyle(
             color: Colors.white,

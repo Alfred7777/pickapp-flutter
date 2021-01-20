@@ -28,6 +28,10 @@ class EventDetailsBloc extends Bloc<EventDetailsEvent, EventDetailsState> {
       if (event is LeaveEvent) {
         await eventRepository.leaveEvent(event.eventID);
       }
+      if (event is CancelParticipationRequestInEvent) {
+        await eventRepository.cancelParticipationRequest(event.eventID);
+      }
+
       var eventDetails = await eventRepository.getEventDetails(event.eventID);
       var participantsList = await eventRepository.getEventParticipants(
         event.eventID,
