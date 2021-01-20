@@ -219,6 +219,7 @@ class MyGroups extends StatelessWidget {
                       onRefresh: refreshView,
                       child: GroupList(
                         groups: groups,
+                        refreshView: refreshView,
                       ),
                     ),
                   ],
@@ -250,7 +251,42 @@ class GroupInvitationList extends StatelessWidget {
       itemBuilder: (BuildContext context, int index) {
         return GroupInvitationBar(
           groupInvitation: groupInvitations[index],
-          answerInvitation: answerInvitation,
+          actionList: [
+            MaterialButton(
+              onPressed: () => answerInvitation(
+                groupInvitations[index],
+                'Accept',
+              ),
+              elevation: 0,
+              height: 42,
+              minWidth: 42,
+              materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              color: Colors.transparent,
+              shape: CircleBorder(),
+              child: Icon(
+                Icons.check,
+                size: 30,
+                color: Colors.green,
+              ),
+            ),
+            MaterialButton(
+              onPressed: () => answerInvitation(
+                groupInvitations[index],
+                'Reject',
+              ),
+              elevation: 0,
+              height: 42,
+              minWidth: 42,
+              materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              color: Colors.transparent,
+              shape: CircleBorder(),
+              child: Icon(
+                Icons.clear,
+                size: 30,
+                color: Colors.red,
+              ),
+            ),
+          ],
         );
       },
     );
@@ -259,9 +295,11 @@ class GroupInvitationList extends StatelessWidget {
 
 class GroupList extends StatelessWidget {
   final List<Group> groups;
+  final Function refreshView;
 
   const GroupList({
     @required this.groups,
+    @required this.refreshView,
   });
 
   @override
@@ -273,6 +311,7 @@ class GroupList extends StatelessWidget {
       itemBuilder: (BuildContext context, int index) {
         return GroupBar(
           group: groups[index],
+          refreshView: refreshView,
         );
       },
     );

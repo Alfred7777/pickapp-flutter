@@ -3,52 +3,55 @@ import 'package:PickApp/repositories/group_repository.dart';
 
 class GroupInvitationBar extends StatelessWidget {
   final GroupInvitation groupInvitation;
-  final Function answerInvitation;
+  final List<MaterialButton> actionList;
 
   const GroupInvitationBar({
     @required this.groupInvitation,
-    @required this.answerInvitation,
+    @required this.actionList,
   });
 
   @override
   Widget build(BuildContext context) {
-    var screenSize = MediaQuery.of(context).size;
     return Padding(
       padding: EdgeInsets.symmetric(
-        horizontal: 0.03 * screenSize.width,
-        vertical: 0.006 * screenSize.height,
+        horizontal: 8,
+        vertical: 2,
       ),
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(8.0),
+        borderRadius: BorderRadius.circular(8),
         child: Material(
           color: Colors.transparent,
           child: InkWell(
             borderRadius: BorderRadius.all(
-              Radius.circular(8.0),
+              Radius.circular(8),
             ),
-            onTap: () {
-              showDialog(
-                context: context,
-                builder: (BuildContext context) {
-                  return InvitationDialog(
-                    groupInvitation: groupInvitation,
-                    answerInvitation: answerInvitation,
-                  );
-                },
-              );
-            },
+            onTap: () {},
             child: Padding(
-              padding: EdgeInsets.symmetric(
-                vertical: 0.01 * screenSize.height,
-                horizontal: 0.02 * screenSize.width,
+              padding: EdgeInsets.only(
+                top: 8,
+                bottom: 8,
+                left: 6,
               ),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
+                  Container(
+                    height: 42,
+                    width: 42,
+                    decoration: BoxDecoration(
+                      image: DecorationImage(
+                        fit: BoxFit.fill,
+                        image: AssetImage(
+                          'assets/images/icons/group/group_icon.png',
+                        ),
+                      ),
+                    ),
+                  ),
                   Expanded(
                     child: Padding(
                       padding: EdgeInsets.only(
-                        left: 0.04 * screenSize.width,
+                        left: 14,
+                        right: 4,
                       ),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -59,8 +62,8 @@ class GroupInvitationBar extends StatelessWidget {
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(
-                              color: Color(0xFF3D3A3A),
-                              fontSize: 0.05 * screenSize.width,
+                              color: Colors.grey[800],
+                              fontSize: 18,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
@@ -69,194 +72,23 @@ class GroupInvitationBar extends StatelessWidget {
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(
-                              color: Color(0xFFA7A7A7),
-                              fontSize: 0.034 * screenSize.width,
+                              color: Colors.grey,
+                              fontSize: 12,
                             ),
                           ),
                         ],
                       ),
                     ),
                   ),
+                  ButtonBar(
+                    mainAxisSize: MainAxisSize.min,
+                    buttonPadding: EdgeInsets.zero,
+                    children: actionList,
+                  ),
                 ],
               ),
             ),
           ),
-        ),
-      ),
-    );
-  }
-}
-
-class InvitationDialog extends StatelessWidget {
-  final GroupInvitation groupInvitation;
-  final Function answerInvitation;
-
-  const InvitationDialog({
-    @required this.groupInvitation,
-    @required this.answerInvitation,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    var screenSize = MediaQuery.of(context).size;
-    return Padding(
-      padding: EdgeInsets.only(
-        top: 0.21 * screenSize.height,
-        bottom: 0.055 * screenSize.height,
-        left: 0.05 * screenSize.width,
-        right: 0.05 * screenSize.width,
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(0.02 * screenSize.width),
-        child: Material(
-          color: Colors.grey[100],
-          child: Stack(
-            children: [
-              InvitationDetails(
-                groupInvitation: groupInvitation,
-              ),
-              Positioned(
-                bottom: 0,
-                child: Container(
-                  height: 76,
-                  width: 0.9 * screenSize.width,
-                  color: Colors.black.withOpacity(0.6),
-                  child: ButtonBar(
-                    mainAxisSize: MainAxisSize.min,
-                    alignment: MainAxisAlignment.spaceEvenly,
-                    buttonPadding: EdgeInsets.zero,
-                    children: [
-                      InvitationButton(
-                        groupInvitation: groupInvitation,
-                        text: 'Accept',
-                        color: Colors.green,
-                        notifyParent: answerInvitation,
-                      ),
-                      InvitationButton(
-                        groupInvitation: groupInvitation,
-                        text: 'Reject',
-                        color: Colors.red,
-                        notifyParent: answerInvitation,
-                      ),
-                    ],
-                  ),
-                ),
-              )
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class InvitationDetails extends StatelessWidget {
-  final GroupInvitation groupInvitation;
-
-  const InvitationDetails({
-    @required this.groupInvitation,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    var screenSize = MediaQuery.of(context).size;
-    return Column(
-      children: [
-        Padding(
-          padding: EdgeInsets.only(
-            top: 0.012 * screenSize.height,
-          ),
-          child: Text(
-            groupInvitation.groupDetails.name,
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              color: Colors.grey[850],
-              fontSize: 0.072 * screenSize.width,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        ),
-        Align(
-          alignment: Alignment.centerLeft,
-          child: Padding(
-            padding: EdgeInsets.only(
-              top: 0.02 * screenSize.height,
-              left: 0.05 * screenSize.width,
-              right: 0.03 * screenSize.width,
-            ),
-            child: Text(
-              'About',
-              style: TextStyle(
-                color: Color(0xFF3D3A3A),
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
-        ),
-        Padding(
-          padding: EdgeInsets.symmetric(
-            horizontal: 0.03 * screenSize.width,
-          ),
-          child: Divider(
-            color: Colors.grey[500],
-          ),
-        ),
-        Align(
-          alignment: Alignment.centerLeft,
-          child: Padding(
-            padding: EdgeInsets.only(
-              left: 0.05 * screenSize.width,
-              right: 0.03 * screenSize.width,
-            ),
-            child: Text(
-              groupInvitation.groupDetails.description ?? '',
-              style: TextStyle(
-                color: Color(0xFF3D3A3A),
-                fontSize: 15,
-              ),
-            ),
-          ),
-        ),
-        SizedBox(
-          height: 0.14 * screenSize.height,
-        ),
-      ],
-    );
-  }
-}
-
-class InvitationButton extends StatelessWidget {
-  final GroupInvitation groupInvitation;
-  final String text;
-  final Color color;
-  final Function notifyParent;
-
-  const InvitationButton({
-    @required this.groupInvitation,
-    @required this.text,
-    @required this.color,
-    @required this.notifyParent,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    var screenSize = MediaQuery.of(context).size;
-    return MaterialButton(
-      height: 40,
-      minWidth: 0.24 * screenSize.width,
-      onPressed: () => notifyParent(groupInvitation, text),
-      color: color,
-      child: Text(
-        text,
-        style: TextStyle(
-          color: Colors.white,
-          fontSize: 0.024 * screenSize.height,
-        ),
-      ),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(
-          0.02 * screenSize.width,
         ),
       ),
     );

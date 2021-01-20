@@ -398,11 +398,11 @@ class EventDate extends StatelessWidget {
             ),
           ),
           Text(
-            DateFormat.Hm().add_EEEE().format(date) +
-                ', ' +
-                DateFormat.MMMMd().format(date) +
-                ', ' +
-                DateFormat.y().format(date),
+            [
+              DateFormat.Hm().add_EEEE().format(date),
+              DateFormat.MMMMd().format(date),
+              DateFormat.y().format(date),
+            ].join(', '),
             style: TextStyle(
               color: Colors.grey[800],
               fontSize: 14,
