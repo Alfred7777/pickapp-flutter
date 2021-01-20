@@ -28,7 +28,15 @@ class FilterMapBloc extends Bloc<FilterMapEvent, FilterMapState> {
       return;
     }
     if (event is ApplyFilter) {
-      mapBloc.add(FilterMapByDiscipline(disciplineId: event.disciplineId));
+      mapBloc.add(
+        FilterMap(
+          disciplineIDs: event.disciplineIDs,
+          filterByDate: event.filterByDate,
+          fromDate: event.fromDate,
+          toDate: event.toDate,
+          visibility: event.visibility,
+        ),
+      );
     }
     if (event is RevokeFilter) {
       mapBloc.add(FetchMap());

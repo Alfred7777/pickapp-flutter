@@ -149,8 +149,6 @@ class UserRepository {
 
     var response = await client.get(url);
 
-    print(response.statusCode);
-
     if (response.statusCode == 200) {
       return json.decode(response.body)['url'];
     } else {

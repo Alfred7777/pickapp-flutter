@@ -25,22 +25,40 @@ class MapBloc extends Bloc<MapEvent, MapState> {
         yield MapReady(
           markers: _markers,
           fluster: _fluster,
+          activeFilters: <String, dynamic>{
+            'discipline_ids': <String>[],
+            'filter_by_date': false,
+            'from_date': null,
+            'to_date': null,
+            'visibility': 'events_and_locations',
+          },
         );
       } catch (exception) {
         yield FetchMapFailure(error: exception.message);
       }
     }
-    if (event is FilterMapByDiscipline) {
+    if (event is FilterMap) {
       yield MapLoading();
       try {
         var _filteredMarkers = await mapRepository.getMap(
-          event.disciplineId,
+          disciplineIDs: event.disciplineIDs,
+          fromDate: event.fromDate,
+          toDate: event.toDate,
+          visibility: event.visibility,
         );
+
         var _fluster = MarkerClusters.initFluster(_filteredMarkers);
 
         yield MapReady(
           markers: _filteredMarkers,
           fluster: _fluster,
+          activeFilters: <String, dynamic>{
+            'discipline_ids': event.disciplineIDs,
+            'filter_by_date': event.filterByDate,
+            'from_date': event.fromDate,
+            'to_date': event.toDate,
+            'visibility': event.visibility,
+          },
         );
       } catch (exception) {
         yield FetchMapFailure(error: exception.message);

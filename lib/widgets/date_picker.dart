@@ -12,6 +12,7 @@ class TextFieldDateTimePicker extends StatefulWidget {
   final Icon prefixIcon;
   final AutovalidateMode autovalidateMode;
   final FormFieldValidator validator;
+  final bool enabled;
 
   TextFieldDateTimePicker({
     this.labelText,
@@ -24,9 +25,11 @@ class TextFieldDateTimePicker extends StatefulWidget {
     @required this.lastDate,
     @required this.initialDate,
     @required this.onDateChanged,
+    @required this.enabled,
   })  : assert(initialDate != null),
         assert(firstDate != null),
         assert(lastDate != null),
+        assert(enabled != null),
         assert(!initialDate.isBefore(firstDate),
             'initialDate must be on or after firstDate'),
         assert(!initialDate.isAfter(lastDate),
@@ -65,6 +68,7 @@ class TextFieldDateTimePickerState extends State<TextFieldDateTimePicker> {
   Widget build(BuildContext context) {
     return TextFormField(
       autovalidateMode: widget.autovalidateMode ?? AutovalidateMode.disabled,
+      enabled: widget.enabled,
       focusNode: widget.focusNode,
       controller: _dateController,
       decoration: InputDecoration(
@@ -87,6 +91,9 @@ class TextFieldDateTimePickerState extends State<TextFieldDateTimePicker> {
       onTap: () => _selectDate(context),
       readOnly: true,
       validator: widget.validator,
+      style: TextStyle(
+        color: widget.enabled ? Colors.grey[800] : Colors.grey[400],
+      ),
     );
   }
 

@@ -10,11 +10,27 @@ class MapEvent extends Equatable {
 
 class FetchMap extends MapEvent {}
 
-class FilterMapByDiscipline extends MapEvent {
-  final String disciplineId;
+class FilterMap extends MapEvent {
+  final List<String> disciplineIDs;
+  final bool filterByDate;
+  final DateTime fromDate;
+  final DateTime toDate;
+  final String visibility;
 
-  const FilterMapByDiscipline({@required this.disciplineId});
+  const FilterMap({
+    @required this.disciplineIDs,
+    @required this.filterByDate,
+    @required this.fromDate,
+    @required this.toDate,
+    @required this.visibility,
+  });
 
   @override
-  List<Object> get props => [disciplineId];
+  List<Object> get props => [
+        disciplineIDs,
+        filterByDate,
+        fromDate,
+        toDate,
+        visibility,
+      ];
 }

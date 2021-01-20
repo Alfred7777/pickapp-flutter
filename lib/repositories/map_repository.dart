@@ -7,17 +7,27 @@ import 'package:fluster/fluster.dart';
 import 'package:PickApp/client.dart';
 
 class MapRepository {
-  Future<List<MapMarker>> getMap([String disciplineId]) async {
+  Future<List<MapMarker>> getMap({
+    List<String> disciplineIDs,
+    DateTime fromDate,
+    DateTime toDate,
+    String visibility,
+  }) async {
     final client = AuthenticatedApiClient();
     var url = 'map';
-    var queryParams;
-    if (disciplineId != null) {
-      queryParams = {
-        'discipline_ids[]': [
-          '$disciplineId',
-        ],
-      };
-    }
+    var queryParams = <String, dynamic>{
+      'discipline_ids[]': disciplineIDs,
+      'from_ms': '${fromDate?.toUtc()?.millisecondsSinceEpoch}',
+      'to_ms': '${toDate?.toUtc()?.millisecondsSinceEpoch}',
+      'visibility': '$visibility',
+    };
+
+    queryParams.removeWhere((key, value) {
+      if (key == null || value == null || value == 'null') {
+        return true;
+      }
+      return false;
+    });
 
     var response = await client.get(url, queryParams: queryParams);
 

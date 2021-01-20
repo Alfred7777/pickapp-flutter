@@ -21,7 +21,9 @@ class CreateEventMapBloc
       try {
         yield CreateEventMapLoading();
 
-        var _locations = await mapRepository.getMap();
+        var _locations = await mapRepository.getMap(
+          visibility: 'locations',
+        );
         var _locationFluster = MarkerClusters.initFluster(_locations);
 
         yield CreateEventMapReady(

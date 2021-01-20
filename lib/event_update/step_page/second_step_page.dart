@@ -341,6 +341,7 @@ class DateAndPrivacyFormState extends State<DateAndPrivacyForm> {
           TextFieldDateTimePicker(
             autovalidateMode: AutovalidateMode.onUserInteraction,
             labelText: 'Start date',
+            enabled: true,
             prefixIcon: Icon(
               Icons.date_range,
               color: Colors.grey[850],
@@ -359,6 +360,7 @@ class DateAndPrivacyFormState extends State<DateAndPrivacyForm> {
           TextFieldDateTimePicker(
             autovalidateMode: AutovalidateMode.onUserInteraction,
             labelText: 'End date',
+            enabled: true,
             prefixIcon: Icon(
               Icons.date_range,
               color: Colors.grey[850],

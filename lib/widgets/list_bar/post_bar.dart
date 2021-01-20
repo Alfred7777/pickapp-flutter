@@ -147,6 +147,7 @@ class PostContent extends StatelessWidget {
           ),
           child: Text(
             content,
+            textAlign: TextAlign.left,
             style: TextStyle(
               color: Colors.grey[800],
               fontSize: 15,

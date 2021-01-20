@@ -104,7 +104,6 @@ class CreateEventMapScreenState extends State<CreateEventMapScreen> {
         bloc: _createEventMapBloc,
         listener: (context, state) {
           if (state is FetchLocationsFailure) {
-            Navigator.pop(context);
             Scaffold.of(context).showSnackBar(
               SnackBar(
                 content: Text('${state.error}'),

@@ -137,7 +137,7 @@ class MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
 
       var _clusters = await MarkerClusters.getMarkers(
         _mapController,
-        _mapBloc.state.props.last,
+        _mapBloc.state.props[1],
         _extendedBounds,
         _currentZoom,
         true,
