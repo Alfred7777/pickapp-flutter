@@ -270,6 +270,7 @@ class SearchResults extends StatelessWidget {
           if (searchType == 'groups') {
             return GroupBar(
               group: searchResult[index],
+              refreshView: () {},
             );
           }
         },

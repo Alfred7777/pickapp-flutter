@@ -1,45 +1,65 @@
-import 'package:PickApp/repositories/group_repository.dart';
 import 'package:flutter/material.dart';
+import 'package:PickApp/repositories/group_repository.dart';
+import 'package:PickApp/group_details/group_details_screen.dart';
 
 class GroupBar extends StatelessWidget {
   final Group group;
+  final Function refreshView;
 
   const GroupBar({
     @required this.group,
+    @required this.refreshView,
   });
 
   @override
   Widget build(BuildContext context) {
-    var screenSize = MediaQuery.of(context).size;
     return Padding(
       padding: EdgeInsets.symmetric(
-        horizontal: 0.03 * screenSize.width,
-        vertical: 0.006 * screenSize.height,
+        horizontal: 8,
+        vertical: 2,
       ),
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(8.0),
+        borderRadius: BorderRadius.circular(8),
         child: Material(
           color: Colors.transparent,
           child: InkWell(
             borderRadius: BorderRadius.all(
-              Radius.circular(8.0),
+              Radius.circular(8),
             ),
-            onTap: () {
-              // redirect to group screen will be added in the future
+            onTap: () async {
+              var route = MaterialPageRoute<void>(
+                builder: (context) => GroupDetailsScreen(
+                  groupID: group.id,
+                ),
+              );
+              await Navigator.push(context, route);
+              refreshView();
             },
             child: Padding(
               padding: EdgeInsets.symmetric(
-                vertical: 0.01 * screenSize.height,
-                horizontal: 0.02 * screenSize.width,
+                vertical: 8,
+                horizontal: 6,
               ),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
+                  Container(
+                    height: 42,
+                    width: 42,
+                    decoration: BoxDecoration(
+                      image: DecorationImage(
+                        fit: BoxFit.fill,
+                        image: AssetImage(
+                          'assets/images/icons/group/group_icon.png',
+                        ),
+                      ),
+                    ),
+                  ),
                   Expanded(
                     child: Padding(
                       padding: EdgeInsets.only(
-                        left: 0.06 * screenSize.width,
-                        right: 0.01 * screenSize.width,
+                        left: 14,
+                        right: 4,
                       ),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -51,7 +71,7 @@ class GroupBar extends StatelessWidget {
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(
                               color: Colors.grey[800],
-                              fontSize: 0.05 * screenSize.width,
+                              fontSize: 18,
                               fontWeight: FontWeight.bold,
                             ),
                           ),

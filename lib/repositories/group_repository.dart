@@ -27,6 +27,21 @@ class GroupRepository {
     }
   }
 
+  Future<String> deleteGroup(String groupID) async {
+    final client = AuthenticatedApiClient();
+    final url = 'groups/$groupID/delete';
+
+    var response = await client.delete(url);
+
+    if (response.statusCode == 201) {
+      return 'Successfully deleted group.';
+    } else {
+      throw Exception(
+        'Deleting this group failed! Please try again later.',
+      );
+    }
+  }
+
   Future<List<Group>> getMyGroups() async {
     var client = AuthenticatedApiClient();
     var url = 'groups/my_groups';
@@ -47,7 +62,7 @@ class GroupRepository {
 
   Future<Group> getGroupDetails(String groupID) async {
     final client = AuthenticatedApiClient();
-    final url = 'events/$groupID';
+    final url = 'groups/$groupID';
     var response = await client.get(url);
 
     if (response.statusCode == 200) {
@@ -56,6 +71,152 @@ class GroupRepository {
       throw Exception(
         'We can\'t show you this group right now. Please try again later.',
       );
+    }
+  }
+
+  Future<List<GroupPost>> getGroupPosts(String groupID) async {
+    var _userRepository = UserRepository();
+    final client = AuthenticatedApiClient();
+    final url = 'groups/$groupID/posts';
+
+    var response = await client.get(url);
+
+    if (response.statusCode == 201) {
+      // ignore: omit_local_variable_types
+      List<GroupPost> groupPosts = [];
+      for (var post in json.decode(response.body)) {
+        var _creator = await _userRepository.getProfileDetails(
+          post['user_id'],
+        );
+        groupPosts.add(GroupPost(
+          id: post['id'],
+          content: post['post_body'],
+          numberOfAnswers: post['comment_count'],
+          creator: _creator,
+        ));
+      }
+      return groupPosts;
+    } else {
+      throw Exception(
+        'We can\'t show you this group posts right now. Please try again later.',
+      );
+    }
+  }
+
+  Future<List<PostComment>> getPostComments(
+      String groupID, String postID) async {
+    var _userRepository = UserRepository();
+    final client = AuthenticatedApiClient();
+    final url = 'groups/$groupID/$postID/comments';
+
+    var response = await client.get(url);
+
+    print(response.statusCode);
+    print(response.body);
+
+    if (response.statusCode == 201) {
+      // ignore: omit_local_variable_types
+      List<PostComment> postAnswers = [];
+      for (var answer in json.decode(response.body)) {
+        var _creator = await _userRepository.getProfileDetails(
+          answer['user_id'],
+        );
+        postAnswers.add(PostComment(
+          id: answer['id'],
+          postID: answer['post_id'],
+          content: answer['comment_body'],
+          creator: _creator,
+        ));
+      }
+      return postAnswers;
+    } else {
+      throw Exception(
+        'We can\'t show you this group posts right now. Please try again later.',
+      );
+    }
+  }
+
+  Future<String> addGroupPost(
+    String groupID,
+    String content,
+  ) async {
+    final client = AuthenticatedApiClient();
+    final url = 'groups/$groupID/add_post';
+
+    var body = {
+      'post_body': '$content',
+    };
+
+    var response = await client.post(url, body: body);
+
+    if (response.statusCode == 201) {
+      return 'Post successfully added.';
+    } else {
+      throw Exception(
+        'Adding group post failed! Please try again later.',
+      );
+    }
+  }
+
+  Future<String> addPostAnswer(
+    String groupID,
+    String postID,
+    String content,
+  ) async {
+    final client = AuthenticatedApiClient();
+    final url = 'groups/$groupID/$postID/add_comment';
+
+    var body = {
+      'comment_body': '$content',
+    };
+
+    var response = await client.post(url, body: body);
+
+    if (response.statusCode == 201) {
+      return 'Post answer successfully added.';
+    } else {
+      throw Exception(
+        'Adding post answer failed! Please try again later.',
+      );
+    }
+  }
+
+  Future<List<User>> getGroupMembers(String groupID) async {
+    final client = AuthenticatedApiClient();
+    final url = 'groups/$groupID/members';
+
+    var response = await client.get(url);
+
+    if (response.statusCode == 200) {
+      return json
+          .decode(response.body)
+          .map<User>((member) => User.fromJson(member))
+          .toList();
+    } else {
+      throw Exception(
+        'We can\'t show you group members right now. Please try again later.',
+      );
+    }
+  }
+
+  void removeUser(String groupID, String userID) async {
+    // to be implemented when backend is ready
+  }
+
+  Future<String> inviteToGroup(String groupID, String inviteeID) async {
+    final client = AuthenticatedApiClient();
+    final url = 'groups/$groupID/invite';
+
+    var body = {
+      'invitee_id': '$inviteeID',
+    };
+
+    var response = await client.post(url, body: body);
+
+    if (response.statusCode == 201) {
+      return 'Successfully invited user to group.';
+    } else {
+      throw Exception(json.decode(response.body)['message']);
     }
   }
 
@@ -124,11 +285,15 @@ class Group {
   final String id;
   final String name;
   final String description;
+  final String ownerID;
+  final bool isOwner;
 
   const Group({
     @required this.id,
     @required this.name,
     @required this.description,
+    @required this.ownerID,
+    @required this.isOwner,
   });
 
   factory Group.fromJson(Map<String, dynamic> json) {
@@ -136,6 +301,8 @@ class Group {
       id: json['id'],
       name: json['name'],
       description: json['description'],
+      ownerID: json['owner_id'],
+      isOwner: true, // change when data is returned
     );
   }
 }
@@ -151,5 +318,37 @@ class GroupInvitation {
     @required this.inviteeID,
     @required this.groupDetails,
     @required this.inviter,
+  });
+}
+
+class GroupPost {
+  final String id;
+  final String content;
+  final int numberOfAnswers;
+  //final DateTime date;
+  final User creator;
+
+  const GroupPost({
+    @required this.id,
+    @required this.content,
+    @required this.numberOfAnswers,
+    //@required this.date,
+    @required this.creator,
+  });
+}
+
+class PostComment {
+  final String id;
+  final String postID;
+  final String content;
+  //final DateTime date;
+  final User creator;
+
+  const PostComment({
+    @required this.id,
+    @required this.postID,
+    @required this.content,
+    //@required this.date,
+    @required this.creator,
   });
 }
