@@ -41,6 +41,7 @@ class AuthenticationBloc
     if (event is LoggedOut) {
       yield AuthenticationLoading();
       await AuthenticationRepository.deleteToken();
+      await AuthenticationRepository.logOutWithFb();
       yield AuthenticationUnauthenticated();
     }
   }

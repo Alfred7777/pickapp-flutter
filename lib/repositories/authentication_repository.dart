@@ -69,6 +69,11 @@ class AuthenticationRepository {
     return null;
   }
 
+  static void logOutWithFb() {
+    final facebookLogin = FacebookLogin();
+    facebookLogin.logOut();
+  }
+
   static Future<String> getAuthToken() async {
     final authToken = await storage.read(key: 'jwt');
     if (authToken == null) return '';

@@ -1,3 +1,5 @@
+import 'package:PickApp/authentication/authentication_bloc.dart';
+import 'package:PickApp/authentication/authentication_event.dart';
 import 'package:PickApp/utils/choose_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -46,7 +48,9 @@ class ProfileScreenState extends State<ProfileScreen> {
   }
 
   void _logout() async {
-    // implement logout
+    BlocProvider.of<AuthenticationBloc>(context).add(
+      LoggedOut(),
+    );
   }
 
   void _updateProfilePicture() async {
