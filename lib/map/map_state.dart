@@ -17,16 +17,19 @@ class MapLoading extends MapState {}
 class MapReady extends MapState {
   final List<MapMarker> markers;
   final Fluster<MapMarker> fluster;
+  final Map<String, dynamic> activeFilters;
 
   const MapReady({
     @required this.markers,
     @required this.fluster,
+    @required this.activeFilters,
   });
 
   @override
   List<Object> get props => [
         markers,
         fluster,
+        activeFilters,
       ];
 }
 

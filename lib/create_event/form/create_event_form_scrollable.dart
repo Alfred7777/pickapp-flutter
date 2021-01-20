@@ -609,6 +609,7 @@ class DateStep extends StatelessWidget {
           TextFieldDateTimePicker(
             autovalidateMode: AutovalidateMode.onUserInteraction,
             labelText: 'Start date',
+            enabled: true,
             prefixIcon: Icon(
               Icons.date_range,
               color: Colors.grey[850],
@@ -627,6 +628,7 @@ class DateStep extends StatelessWidget {
           TextFieldDateTimePicker(
             autovalidateMode: AutovalidateMode.onUserInteraction,
             labelText: 'End date',
+            enabled: true,
             prefixIcon: Icon(
               Icons.date_range,
               color: Colors.grey[850],
@@ -743,6 +745,7 @@ class PrivacySettingsStepState extends State<PrivacySettingsStep> {
           SizedBox(height: 8.0),
           Text(
             _recurringRule.description,
+            textAlign: TextAlign.left,
             style: TextStyle(
               fontSize: 14,
               color: Colors.grey[600],
@@ -779,6 +782,7 @@ class PrivacySettingsStepState extends State<PrivacySettingsStep> {
           SizedBox(height: 8.0),
           Text(
             _privacyRule.description,
+            textAlign: TextAlign.left,
             style: TextStyle(
               fontSize: 14,
               color: Colors.grey[600],

@@ -24,12 +24,6 @@ void main() async {
     disciplineID: 'disciplineId',
   );
 
-  var _anotherEventMarker = MapMarker(
-    id: 'id3',
-    position: LatLng(40.50, 75.50),
-    disciplineID: 'anotherDisciplineId',
-  );
-
   var fetchMapError =
       'We can\'t show you map right now. Please try again later.';
 
@@ -105,36 +99,6 @@ void main() async {
             ),
           ),
         );
-      },
-    );
-
-    blocTest(
-      'emits [Map Loading, MapReady] when FilterMapByDiscipline is added with correctly filtered locations',
-      build: () async {
-        when(_mapRepositoryMock.getMap('anotherDisciplineId'))
-            .thenAnswer((_) async => [_anotherEventMarker, _locationMarker]);
-        return MapBloc(mapRepository: _mapRepositoryMock);
-      },
-      act: (bloc) => bloc.add(
-        FilterMapByDiscipline(disciplineId: 'anotherDisciplineId'),
-      ),
-      expect: [
-        isA<MapLoading>(),
-        isA<MapReady>(),
-      ],
-      verify: (bloc) async {
-        verify(
-          _mapRepositoryMock.getMap('anotherDisciplineId'),
-        ).called(1);
-        // expect(
-        //   bloc.state,
-        //   equals(
-        //     MapReady(
-        //       eventMarkers: [_anotherEventMarker],
-        //       eventFluster: bloc.initEventFluster([_anotherEventMarker]),
-        //     ),
-        //   ),
-        // );
       },
     );
   });

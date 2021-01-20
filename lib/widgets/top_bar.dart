@@ -1,4 +1,4 @@
-import 'package:PickApp/map/filter_map/filter_map_screen.dart';
+import 'package:PickApp/map/filter_map/filter_map_scrollable.dart';
 import 'package:PickApp/search/search_screen.dart';
 import 'package:PickApp/map/map_bloc.dart';
 import 'package:flutter/material.dart';
@@ -51,7 +51,9 @@ class MapScreenTopBar extends StatelessWidget implements PreferredSizeWidget {
             showDialog(
               context: context,
               builder: (BuildContext context) {
-                return FilterMapScreen(mapBloc: mapBloc);
+                return FilterMapScrollable(
+                  mapBloc: mapBloc,
+                );
               },
             );
           },

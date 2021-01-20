@@ -53,7 +53,6 @@ class MyGroupsScreenState extends State<MyGroupsScreen> {
         ),
       );
     }
-    Navigator.pop(context);
     _myGroupsBloc.add(FetchMyGroups());
   }
 

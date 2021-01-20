@@ -111,9 +111,6 @@ class GroupRepository {
 
     var response = await client.get(url);
 
-    print(response.statusCode);
-    print(response.body);
-
     if (response.statusCode == 201) {
       // ignore: omit_local_variable_types
       List<PostComment> postAnswers = [];
