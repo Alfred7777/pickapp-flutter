@@ -32,5 +32,14 @@ class NotificationsBloc extends Bloc<NotificationsEvent, NotificationsState> {
         yield FetchNotificationsFailure(error: exception.message);
       }
     }
+    if (event is MarkAllAsRead) {
+      var readNotifications =
+          await NotificationRepository.markAllAsRead(event.notificationsToMark);
+
+      yield NotificationsReady(
+        nextToken: state.props.first,
+        notifications: readNotifications,
+      );
+    }
   }
 }
