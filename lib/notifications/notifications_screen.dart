@@ -62,6 +62,11 @@ class NotificationsScreenState extends State<NotificationsScreen> {
     ));
   }
 
+  void _markAllAsRead(List<nr.Notification> allNotifications) {
+    _notificationsBloc
+        .add(MarkAllAsRead(notificationsToMark: allNotifications));
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocListener<NotificationsBloc, NotificationsState>(
@@ -91,6 +96,17 @@ class NotificationsScreenState extends State<NotificationsScreen> {
             return Scaffold(
               appBar: MainScreenTopBar(
                 title: 'Notifications',
+                actions: <Widget>[
+                  IconButton(
+                    icon: Icon(
+                      Icons.check_box_sharp,
+                      size: 30,
+                      color: Colors.white,
+                    ),
+                    color: Colors.black,
+                    onPressed: () => _markAllAsRead(state.notifications),
+                  )
+                ],
               ),
               body: SafeArea(
                 child: RefreshIndicator(
@@ -178,9 +194,7 @@ class NotificationsList extends StatelessWidget {
           }
           return LoadingBar();
         }
-        return NotificationBar(
-          notification: notifications[index],
-        );
+        return NotificationBar(notification: notifications[index]);
       },
     );
   }
@@ -202,7 +216,9 @@ class NotificationBar extends StatelessWidget {
       decoration: BoxDecoration(
         border: Border(
           bottom: BorderSide(color: Colors.black45, width: 0.3),
+          top: BorderSide(color: Colors.black45, width: 0.3),
         ),
+        color: notification.isUnread ? Colors.lightBlue[50] : Colors.white,
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,

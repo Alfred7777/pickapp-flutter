@@ -63,9 +63,11 @@ class MapScreenTopBar extends StatelessWidget implements PreferredSizeWidget {
 
 class MainScreenTopBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
+  final List<Widget> actions;
 
   const MainScreenTopBar({
     @required this.title,
+    this.actions,
   });
 
   @override
@@ -76,6 +78,7 @@ class MainScreenTopBar extends StatelessWidget implements PreferredSizeWidget {
     return AppBar(
       backgroundColor: Colors.green,
       elevation: 0,
+      actions: actions,
       centerTitle: true,
       title: Text(
         title,

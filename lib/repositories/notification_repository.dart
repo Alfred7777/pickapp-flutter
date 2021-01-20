@@ -38,6 +38,22 @@ class NotificationRepository {
       );
     }
   }
+
+  static Future<List<Notification>> markAllAsRead(
+      List<Notification> notifications) async {
+    var client = AuthenticatedApiClient();
+
+    await client.post('my_notifications/read_all');
+
+    return notifications
+        .map((notification) => Notification(
+            description: notification.description,
+            isUnread: false,
+            id: notification.id,
+            title: notification.title,
+            userID: notification.userID))
+        .toList();
+  }
 }
 
 class Notification {
@@ -45,9 +61,9 @@ class Notification {
   final String description;
   final String id;
   final String userID;
-  final bool isUnread;
+  bool isUnread;
 
-  const Notification({
+  Notification({
     @required this.title,
     @required this.description,
     @required this.id,

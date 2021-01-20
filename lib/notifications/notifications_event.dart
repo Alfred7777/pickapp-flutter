@@ -20,3 +20,12 @@ class FetchNotifications extends NotificationsEvent {
     @required this.limit,
   });
 }
+
+class MarkAllAsRead extends NotificationsEvent {
+  final List<Notification> notificationsToMark;
+
+  const MarkAllAsRead({@required this.notificationsToMark});
+
+  @override
+  List<Object> get props => [notificationsToMark];
+}
