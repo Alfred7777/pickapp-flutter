@@ -7,7 +7,7 @@ class UnreadNotificationsCountSocket {
   final String authToken;
   final BottomNavbarBloc bottomNavbarBloc;
 
-  final String socketUrl = 'ws://pickapp.projektstudencki.pl/socket/websocket';
+  final String socketUrl = 'ws://18.197.42.194:4000/socket/websocket';
   final String topic = 'unread_notifications_count';
   final String incomingEventName = 'new_count';
 

@@ -6,7 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 class AuthenticatedApiClient {
-  final apiUrl = '150.254.78.200';
+  final apiUrl = '18.197.42.194';
+  final apiPort = 4000;
 
   Future getAuthToken() async {
     var token = await AuthenticationRepository.getAuthToken();
@@ -32,6 +33,7 @@ class AuthenticatedApiClient {
     var uri = Uri(
       scheme: 'http',
       host: apiUrl,
+      port: apiPort,
       path: '/api/' + url,
     );
 
@@ -57,6 +59,7 @@ class AuthenticatedApiClient {
     var uri = Uri(
       scheme: 'http',
       host: apiUrl,
+      port: apiPort,
       path: '/api/' + url,
       queryParameters: queryParams,
     );
@@ -81,6 +84,7 @@ class AuthenticatedApiClient {
     var uri = Uri(
       scheme: 'http',
       host: apiUrl,
+      port: apiPort,
       path: '/api/' + url,
     );
 
@@ -105,6 +109,7 @@ class AuthenticatedApiClient {
     var uri = Uri(
       scheme: 'http',
       host: apiUrl,
+      port: apiPort,
       path: '/api/' + url,
     );
 
