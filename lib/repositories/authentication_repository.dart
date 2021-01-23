@@ -5,7 +5,7 @@ import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:http/http.dart';
 
 class AuthenticationRepository {
-  static final apiUrl = 'http://150.254.78.200/api/';
+  static final apiUrl = 'http://18.197.42.194:4000/api/';
 
   static final signInWithFacebookFailedMessage =
       'Something went wrong while trying to sign in with Facebook. Please try again later.';
