@@ -33,7 +33,7 @@ class MapScreenTopBar extends StatelessWidget implements PreferredSizeWidget {
                 );
                 Navigator.push(context, route);
               },
-              color: Color(0x55C4C4C4),
+              color: Color(0x99C4C4C4),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(20.0),
               ),
