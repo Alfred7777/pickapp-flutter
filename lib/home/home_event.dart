@@ -1,3 +1,5 @@
+import 'package:PickApp/repositories/event_repository.dart';
+import 'package:PickApp/repositories/user_repository.dart';
 import 'package:meta/meta.dart';
 import 'package:equatable/equatable.dart';
 import 'package:phoenix_wings/phoenix_wings.dart';
@@ -44,4 +46,17 @@ class UpdateUnreadNotificationsCount extends HomeEvent {
 
   @override
   List<Object> get props => [index, newUnreadNotificationsCount];
+}
+
+class InitializeRating extends HomeEvent {
+  final List<User> participants;
+  final Event event;
+
+  const InitializeRating({
+    @required this.participants,
+    @required this.event,
+  });
+
+  @override
+  List<Object> get props => [participants, event];
 }

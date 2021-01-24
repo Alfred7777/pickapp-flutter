@@ -17,15 +17,17 @@ class ProfileReady extends ProfileState {
   final User details;
   final Map<String, dynamic> stats;
   final String pictureUploadUrl;
+  final Map<dynamic, dynamic> rating;
 
   const ProfileReady({
     @required this.details,
     @required this.stats,
     @required this.pictureUploadUrl,
+    @required this.rating,
   });
 
   @override
-  List<Object> get props => [details, stats, pictureUploadUrl];
+  List<Object> get props => [details, stats, pictureUploadUrl, rating];
 }
 
 class ProfileFailure extends ProfileState {

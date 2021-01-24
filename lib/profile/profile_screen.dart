@@ -120,6 +120,7 @@ class ProfileScreenState extends State<ProfileScreen> {
                 onRefresh: _refreshView,
                 child: ProfileScrollable(
                   profileDetails: state.details,
+                  rating: state.rating,
                   userStats: state.stats,
                   isLoggedUser: userID == null,
                   editProfile: _editProfile,
@@ -139,6 +140,7 @@ class ProfileScreenState extends State<ProfileScreen> {
 class ProfileScrollable extends StatelessWidget {
   final User profileDetails;
   final Map<String, dynamic> userStats;
+  final Map<dynamic, dynamic> rating;
   final bool isLoggedUser;
   final Function editProfile;
   final Function updateProfilePicture;
@@ -147,6 +149,7 @@ class ProfileScrollable extends StatelessWidget {
   const ProfileScrollable({
     @required this.profileDetails,
     @required this.userStats,
+    @required this.rating,
     @required this.isLoggedUser,
     @required this.editProfile,
     @required this.updateProfilePicture,
@@ -170,6 +173,10 @@ class ProfileScrollable extends StatelessWidget {
               ProfileInfo(
                 name: profileDetails.name,
                 username: profileDetails.uniqueUsername,
+              ),
+              ProfileRating(
+                thumbsUp: rating['thumbs_up'],
+                thumbsDown: rating['thumbs_down'],
               ),
               Padding(
                 padding: EdgeInsets.all(4),
@@ -316,6 +323,52 @@ class ProfilePhoto extends StatelessWidget {
   }
 }
 
+class ProfileRating extends StatelessWidget {
+  final int thumbsUp;
+  final int thumbsDown;
+
+  const ProfileRating({
+    @required this.thumbsUp,
+    @required this.thumbsDown,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
+      Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+        SizedBox(height: 80.0),
+        Rate(icon: Icons.thumb_up, count: thumbsUp, color: Colors.green),
+        SizedBox(width: 30.0),
+        Rate(icon: Icons.thumb_down, count: thumbsDown, color: Colors.red),
+      ])
+    ]);
+  }
+}
+
+class Rate extends StatelessWidget {
+  final IconData icon;
+  final int count;
+  final Color color;
+
+  Rate({
+    @required this.icon,
+    @required this.count,
+    @required this.color,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(children: [
+      Icon(icon, color: color),
+      SizedBox(height: 1.0),
+      Text(
+        count.toString(),
+        style: TextStyle(color: color),
+      ),
+    ]);
+  }
+}
+
 class ProfileInfo extends StatelessWidget {
   final String name;
   final String username;
@@ -370,7 +423,7 @@ class ProfileBio extends StatelessWidget {
           alignment: Alignment.centerLeft,
           child: Padding(
             padding: EdgeInsets.only(
-              top: 2,
+              top: 0,
               left: 16,
             ),
             child: Text(

@@ -173,6 +173,43 @@ class UserRepository {
       throw Exception('Error uploading photo!');
     }
   }
+
+  static Future<Map<dynamic, dynamic>> getUserRating(String userID) async {
+    var url;
+    if (userID != null) {
+      url = 'profile/$userID/rating';
+      ;
+    } else {
+      url = 'profile/rating';
+    }
+    final client = AuthenticatedApiClient();
+
+    var response = await client.get(url);
+
+    if (response.statusCode == 200) {
+      return json.decode(response.body);
+    } else {
+      throw Exception('Something went wrong. Please try again later.');
+    }
+  }
+
+  static void submitRatings(ratingsByUsers, eventId) async {
+    var url = 'profile/rating';
+    var mappedRatings = {};
+    final client = AuthenticatedApiClient();
+
+    ratingsByUsers.forEach((user, rating) =>
+        {mappedRatings[(user as User).userID.toString()] = rating});
+
+    var body = {'rates_by_users': mappedRatings, 'event_id': eventId};
+
+    var response = await client.post(url, body: body);
+
+    if (response.statusCode != 201) {
+      throw Exception(
+          'Sorry, something went wrong! Please contact our support.');
+    }
+  }
 }
 
 class User extends Equatable {
