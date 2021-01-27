@@ -1,42 +1,56 @@
-import 'package:PickApp/widgets/bottom_navbar/bottom_navbar_bloc.dart';
-import 'package:PickApp/widgets/bottom_navbar/bottom_navbar_event.dart';
-import 'package:PickApp/widgets/bottom_navbar/ui/bottom_navbar.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'notifications_icon.dart';
 
-import 'bottom_navbar_state.dart';
+class BottomNavbar extends StatelessWidget {
+  final Function onIndexChanged;
+  final int currentIndex;
+  final int currentNotificationsCount;
 
-class BottomNavbarWidget extends StatefulWidget {
-  BottomNavbarWidget();
+  BottomNavbar({
+    @required this.onIndexChanged,
+    @required this.currentIndex,
+    this.currentNotificationsCount,
+  });
 
-  @override
-  BottomNavbarWidgetState createState() => BottomNavbarWidgetState();
-}
-
-class BottomNavbarWidgetState extends State<BottomNavbarWidget> {
   @override
   Widget build(BuildContext context) {
-    var _bottomNavbarBloc = BlocProvider.of<BottomNavbarBloc>(context);
-
-    return BlocBuilder<BottomNavbarBloc, BottomNavbarState>(
-        bloc: _bottomNavbarBloc,
-        builder: (context, state) {
-          if (state is InitialBottomNavbarState) {
-            _bottomNavbarBloc.add(InitializeBottomNavbar());
-            return BottomNavbar(
-              currentIndex: 0,
-              currentNotificationsCount: state.initialCount,
-              bloc: _bottomNavbarBloc,
-            );
-          }
-          if (state is BottomNavbarLoaded) {
-            return BottomNavbar(
-              currentIndex: state.index,
-              currentNotificationsCount: state.currentUnreadNotificationsCount,
-              bloc: _bottomNavbarBloc,
-            );
-          }
-          return Container();
-        });
+    return BottomNavigationBar(
+      currentIndex: currentIndex,
+      type: BottomNavigationBarType.fixed,
+      selectedItemColor: Colors.blueAccent,
+      unselectedItemColor: Colors.black,
+      showUnselectedLabels: true,
+      selectedFontSize: 13,
+      unselectedLabelStyle: TextStyle(
+        fontSize: 13,
+        color: Colors.black,
+        decorationColor: Colors.black,
+      ),
+      onTap: (index) => onIndexChanged(index),
+      items: [
+        BottomNavigationBarItem(
+          icon: Icon(Icons.public),
+          label: 'Map',
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.event),
+          label: 'My events',
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.people),
+          label: 'Groups',
+        ),
+        BottomNavigationBarItem(
+          icon: NotificationsIcon(
+            notificationsCount: currentNotificationsCount,
+          ),
+          label: 'Alerts',
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.person),
+          label: 'Profile',
+        ),
+      ],
+    );
   }
 }

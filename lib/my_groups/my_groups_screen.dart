@@ -150,7 +150,7 @@ class MyGroups extends StatelessWidget {
     var screenSize = MediaQuery.of(context).size;
     return DefaultTabController(
       length: 2,
-      initialIndex: 1,
+      initialIndex: 0,
       child: Scaffold(
         appBar: MainScreenTopBar(
           title: 'My Groups',
@@ -169,7 +169,7 @@ class MyGroups extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
-                height: 0.15 * screenSize.width,
+                height: 52,
                 width: screenSize.width,
                 decoration: BoxDecoration(
                   border: Border(
@@ -179,11 +179,11 @@ class MyGroups extends StatelessWidget {
                 child: TabBar(
                   labelColor: Colors.grey[700],
                   labelStyle: TextStyle(
-                    fontSize: 0.04 * screenSize.width,
+                    fontSize: 14,
                     fontWeight: FontWeight.bold,
                   ),
                   unselectedLabelStyle: TextStyle(
-                    fontSize: 0.04 * screenSize.width,
+                    fontSize: 14,
                     fontWeight: FontWeight.normal,
                   ),
                   tabs: [
@@ -243,52 +243,84 @@ class GroupInvitationList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
-      shrinkWrap: true,
-      physics: AlwaysScrollableScrollPhysics(),
-      itemCount: groupInvitations.length,
-      itemBuilder: (BuildContext context, int index) {
-        return GroupInvitationBar(
-          groupInvitation: groupInvitations[index],
-          actionList: [
-            MaterialButton(
-              onPressed: () => answerInvitation(
-                groupInvitations[index],
-                'Accept',
+    var screenSize = MediaQuery.of(context).size;
+    if (groupInvitations.isNotEmpty) {
+      return ListView.builder(
+        shrinkWrap: true,
+        physics: AlwaysScrollableScrollPhysics(),
+        itemCount: groupInvitations.length,
+        itemBuilder: (BuildContext context, int index) {
+          return GroupInvitationBar(
+            groupInvitation: groupInvitations[index],
+            actionList: [
+              MaterialButton(
+                onPressed: () => answerInvitation(
+                  groupInvitations[index],
+                  'Accept',
+                ),
+                elevation: 0,
+                height: 42,
+                minWidth: 42,
+                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                color: Colors.transparent,
+                shape: CircleBorder(),
+                child: Icon(
+                  Icons.check,
+                  size: 30,
+                  color: Colors.green,
+                ),
               ),
-              elevation: 0,
-              height: 42,
-              minWidth: 42,
-              materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-              color: Colors.transparent,
-              shape: CircleBorder(),
-              child: Icon(
-                Icons.check,
-                size: 30,
-                color: Colors.green,
+              MaterialButton(
+                onPressed: () => answerInvitation(
+                  groupInvitations[index],
+                  'Reject',
+                ),
+                elevation: 0,
+                height: 42,
+                minWidth: 42,
+                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                color: Colors.transparent,
+                shape: CircleBorder(),
+                child: Icon(
+                  Icons.clear,
+                  size: 30,
+                  color: Colors.red,
+                ),
               ),
+            ],
+          );
+        },
+      );
+    } else {
+      return ListView(
+        children: [
+          Container(
+            width: screenSize.width,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Padding(
+                  padding: EdgeInsets.only(
+                    left: 20,
+                    right: 20,
+                    top: 16,
+                    bottom: 16,
+                  ),
+                  child: Text(
+                    'You don\'t have any pending invitations.',
+                    style: TextStyle(
+                      color: Colors.grey[400],
+                      fontSize: 18,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ],
             ),
-            MaterialButton(
-              onPressed: () => answerInvitation(
-                groupInvitations[index],
-                'Reject',
-              ),
-              elevation: 0,
-              height: 42,
-              minWidth: 42,
-              materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-              color: Colors.transparent,
-              shape: CircleBorder(),
-              child: Icon(
-                Icons.clear,
-                size: 30,
-                color: Colors.red,
-              ),
-            ),
-          ],
-        );
-      },
-    );
+          ),
+        ],
+      );
+    }
   }
 }
 
@@ -303,16 +335,48 @@ class GroupList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
-      shrinkWrap: true,
-      physics: AlwaysScrollableScrollPhysics(),
-      itemCount: groups.length,
-      itemBuilder: (BuildContext context, int index) {
-        return GroupBar(
-          group: groups[index],
-          refreshView: refreshView,
-        );
-      },
-    );
+    var screenSize = MediaQuery.of(context).size;
+    if (groups.isNotEmpty) {
+      return ListView.builder(
+        shrinkWrap: true,
+        physics: AlwaysScrollableScrollPhysics(),
+        itemCount: groups.length,
+        itemBuilder: (BuildContext context, int index) {
+          return GroupBar(
+            group: groups[index],
+            refreshView: refreshView,
+          );
+        },
+      );
+    } else {
+      return ListView(
+        children: [
+          Container(
+            width: screenSize.width,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Padding(
+                  padding: EdgeInsets.only(
+                    left: 20,
+                    right: 20,
+                    top: 16,
+                    bottom: 16,
+                  ),
+                  child: Text(
+                    'You aren\'t a member of any group.',
+                    style: TextStyle(
+                      color: Colors.grey[400],
+                      fontSize: 18,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      );
+    }
   }
 }

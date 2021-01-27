@@ -50,6 +50,14 @@
 			<array>
 				<string>fb184383603396137</string>
 			</array>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLName</key>
+			<string>pickapp</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>pickappscheme</string>
+			</array>
 		</dict>
 	</array>
 	<key>FacebookAppID</key>

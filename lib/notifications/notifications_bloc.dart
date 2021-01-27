@@ -33,8 +33,9 @@ class NotificationsBloc extends Bloc<NotificationsEvent, NotificationsState> {
       }
     }
     if (event is MarkAllAsRead) {
-      var readNotifications =
-          await NotificationRepository.markAllAsRead(event.notificationsToMark);
+      var readNotifications = await NotificationRepository.markAllAsRead(
+        event.notificationsToMark,
+      );
 
       yield NotificationsReady(
         nextToken: state.props.first,

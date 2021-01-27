@@ -1,28 +1,42 @@
+import 'package:bloc/bloc.dart';
 import 'home_event.dart';
 import 'home_state.dart';
-import 'package:PickApp/repositories/user_repository.dart';
-import 'package:bloc/bloc.dart';
-import 'package:meta/meta.dart';
+import 'package:PickApp/repositories/authentication_repository.dart';
+import 'package:PickApp/utils/unread_notifications_count_socket.dart';
 
 class HomeBloc extends Bloc<HomeEvent, HomeState> {
-  final UserRepository userRepository;
-
-  HomeBloc({@required this.userRepository}) : assert(userRepository != null);
-
   @override
-  HomeState get initialState => InitialHomeState();
+  HomeState get initialState => HomeInitial();
 
   @override
   Stream<HomeState> mapEventToState(HomeEvent event) async* {
-    if (event is FetchProfile) {
+    if (event is ConnectNotificationsSocket) {
       yield HomeLoading();
-      var details = await userRepository.getProfileDetails(event.userID);
-      yield HomeLoaded(details: details, index: 0);
-      return;
+      var _authToken = await AuthenticationRepository.getAuthToken();
+
+      var unreadNotificationsCountSocket = UnreadNotificationsCountSocket(
+        authToken: _authToken,
+        handleNewNotificationsCount: event.handleNewNotificationsCount,
+      );
+
+      await unreadNotificationsCountSocket.connect();
+
+      yield HomeReady(
+        unreadNotificationsCount: 0,
+        index: 0,
+      );
     }
-    if (event is NavbarSelectedIndexChanged) {
-      var details = state.details;
-      yield HomeLoaded(index: event.index, details: details);
+    if (event is UpdateUnreadNotificationsCount) {
+      yield HomeReady(
+        index: event.index,
+        unreadNotificationsCount: event.newUnreadNotificationsCount,
+      );
+    }
+    if (event is IndexChanged) {
+      yield HomeReady(
+        index: event.newIndex,
+        unreadNotificationsCount: event.unreadNotificationsCount,
+      );
     }
   }
 }

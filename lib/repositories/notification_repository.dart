@@ -47,11 +47,14 @@ class NotificationRepository {
 
     return notifications
         .map((notification) => Notification(
-            description: notification.description,
-            isUnread: false,
-            id: notification.id,
-            title: notification.title,
-            userID: notification.userID))
+              title: notification.title,
+              description: notification.description,
+              id: notification.id,
+              userID: notification.userID,
+              type: notification.type,
+              referenceID: notification.referenceID,
+              isUnread: false,
+            ))
         .toList();
   }
 }
@@ -61,6 +64,8 @@ class Notification {
   final String description;
   final String id;
   final String userID;
+  final String type;
+  final String referenceID;
   bool isUnread;
 
   Notification({
@@ -68,6 +73,8 @@ class Notification {
     @required this.description,
     @required this.id,
     @required this.userID,
+    @required this.type,
+    @required this.referenceID,
     @required this.isUnread,
   });
 
@@ -77,6 +84,8 @@ class Notification {
       description: json['description'],
       id: json['id'],
       userID: json['user_id'],
+      type: json['type'],
+      referenceID: json['reference_id'],
       isUnread: json['unread'],
     );
   }

@@ -134,7 +134,7 @@ class MyEvents extends StatelessWidget {
     var screenSize = MediaQuery.of(context).size;
     return DefaultTabController(
       length: 3,
-      initialIndex: 1,
+      initialIndex: 0,
       child: Scaffold(
         appBar: MainScreenTopBar(
           title: 'My Events',
@@ -144,7 +144,7 @@ class MyEvents extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
-                height: 0.15 * screenSize.width,
+                height: 52,
                 width: screenSize.width,
                 decoration: BoxDecoration(
                   border: Border(
@@ -154,11 +154,11 @@ class MyEvents extends StatelessWidget {
                 child: TabBar(
                   labelColor: Colors.grey[700],
                   labelStyle: TextStyle(
-                    fontSize: 0.04 * screenSize.width,
+                    fontSize: 14,
                     fontWeight: FontWeight.bold,
                   ),
                   unselectedLabelStyle: TextStyle(
-                    fontSize: 0.04 * screenSize.width,
+                    fontSize: 14,
                     fontWeight: FontWeight.normal,
                   ),
                   tabs: [
