@@ -8,9 +8,10 @@ class NotificationsIcon extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Stack(
-        children: notificationsCount == 0
-            ? _buildIconWithoutLabel()
-            : _buildIconWithLabel(notificationsCount));
+      children: notificationsCount == 0
+          ? _buildIconWithoutLabel()
+          : _buildIconWithLabel(notificationsCount),
+    );
   }
 
   List<Widget> _buildIconWithoutLabel() {

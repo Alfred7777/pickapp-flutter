@@ -1,3 +1,4 @@
+import 'package:PickApp/home/home_bloc.dart';
 import 'package:PickApp/home/home_screen.dart';
 import 'package:PickApp/widgets/loading_screen.dart';
 import 'package:flutter/material.dart';
@@ -60,7 +61,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   return OnboardingForm(profileDraft: state.draft);
                 }
                 if (state is OnboardingCompleted) {
-                  return HomeScreen();
+                  return BlocProvider<HomeBloc>(
+                    create: (context) => HomeBloc(),
+                    child: HomeScreen(),
+                  );
                 }
                 if (state is ProfileDraftFetchFailure) {
                   return Center(

@@ -1,3 +1,7 @@
+import 'package:PickApp/event_details/event_details_screen.dart';
+import 'package:PickApp/home/home_bloc.dart';
+import 'package:PickApp/home/home_event.dart';
+import 'package:PickApp/home/home_state.dart';
 import 'package:flutter/material.dart';
 import 'notifications_bloc.dart';
 import 'notifications_event.dart';
@@ -38,7 +42,7 @@ class NotificationsScreenState extends State<NotificationsScreen> {
 
   int _notificationsLimit() {
     var screenSize = MediaQuery.of(context).size;
-    return (screenSize.height / (0.16 * screenSize.width)).ceil() + 1;
+    return (screenSize.height / 60).ceil() + 1;
   }
 
   void _scrollListener() {
@@ -63,8 +67,38 @@ class NotificationsScreenState extends State<NotificationsScreen> {
   }
 
   void _markAllAsRead(List<nr.Notification> allNotifications) {
-    _notificationsBloc
-        .add(MarkAllAsRead(notificationsToMark: allNotifications));
+    _notificationsBloc.add(
+      MarkAllAsRead(notificationsToMark: allNotifications),
+    );
+  }
+
+  void _notificationRedirect(String notificationType, String referenceID) {
+    var _homeBlocState = BlocProvider.of<HomeBloc>(context).state;
+    if (_homeBlocState is HomeReady) {
+      if (notificationType == 'event_invitation') {
+        BlocProvider.of<HomeBloc>(context).add(
+          IndexChanged(
+            newIndex: 1,
+            unreadNotificationsCount: _homeBlocState.props.last,
+          ),
+        );
+      } else if (notificationType == 'group_invitation') {
+        BlocProvider.of<HomeBloc>(context).add(
+          IndexChanged(
+            newIndex: 2,
+            unreadNotificationsCount: _homeBlocState.props.last,
+          ),
+        );
+      } else if (notificationType == 'event') {
+        var route = MaterialPageRoute<void>(
+          builder: (context) => EventDetailsScreen(
+            eventID: referenceID,
+            showButtons: true,
+          ),
+        );
+        Navigator.push(context, route);
+      }
+    }
   }
 
   @override
@@ -117,6 +151,7 @@ class NotificationsScreenState extends State<NotificationsScreen> {
                           notifications: state.notifications,
                           nextToken: state.nextToken,
                           scrollController: _scrollController,
+                          notificationRedirect: _notificationRedirect,
                         ),
                 ),
               ),
@@ -174,11 +209,13 @@ class NotificationsList extends StatelessWidget {
   final List<nr.Notification> notifications;
   final String nextToken;
   final ScrollController scrollController;
+  final Function notificationRedirect;
 
   const NotificationsList({
     @required this.notifications,
     @required this.nextToken,
     @required this.scrollController,
+    @required this.notificationRedirect,
   });
 
   @override
@@ -194,7 +231,10 @@ class NotificationsList extends StatelessWidget {
           }
           return LoadingBar();
         }
-        return NotificationBar(notification: notifications[index]);
+        return NotificationBar(
+          notification: notifications[index],
+          notificationRedirect: notificationRedirect,
+        );
       },
     );
   }
@@ -202,56 +242,124 @@ class NotificationsList extends StatelessWidget {
 
 class NotificationBar extends StatelessWidget {
   final nr.Notification notification;
+  final Function notificationRedirect;
 
   const NotificationBar({
     @required this.notification,
+    @required this.notificationRedirect,
   });
 
   @override
   Widget build(BuildContext context) {
     var screenSize = MediaQuery.of(context).size;
-    return Container(
-      height: 0.16 * screenSize.width,
-      width: screenSize.width,
-      decoration: BoxDecoration(
-        border: Border(
-          bottom: BorderSide(color: Colors.black45, width: 0.3),
-          top: BorderSide(color: Colors.black45, width: 0.3),
+    return InkWell(
+      onTap: () {
+        notificationRedirect(
+          notification.type,
+          notification.referenceID,
+        );
+      },
+      child: Container(
+        height: 60,
+        width: screenSize.width,
+        decoration: BoxDecoration(
+          border: Border(
+            bottom: BorderSide(color: Colors.black45, width: 0.3),
+            top: BorderSide(color: Colors.black45, width: 0.3),
+          ),
+          color: notification.isUnread ? Colors.lightBlue[50] : Colors.white,
         ),
-        color: notification.isUnread ? Colors.lightBlue[50] : Colors.white,
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: EdgeInsets.only(
-              left: 0.04 * screenSize.width,
-            ),
-            child: Text(
-              notification.title,
-              overflow: TextOverflow.ellipsis,
-              maxLines: 1,
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 0.036 * screenSize.width,
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Padding(
+              padding: EdgeInsets.symmetric(
+                horizontal: 10,
+              ),
+              child: Container(
+                height: 44,
+                width: 44,
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                    fit: BoxFit.fill,
+                    image: AssetImage(
+                      'assets/images/icons/notification/${notification.type}.png',
+                    ),
+                  ),
+                ),
               ),
             ),
-          ),
-          Padding(
-            padding: EdgeInsets.only(
-              left: 0.04 * screenSize.width,
-            ),
-            child: Text(
-              notification.description,
-              overflow: TextOverflow.ellipsis,
-              maxLines: 2,
-              style: TextStyle(
-                fontSize: 0.032 * screenSize.width,
+            Expanded(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: EdgeInsets.only(
+                      right: 10,
+                    ),
+                    child: Text(
+                      notification.title,
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 13,
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.only(
+                      right: 10,
+                    ),
+                    child: Text(
+                      notification.description,
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 2,
+                      style: TextStyle(
+                        fontSize: 12,
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
-          ),
-        ],
+          ],
+        ),
+
+        // Column(
+        //   mainAxisAlignment: MainAxisAlignment.center,
+        //   crossAxisAlignment: CrossAxisAlignment.start,
+        //   children: [
+        //     Padding(
+        //       padding: EdgeInsets.only(
+        //         left: 0.04 * screenSize.width,
+        //       ),
+        //       child: Text(
+        //         notification.title,
+        //         overflow: TextOverflow.ellipsis,
+        //         maxLines: 1,
+        //         style: TextStyle(
+        //           fontWeight: FontWeight.bold,
+        //           fontSize: 0.036 * screenSize.width,
+        //         ),
+        //       ),
+        //     ),
+        //     Padding(
+        //       padding: EdgeInsets.only(
+        //         left: 0.04 * screenSize.width,
+        //       ),
+        //       child: Text(
+        //         notification.description,
+        //         overflow: TextOverflow.ellipsis,
+        //         maxLines: 2,
+        //         style: TextStyle(
+        //           fontSize: 0.032 * screenSize.width,
+        //         ),
+        //       ),
+        //     ),
+        //   ],
+        // ),
       ),
     );
   }

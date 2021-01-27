@@ -1,30 +1,28 @@
 import 'package:meta/meta.dart';
 import 'package:equatable/equatable.dart';
-import 'package:PickApp/repositories/user_repository.dart';
 
 class HomeState extends Equatable {
-  final User details;
-
-  const HomeState({@required this.details});
+  const HomeState();
 
   @override
   List<Object> get props => [];
 }
 
-class InitialHomeState extends HomeState {}
+class HomeInitial extends HomeState {}
 
 class HomeLoading extends HomeState {}
 
-class HomeLoaded extends HomeState {
-  @override
-  final User details;
-
+class HomeReady extends HomeState {
   final int index;
+  final int unreadNotificationsCount;
 
-  const HomeLoaded({@required this.details, this.index});
+  const HomeReady({
+    @required this.index,
+    @required this.unreadNotificationsCount,
+  });
 
   @override
-  List<Object> get props => [details, index];
+  List<Object> get props => [index, unreadNotificationsCount];
 }
 
-class HomeError extends HomeState {}
+class HomeFailure extends HomeState {}

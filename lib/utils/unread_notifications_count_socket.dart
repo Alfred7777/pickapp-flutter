@@ -1,11 +1,9 @@
-import 'package:PickApp/widgets/bottom_navbar/bottom_navbar_bloc.dart';
-import 'package:PickApp/widgets/bottom_navbar/bottom_navbar_event.dart';
 import 'package:meta/meta.dart';
 import 'package:phoenix_wings/phoenix_wings.dart';
 
 class UnreadNotificationsCountSocket {
   final String authToken;
-  final BottomNavbarBloc bottomNavbarBloc;
+  final PhoenixMessageCallback handleNewNotificationsCount;
 
   final String socketUrl = 'ws://18.197.42.194:4000/socket/websocket';
   final String topic = 'unread_notifications_count';
@@ -13,7 +11,7 @@ class UnreadNotificationsCountSocket {
 
   UnreadNotificationsCountSocket({
     @required this.authToken,
-    @required this.bottomNavbarBloc,
+    @required this.handleNewNotificationsCount,
   });
 
   Future<void> connect() async {
@@ -31,11 +29,11 @@ class UnreadNotificationsCountSocket {
   }
 
   // ignore: missing_return
-  PhoenixMessageCallback handleNewNotificationsCount(
-      Map payload, String _ref, String _joinRef) {
-    var newCount = payload['count'];
-    bottomNavbarBloc.add(
-      NotificationsCountUpdated(newUnreadNotificationsCount: newCount),
-    );
-  }
+  // PhoenixMessageCallback handleNewNotificationsCount(
+  //     Map payload, String _ref, String _joinRef) {
+  //   var newCount = payload['count'];
+  //   bottomNavbarBloc.add(
+  //     NotificationsCountUpdated(newUnreadNotificationsCount: newCount),
+  //   );
+  // }
 }
