@@ -32,11 +32,13 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
       var _details = await userRepository.getProfileDetails(userID);
       var _stats = await userRepository.getUserStats(userID);
       var _uploadUrl = await userRepository.getProfilePictureUploadUrl();
+      var _rating = await UserRepository.getUserRating(userID);
 
       yield ProfileReady(
         details: _details,
         stats: _stats,
         pictureUploadUrl: _uploadUrl,
+        rating: _rating,
       );
     } catch (exception) {
       yield ProfileFailure(
