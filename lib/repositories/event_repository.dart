@@ -375,6 +375,7 @@ class EventDetails {
   final String name;
   final String description;
   final String disciplineID;
+  final String organiserProfilePictureUrl;
   final LatLng position;
   final DateTime startDate;
   final DateTime endDate;
@@ -389,6 +390,7 @@ class EventDetails {
     this.name,
     this.description,
     this.disciplineID,
+    this.organiserProfilePictureUrl,
     this.position,
     this.startDate,
     this.endDate,
@@ -405,6 +407,7 @@ class EventDetails {
       json['name'],
       json['description'],
       json['discipline_id'],
+      json['organiser_profile_picture_url'],
       LatLng(json['lat'], json['lon']),
       DateTime.fromMillisecondsSinceEpoch(json['start_datetime_ms']),
       DateTime.fromMillisecondsSinceEpoch(json['end_datetime_ms']),

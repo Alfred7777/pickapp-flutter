@@ -201,7 +201,7 @@ class AddCommentBar extends StatelessWidget {
               height: 44,
               width: 44,
               shape: BoxShape.circle,
-              fit: BoxFit.fill,
+              fit: BoxFit.cover,
               profilePictureUrl: userProfile.profilePictureUrl,
             ),
           ),
