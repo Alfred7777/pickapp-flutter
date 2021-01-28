@@ -220,7 +220,8 @@ class EventDetailsList extends StatelessWidget {
                         organiserProfilePictureUrl:
                             eventDetails.organiserProfilePictureUrl,
                         numberOfParticipants: participantList.length,
-                        numberOfParticipationRequests: 10,
+                        participationRequestCount:
+                            eventDetails.participationRequestCount,
                         participationStatus: eventDetails.participationStatus,
                         isOrganiser: eventDetails.isOrganiser,
                         allowInvitations: eventDetails.allowInvitations,
@@ -422,7 +423,7 @@ class EventDate extends StatelessWidget {
 class EventButtons extends StatelessWidget {
   final String organiserProfilePictureUrl;
   final int numberOfParticipants;
-  final int numberOfParticipationRequests;
+  final int participationRequestCount;
   final String participationStatus;
   final bool isOrganiser;
   final bool allowInvitations;
@@ -435,7 +436,7 @@ class EventButtons extends StatelessWidget {
   const EventButtons({
     @required this.organiserProfilePictureUrl,
     @required this.numberOfParticipants,
-    @required this.numberOfParticipationRequests,
+    @required this.participationRequestCount,
     @required this.participationStatus,
     @required this.isOrganiser,
     @required this.allowInvitations,
@@ -453,7 +454,7 @@ class EventButtons extends StatelessWidget {
       children: [
         EventParticipantsNumber(
           numberOfParticipants: numberOfParticipants,
-          numberOfParticipationRequests: numberOfParticipationRequests,
+          participationRequestCount: participationRequestCount,
           isOrganiser: isOrganiser,
           requireParticipationAcceptation: requireParticipationAcceptation,
           manageParticipationRequests: manageParticipationRequests,
@@ -510,14 +511,14 @@ class EventButtons extends StatelessWidget {
 
 class EventParticipantsNumber extends StatelessWidget {
   final int numberOfParticipants;
-  final int numberOfParticipationRequests;
+  final int participationRequestCount;
   final bool isOrganiser;
   final bool requireParticipationAcceptation;
   final Function manageParticipationRequests;
 
   const EventParticipantsNumber({
     @required this.numberOfParticipants,
-    @required this.numberOfParticipationRequests,
+    @required this.participationRequestCount,
     @required this.isOrganiser,
     @required this.requireParticipationAcceptation,
     @required this.manageParticipationRequests,
@@ -555,20 +556,16 @@ class EventParticipantsNumber extends StatelessWidget {
                   right: 0,
                   child: isOrganiser && requireParticipationAcceptation
                       ? Container(
-                          padding: EdgeInsets.all(1),
+                          padding: EdgeInsets.all(3),
                           decoration: BoxDecoration(
                             color: Colors.red,
-                            borderRadius: BorderRadius.circular(60),
-                          ),
-                          constraints: BoxConstraints(
-                            minWidth: 10,
-                            minHeight: 10,
+                            shape: BoxShape.circle,
                           ),
                           child: Text(
-                            numberOfParticipationRequests.toString(),
+                            participationRequestCount.toString(),
                             style: TextStyle(
                               color: Colors.white,
-                              fontSize: 10,
+                              fontSize: 9,
                             ),
                             textAlign: TextAlign.center,
                           ),

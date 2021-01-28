@@ -1,3 +1,4 @@
+import 'package:PickApp/widgets/loading_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:PickApp/login/login_bloc.dart';
@@ -61,6 +62,9 @@ class _LoginFormState extends State<LoginForm> {
       child: BlocBuilder<LoginBloc, LoginState>(
         builder: (context, state) {
           var screenSize = MediaQuery.of(context).size;
+          if (state is LoginLoading) {
+            return LoadingScreen();
+          }
           return Form(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,

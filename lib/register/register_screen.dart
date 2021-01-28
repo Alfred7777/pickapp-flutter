@@ -1,3 +1,4 @@
+import 'package:PickApp/widgets/loading_screen.dart';
 import 'package:PickApp/widgets/top_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -13,6 +14,7 @@ class RegisterScreen extends StatefulWidget {
 class RegisterScreenState extends State<RegisterScreen> {
   TextEditingController _emailController;
   TextEditingController _passwordController;
+  TextEditingController _confirmPasswordController;
 
   RegisterBloc _registerBloc;
 
@@ -24,6 +26,7 @@ class RegisterScreenState extends State<RegisterScreen> {
     _registerBloc = RegisterBloc();
     _emailController = TextEditingController();
     _passwordController = TextEditingController();
+    _confirmPasswordController = TextEditingController();
   }
 
   @override
@@ -63,7 +66,14 @@ class RegisterScreenState extends State<RegisterScreen> {
       return 'Password must be longer than 8 characters!';
     }
     if (password.length > 24) {
-      return 'Password must be longer than 24 characters!';
+      return 'Password can\'t have more than 24 characters!';
+    }
+    return null;
+  }
+
+  String _validateConfirmPassword(String password) {
+    if (_passwordController.text != password) {
+      return 'Passwords don\'t match!';
     }
     return null;
   }
@@ -86,132 +96,172 @@ class RegisterScreenState extends State<RegisterScreen> {
         title: 'Create Account',
       ),
       body: BlocListener<RegisterBloc, RegisterState>(
-        bloc: _registerBloc,
-        listener: (context, state) {
-          if (state is RegisterFailure) {
-            Scaffold.of(context).showSnackBar(
-              SnackBar(
-                content: Text('${state.error}'),
-                backgroundColor: Colors.red,
-              ),
-            );
-          }
-          if (state is RegisterSuccess) {
-            Navigator.pop(context, [state.message]);
-          }
-        },
-        child: SafeArea(
-          child: ListView(
-            children: [
-              Padding(
-                padding: EdgeInsets.only(
-                  top: 32,
-                  bottom: 12,
+          bloc: _registerBloc,
+          listener: (context, state) {
+            if (state is RegisterFailure) {
+              Scaffold.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('${state.error}'),
+                  backgroundColor: Colors.red,
                 ),
-                child: Text(
-                  'Create account',
-                  style: TextStyle(
-                    color: Colors.grey[800],
-                    fontWeight: FontWeight.bold,
-                    fontSize: 32.0,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-              ),
-              Form(
-                key: _formKey,
-                child: Column(
+              );
+            }
+            if (state is RegisterSuccess) {
+              Navigator.pop(context, [state.message]);
+            }
+          },
+          child: BlocBuilder<RegisterBloc, RegisterState>(
+            bloc: _registerBloc,
+            builder: (context, state) {
+              if (state is RegisterLoading) {
+                return LoadingScreen();
+              }
+              return SafeArea(
+                child: ListView(
                   children: [
                     Padding(
-                      padding: EdgeInsets.symmetric(
-                        vertical: 12,
-                        horizontal: 32,
+                      padding: EdgeInsets.only(
+                        top: 32,
+                        bottom: 12,
                       ),
-                      child: TextFormField(
-                        autovalidateMode: AutovalidateMode.onUserInteraction,
-                        controller: _emailController,
-                        keyboardType: TextInputType.emailAddress,
-                        textInputAction: TextInputAction.next,
-                        decoration: InputDecoration(
-                          border: OutlineInputBorder(),
-                          errorBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
-                              color: Colors.red,
-                            ),
-                          ),
-                          focusedErrorBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
-                              color: Colors.red,
-                              width: 2.0,
-                            ),
-                          ),
-                          errorStyle: TextStyle(color: Colors.red),
-                          labelText: 'Email',
+                      child: Text(
+                        'Create account',
+                        style: TextStyle(
+                          color: Colors.grey[800],
+                          fontWeight: FontWeight.bold,
+                          fontSize: 32.0,
                         ),
-                        validator: _validateEmail,
+                        textAlign: TextAlign.center,
                       ),
                     ),
-                    Padding(
-                      padding: EdgeInsets.symmetric(
-                        vertical: 12,
-                        horizontal: 32,
-                      ),
-                      child: TextFormField(
-                        autovalidateMode: AutovalidateMode.onUserInteraction,
-                        controller: _passwordController,
-                        keyboardType: TextInputType.text,
-                        textInputAction: TextInputAction.done,
-                        obscureText: true,
-                        decoration: InputDecoration(
-                          border: OutlineInputBorder(),
-                          errorBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
-                              color: Colors.red,
+                    Form(
+                      key: _formKey,
+                      child: Column(
+                        children: [
+                          Padding(
+                            padding: EdgeInsets.symmetric(
+                              vertical: 12,
+                              horizontal: 32,
+                            ),
+                            child: TextFormField(
+                              autovalidateMode:
+                                  AutovalidateMode.onUserInteraction,
+                              controller: _emailController,
+                              keyboardType: TextInputType.emailAddress,
+                              textInputAction: TextInputAction.next,
+                              decoration: InputDecoration(
+                                border: OutlineInputBorder(),
+                                errorBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                    color: Colors.red,
+                                  ),
+                                ),
+                                focusedErrorBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                    color: Colors.red,
+                                    width: 2.0,
+                                  ),
+                                ),
+                                errorStyle: TextStyle(color: Colors.red),
+                                labelText: 'Email',
+                              ),
+                              validator: _validateEmail,
                             ),
                           ),
-                          focusedErrorBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
-                              color: Colors.red,
-                              width: 2.0,
+                          Padding(
+                            padding: EdgeInsets.symmetric(
+                              vertical: 12,
+                              horizontal: 32,
+                            ),
+                            child: TextFormField(
+                              autovalidateMode:
+                                  AutovalidateMode.onUserInteraction,
+                              controller: _passwordController,
+                              keyboardType: TextInputType.text,
+                              textInputAction: TextInputAction.done,
+                              obscureText: true,
+                              decoration: InputDecoration(
+                                border: OutlineInputBorder(),
+                                errorBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                    color: Colors.red,
+                                  ),
+                                ),
+                                focusedErrorBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                    color: Colors.red,
+                                    width: 2.0,
+                                  ),
+                                ),
+                                errorStyle: TextStyle(color: Colors.red),
+                                labelText: 'Password',
+                              ),
+                              validator: _validatePassword,
                             ),
                           ),
-                          errorStyle: TextStyle(color: Colors.red),
-                          labelText: 'Password',
-                        ),
-                        validator: _validatePassword,
-                      ),
-                    ),
-                    Center(
-                      child: Padding(
-                        padding: EdgeInsets.symmetric(
-                          vertical: 8,
-                        ),
-                        child: ButtonTheme(
-                          minWidth: 140,
-                          height: 36,
-                          child: RaisedButton(
-                            child: Text(
-                              'Register',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 18,
+                          Padding(
+                            padding: EdgeInsets.symmetric(
+                              vertical: 12,
+                              horizontal: 32,
+                            ),
+                            child: TextFormField(
+                              autovalidateMode:
+                                  AutovalidateMode.onUserInteraction,
+                              controller: _confirmPasswordController,
+                              keyboardType: TextInputType.text,
+                              textInputAction: TextInputAction.done,
+                              obscureText: true,
+                              decoration: InputDecoration(
+                                border: OutlineInputBorder(),
+                                errorBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                    color: Colors.red,
+                                  ),
+                                ),
+                                focusedErrorBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                    color: Colors.red,
+                                    width: 2.0,
+                                  ),
+                                ),
+                                errorStyle: TextStyle(color: Colors.red),
+                                labelText: 'Confirm Password',
+                              ),
+                              validator: _validateConfirmPassword,
+                            ),
+                          ),
+                          Center(
+                            child: Padding(
+                              padding: EdgeInsets.symmetric(
+                                vertical: 8,
+                              ),
+                              child: ButtonTheme(
+                                minWidth: 140,
+                                height: 36,
+                                child: RaisedButton(
+                                  child: Text(
+                                    'Register',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 18,
+                                    ),
+                                  ),
+                                  onPressed: _createAccount,
+                                  color: Colors.green,
+                                  elevation: 2.0,
+                                  autofocus: false,
+                                ),
                               ),
                             ),
-                            onPressed: _createAccount,
-                            color: Colors.green,
-                            elevation: 2.0,
-                            autofocus: false,
                           ),
-                        ),
+                        ],
                       ),
                     ),
                   ],
                 ),
-              ),
-            ],
-          ),
-        ),
-      ),
+              );
+            },
+          )),
     );
   }
 }

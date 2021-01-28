@@ -379,6 +379,7 @@ class EventDetails {
   final LatLng position;
   final DateTime startDate;
   final DateTime endDate;
+  final int participationRequestCount;
   final String participationStatus;
   final bool isOrganiser;
   final bool allowInvitations;
@@ -394,6 +395,7 @@ class EventDetails {
     this.position,
     this.startDate,
     this.endDate,
+    this.participationRequestCount,
     this.participationStatus,
     this.isOrganiser,
     this.allowInvitations,
@@ -411,6 +413,7 @@ class EventDetails {
       LatLng(json['lat'], json['lon']),
       DateTime.fromMillisecondsSinceEpoch(json['start_datetime_ms']),
       DateTime.fromMillisecondsSinceEpoch(json['end_datetime_ms']),
+      json['participation_request_count'],
       json['participation']['status'],
       json['participation']['is_organiser?'],
       json['settings']['allow_invitations'],
