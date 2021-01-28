@@ -1,5 +1,4 @@
 import 'package:PickApp/client.dart';
-import 'package:PickApp/utils/string_formatter.dart';
 import 'dart:convert';
 import 'package:equatable/equatable.dart';
 import 'package:image_picker/image_picker.dart';
@@ -113,7 +112,7 @@ class UserRepository {
       return User.fromJson(json.decode(response.body));
     } else {
       throw Exception(
-        StringFormatter.formatErrors(json.decode(response.body)),
+        'Unique username is already taken!',
       );
     }
   }

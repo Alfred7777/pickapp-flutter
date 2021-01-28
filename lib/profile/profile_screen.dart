@@ -58,7 +58,7 @@ class ProfileScreenState extends State<ProfileScreen> {
     if (_source != null) {
       var _pickedPicture = await ChooseImage.chooseImage(_source);
       _profileBloc.add(UpdateProfilePicture(
-        pictureUploadUrl: _profileBloc.state.props[2],
+        pictureUploadUrl: (_profileBloc.state as ProfileReady).pictureUploadUrl,
         pickedProfilePicture: _pickedPicture,
       ));
     }

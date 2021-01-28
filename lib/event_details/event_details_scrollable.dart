@@ -1,4 +1,5 @@
 import 'package:PickApp/event_update/event_update_screen.dart';
+import 'package:PickApp/widgets/profile_picture_rounded.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
@@ -216,6 +217,8 @@ class EventDetailsList extends StatelessWidget {
                         ),
                       ),
                       EventButtons(
+                        organiserProfilePictureUrl:
+                            eventDetails.organiserProfilePictureUrl,
                         numberOfParticipants: participantList.length,
                         numberOfParticipationRequests: 10,
                         participationStatus: eventDetails.participationStatus,
@@ -417,6 +420,7 @@ class EventDate extends StatelessWidget {
 }
 
 class EventButtons extends StatelessWidget {
+  final String organiserProfilePictureUrl;
   final int numberOfParticipants;
   final int numberOfParticipationRequests;
   final String participationStatus;
@@ -429,6 +433,7 @@ class EventButtons extends StatelessWidget {
   final bool showButtons;
 
   const EventButtons({
+    @required this.organiserProfilePictureUrl,
     @required this.numberOfParticipants,
     @required this.numberOfParticipationRequests,
     @required this.participationStatus,
@@ -459,11 +464,20 @@ class EventButtons extends StatelessWidget {
                 alignment: MainAxisAlignment.spaceEvenly,
                 buttonPadding: EdgeInsets.zero,
                 children: [
-                  EventRoundButton(
-                    icon: Icons.add_alert,
-                    label: 'Follow',
-                    color: Colors.blue[300],
-                    notifyParent: () {},
+                  Column(
+                    children: [
+                      EventRoundButton(
+                        label: 'Owner',
+                        child: ProfilePicture(
+                          height: 56,
+                          width: 56,
+                          shape: BoxShape.circle,
+                          fit: BoxFit.cover,
+                          profilePictureUrl: organiserProfilePictureUrl,
+                        ),
+                        notifyParent: () {},
+                      ),
+                    ],
                   ),
                   EventMainButton(
                     text: participationStatus,
@@ -627,12 +641,14 @@ class EventRoundButton extends StatelessWidget {
   final String label;
   final Color color;
   final Function notifyParent;
+  final Widget child;
 
   const EventRoundButton({
-    @required this.icon,
     @required this.label,
-    @required this.color,
     @required this.notifyParent,
+    this.icon,
+    this.color,
+    this.child,
   });
 
   @override
@@ -644,11 +660,12 @@ class EventRoundButton extends StatelessWidget {
           minWidth: 56,
           onPressed: notifyParent,
           color: color,
-          child: Icon(
-            icon,
-            size: 32,
-            color: Colors.white,
-          ),
+          child: child ??
+              Icon(
+                icon,
+                size: 32,
+                color: Colors.white,
+              ),
           shape: CircleBorder(),
         ),
         Padding(

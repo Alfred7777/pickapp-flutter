@@ -48,7 +48,7 @@ class UserBar extends StatelessWidget {
                     height: 52,
                     width: 52,
                     shape: BoxShape.circle,
-                    fit: BoxFit.fill,
+                    fit: BoxFit.cover,
                     profilePictureUrl: user.profilePictureUrl,
                   ),
                   Expanded(

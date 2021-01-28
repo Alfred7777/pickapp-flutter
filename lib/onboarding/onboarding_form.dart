@@ -145,6 +145,7 @@ class _OnboardingFormState extends State<OnboardingForm> {
             bio: bioController.text,
             name: nameController.text,
             uniqueUsername: uniqueUsernameController.text,
+            profilePicturePath: profilePicturePath,
           ),
         ),
       );
@@ -218,7 +219,7 @@ class TextForm extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TextFormField(
-      autovalidateMode: AutovalidateMode.always,
+      autovalidateMode: AutovalidateMode.onUserInteraction,
       keyboardType: keyboardType,
       textCapitalization: textCapitalization,
       controller: controller,

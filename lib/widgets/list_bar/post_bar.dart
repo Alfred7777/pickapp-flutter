@@ -84,7 +84,7 @@ class PostCreatorBar extends StatelessWidget {
           height: 48,
           width: 48,
           shape: BoxShape.circle,
-          fit: BoxFit.fill,
+          fit: BoxFit.cover,
           profilePictureUrl: creator.profilePictureUrl,
         ),
         Expanded(
@@ -141,18 +141,27 @@ class PostContent extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
+        Divider(
+          thickness: 0.5,
+        ),
         Padding(
           padding: EdgeInsets.symmetric(
-            vertical: 8,
+            vertical: 3,
           ),
-          child: Text(
-            content,
-            textAlign: TextAlign.left,
-            style: TextStyle(
-              color: Colors.grey[800],
-              fontSize: 15,
+          child: Align(
+            alignment: Alignment.centerLeft,
+            // child: Padding(
+            //   padding: EdgeInsets.symmetric(horizontal: 60),
+            child: Text(
+              content,
+              textAlign: TextAlign.left,
+              style: TextStyle(
+                color: Colors.grey[800],
+                fontSize: 15,
+              ),
             ),
           ),
+          // ),
         ),
         Align(
           alignment: Alignment.bottomRight,
