@@ -13,6 +13,21 @@ class AuthenticationRepository {
   static final signInWithFacebookCancelledMessage =
       "It seems like you cancelled logging in. Please try again or report the issue in case it's unexpected.";
 
+  static Future<String> registerWithEmail(String email, String password) async {
+    final url = apiUrl + 'register';
+
+    var headers = {'Content-type': 'application/json'};
+    var json = '{"email": "$email", "password": "$password"}';
+
+    var response = await post(url, headers: headers, body: json);
+
+    if (response.statusCode == 201) {
+      return 'Account created succesfully.';
+    } else {
+      throw Exception();
+    }
+  }
+
   static Future<String> signInWithEmail({
     @required String email,
     @required String password,

@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:PickApp/login/login_bloc.dart';
 import 'package:PickApp/login/login_event.dart';
 import 'package:PickApp/login/login_state.dart';
+import 'package:PickApp/register/register_screen.dart';
 import 'package:flutter_signin_button/flutter_signin_button.dart';
 
 class LoginForm extends StatefulWidget {
@@ -16,6 +17,21 @@ class _LoginFormState extends State<LoginForm> {
 
   @override
   Widget build(BuildContext context) {
+    void _onCreateAccountButtonPressed() async {
+      var route = MaterialPageRoute(
+        builder: (context) => RegisterScreen(),
+      );
+      var result = await Navigator.push(context, route);
+      if (result != null) {
+        Scaffold.of(context).showSnackBar(
+          SnackBar(
+            content: Text('${result[0]}'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
+    }
+
     void _onSignInWithFacebookButtonPressed() {
       BlocProvider.of<LoginBloc>(context).add(
         SignInWithFacebookButtonPressed(),
@@ -156,7 +172,7 @@ class _LoginFormState extends State<LoginForm> {
                           null;
                         }
                       },
-                      color: Color(0xFF5EC374),
+                      color: Colors.green,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(20.0),
                       ),
@@ -187,6 +203,31 @@ class _LoginFormState extends State<LoginForm> {
                       _onSignInWithFacebookButtonPressed();
                     }
                   }),
+                ),
+                Padding(
+                  padding: EdgeInsets.only(top: 16.0),
+                  child: InkWell(
+                    onTap: _onCreateAccountButtonPressed,
+                    child: RichText(
+                      text: TextSpan(
+                        text: 'Don\'t have an account? ',
+                        style: TextStyle(
+                          color: Colors.grey,
+                          fontSize: 14,
+                        ),
+                        children: [
+                          TextSpan(
+                            text: 'Create One!',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              decoration: TextDecoration.underline,
+                              color: Colors.green,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
                 ),
                 Expanded(
                   child: Padding(
