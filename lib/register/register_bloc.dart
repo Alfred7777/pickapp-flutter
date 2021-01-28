@@ -21,7 +21,7 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
         );
       } catch (exception) {
         yield RegisterFailure(
-          error: 'Something went wrong. Please try again later.',
+          error: 'Email was already used.',
         );
       }
     }

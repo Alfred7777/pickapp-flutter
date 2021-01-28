@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:PickApp/repositories/event_repository.dart';
 import 'package:PickApp/widgets/top_bar.dart';
 import 'package:PickApp/widgets/sliver_map_header.dart';
-import 'package:PickApp/widgets/date_picker.dart';
+//import 'package:PickApp/widgets/date_picker.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class SecondStepPage extends StatefulWidget {
@@ -338,44 +338,44 @@ class DateAndPrivacyFormState extends State<DateAndPrivacyForm> {
       key: formKey,
       child: Column(
         children: [
-          TextFieldDateTimePicker(
-            autovalidateMode: AutovalidateMode.onUserInteraction,
-            labelText: 'Start date',
-            enabled: true,
-            prefixIcon: Icon(
-              Icons.date_range,
-              color: Colors.grey[850],
-            ),
-            firstDate: DateTime(DateTime.now().year - 10),
-            lastDate: DateTime(DateTime.now().year + 10),
-            initialDate: initStartDate,
-            onDateChanged: (DateTime date) {
-              setStartDate(date);
-            },
-            validator: (value) {
-              return validateStartDate();
-            },
-          ),
-          SizedBox(height: 14.0),
-          TextFieldDateTimePicker(
-            autovalidateMode: AutovalidateMode.onUserInteraction,
-            labelText: 'End date',
-            enabled: true,
-            prefixIcon: Icon(
-              Icons.date_range,
-              color: Colors.grey[850],
-            ),
-            firstDate: DateTime(DateTime.now().year - 10),
-            lastDate: DateTime(DateTime.now().year + 10),
-            initialDate: initEndDate,
-            onDateChanged: (DateTime date) {
-              setEndDate(date);
-            },
-            validator: (value) {
-              return validateEndDate();
-            },
-          ),
-          SizedBox(height: 14.0),
+          // TextFieldDateTimePicker(
+          //   autovalidateMode: AutovalidateMode.onUserInteraction,
+          //   labelText: 'Start date',
+          //   enabled: true,
+          //   prefixIcon: Icon(
+          //     Icons.date_range,
+          //     color: Colors.grey[850],
+          //   ),
+          //   firstDate: DateTime(DateTime.now().year - 10),
+          //   lastDate: DateTime(DateTime.now().year + 10),
+          //   initialDate: initStartDate,
+          //   onDateChanged: (DateTime date) {
+          //     setStartDate(date);
+          //   },
+          //   validator: (value) {
+          //     return validateStartDate();
+          //   },
+          // ),
+          // SizedBox(height: 14.0),
+          // TextFieldDateTimePicker(
+          //   autovalidateMode: AutovalidateMode.onUserInteraction,
+          //   labelText: 'End date',
+          //   enabled: true,
+          //   prefixIcon: Icon(
+          //     Icons.date_range,
+          //     color: Colors.grey[850],
+          //   ),
+          //   firstDate: DateTime(DateTime.now().year - 10),
+          //   lastDate: DateTime(DateTime.now().year + 10),
+          //   initialDate: initEndDate,
+          //   onDateChanged: (DateTime date) {
+          //     setEndDate(date);
+          //   },
+          //   validator: (value) {
+          //     return validateEndDate();
+          //   },
+          // ),
+          // SizedBox(height: 14.0),
           DropdownButtonFormField<EventPrivacyRule>(
             autovalidateMode: AutovalidateMode.onUserInteraction,
             isExpanded: true,
