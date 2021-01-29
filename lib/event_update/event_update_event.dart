@@ -41,6 +41,7 @@ class UpdateEventButtonPressed extends EventUpdateEvent {
   final DateTime eventStartDate;
   final DateTime eventEndDate;
   final EventPrivacyRule eventPrivacyRule;
+  final int recurrenceIntervalInSeconds;
 
   UpdateEventButtonPressed({
     @required this.initialDetails,
@@ -52,6 +53,7 @@ class UpdateEventButtonPressed extends EventUpdateEvent {
     @required this.eventStartDate,
     @required this.eventEndDate,
     @required this.eventPrivacyRule,
+    @required this.recurrenceIntervalInSeconds,
   });
 
   @override
@@ -65,5 +67,6 @@ class UpdateEventButtonPressed extends EventUpdateEvent {
         eventStartDate,
         eventEndDate,
         eventPrivacyRule,
+        recurrenceIntervalInSeconds,
       ];
 }

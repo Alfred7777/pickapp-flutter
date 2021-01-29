@@ -69,6 +69,10 @@ class EventUpdateBloc extends Bloc<EventUpdateEvent, EventUpdateState> {
                 )
             ? null
             : event.eventPrivacyRule.requireParticipationAcceptation,
+        recurrenceIntervalInSeconds: event.recurrenceIntervalInSeconds ==
+                event.initialDetails.recurrenceIntervalInSeconds
+            ? null
+            : event.recurrenceIntervalInSeconds,
       );
       if (response == 'Event successfully updated.') {
         yield EventUpdateSuccess(

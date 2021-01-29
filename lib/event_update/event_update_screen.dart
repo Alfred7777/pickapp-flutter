@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'event_update_bloc.dart';
-import 'event_update_state.dart';
 import 'event_update_event.dart';
+import 'event_update_state.dart';
 import 'package:PickApp/event_update/step_page/first_step_page.dart';
 import 'package:PickApp/event_update/step_page/second_step_page.dart';
 import 'package:PickApp/repositories/event_repository.dart';
@@ -36,6 +36,9 @@ class EventUpdateScreenState extends State<EventUpdateScreen> {
   List<EventPrivacyRule> _eventPrivacyRules;
   EventPrivacyRule _privacyRule;
 
+  List<EventRecurringRule> _eventRecurringRules;
+  EventRecurringRule _recurringRule;
+
   EventUpdateScreenState({
     @required this.eventID,
   });
@@ -52,6 +55,8 @@ class EventUpdateScreenState extends State<EventUpdateScreen> {
     _descriptionController = TextEditingController();
 
     _eventPrivacyRules = EventPrivacyRule.getEventPrivacyRules();
+
+    _eventRecurringRules = EventRecurringRule.getEventRecurringRules();
   }
 
   @override
@@ -76,6 +81,10 @@ class EventUpdateScreenState extends State<EventUpdateScreen> {
     _privacyRule = privacyRule;
   }
 
+  void _setRecurringRule(EventRecurringRule recurringRule) {
+    _recurringRule = recurringRule;
+  }
+
   String _validateStartDate() {
     if (!_endDate.isAfter(_startDate)) {
       return 'Event can\'t start after the end of it!';
@@ -98,15 +107,18 @@ class EventUpdateScreenState extends State<EventUpdateScreen> {
       builder: (context) => SecondStepPage(
         eventPos: _eventPos,
         eventPrivacyRules: _eventPrivacyRules,
+        eventRecurringRules: _eventRecurringRules,
         updateEvent: _updateEvent,
         setStartDate: _setStartDate,
         setEndDate: _setEndDate,
         setPrivacyRule: _setPrivacyRule,
+        setRecurringRule: _setRecurringRule,
         validateStartDate: _validateStartDate,
         validateEndDate: _validateEndDate,
         initStartDate: _startDate,
         initEndDate: _endDate,
         initPrivacyRule: _privacyRule,
+        initRecurringRule: _recurringRule,
       ),
     );
     Navigator.push(context, route);
@@ -123,6 +135,7 @@ class EventUpdateScreenState extends State<EventUpdateScreen> {
       eventStartDate: _startDate,
       eventEndDate: _endDate,
       eventPrivacyRule: _privacyRule,
+      recurrenceIntervalInSeconds: _recurringRule.recurrenceIntervalInSeconds,
     ));
   }
 
@@ -155,6 +168,8 @@ class EventUpdateScreenState extends State<EventUpdateScreen> {
               state.initialDetails.allowInvitations,
               state.initialDetails.requireParticipationAcceptation,
             );
+            _recurringRule = EventRecurringRule.getRule(
+                state.initialDetails.recurrenceIntervalInSeconds);
           }
         },
         child: BlocBuilder<EventUpdateBloc, EventUpdateState>(

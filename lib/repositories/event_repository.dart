@@ -77,6 +77,7 @@ class EventRepository {
     @required DateTime endDate,
     @required bool allowInvitations,
     @required bool requireParticipationAcceptation,
+    @required int recurrenceIntervalInSeconds,
   }) async {
     var client = AuthenticatedApiClient();
 
@@ -95,6 +96,7 @@ class EventRepository {
       'end_datetime_ms': endDate?.toUtc()?.millisecondsSinceEpoch,
       'discipline_id': '$disciplineID',
       'settings': new_settings,
+      'recurrence_interval_in_seconds': recurrenceIntervalInSeconds,
     };
 
     new_details.removeWhere((key, value) {
@@ -546,6 +548,19 @@ class EventRecurringRule {
       }
     }
     return availableRules[0].name;
+  }
+
+  // nevermind the duplicate code, it's needed ASAP!
+  static EventRecurringRule getRule(int recurrenceIntervalInSeconds) {
+    var availableRules = getEventRecurringRules();
+
+    for (var i = 0; i < availableRules.length; i++) {
+      if (availableRules[i].recurrenceIntervalInSeconds ==
+          recurrenceIntervalInSeconds) {
+        return availableRules[i];
+      }
+    }
+    return availableRules[0];
   }
 
   static List<EventRecurringRule> getEventRecurringRules() {
